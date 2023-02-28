@@ -1,0 +1,39 @@
+version: '3'
+services:
+  casper:
+      build:
+        context: ./casper
+      ports:
+        - "5433:5432"
+      # env_file: .env
+      environment:
+        POSTGRES_USER: postgres
+        POSTGRES_PASSWORD: 123456
+        POSTGRES_DB: eva01
+      volumes:
+        - /data/db:/var/lib/postgresql/data
+  melchior:
+    build:
+      context: ./melchior
+    command: [ "yarn", "serve", "--host", "0.0.0.0" ]
+    ports:
+      - "8082:8080"
+    # env_file: .env
+    tty: true
+    stdin_open: true
+  balthasar:
+    build: ./balthasar
+    # env_file: .env
+    environment:
+      PORT: 3000
+      DB_USER: postgres
+      DB_PWD: 123456
+      DB_NAME: eva01
+      DB_HOST: casper
+      DB_PORT: 5432
+      DB_DIALECT: postgres
+      SECRET_kEY: secret-key
+    command: [ "yarn", "dev" ]
+    ports:
+      - "3001:3000"
+  
