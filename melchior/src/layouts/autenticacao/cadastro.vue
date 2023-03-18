@@ -1,16 +1,11 @@
 <template>
-  <div>
-  <app/>
-  <loading/>
+  <div>cadastro
+
   </div>
 </template>
 
 <script>
-import app from './layouts/app'
 export default {
-  components: {
-    app
-  }
 
 }
 </script>
