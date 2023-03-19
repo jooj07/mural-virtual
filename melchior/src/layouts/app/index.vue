@@ -1,110 +1,159 @@
 <template>
-  <v-app>
-    <v-hover
-      v-if="$vuetify.breakpoint.width >= 700"
-      open-delay="80"
-      v-slot="{ hover }"
-    >
+  <v-app id="inspire">
+    <v-main>
       <v-navigation-drawer
+        v-if="$vuetify.breakpoint.width >= 700"
+        v-model="drawer"
+        :mini-variant="!fix"
         app
-        class="pt-4"
-        color="grey lighten-3"
-        :mini-variant="!hover"
       >
         <v-list>
-          <v-list-item v-show="hover" class="px-2">
-            <h1>INÍCIO</h1>
+          <v-list-item v-show="fix">
+            <p
+              class="text-h4 mx-auto font-weight-black"
+              style="word-wrap: break-word; width: 90%"
+            >
+              {{ $route.name }}
+            </p>
           </v-list-item>
-          <v-list-item class="px-2">
-            <v-list-item-avatar
-              v-for="n in 1"
-              :key="n"
-              :color="`grey ${n === 1 ? 'darken' : 'lighten'}-1`"
-              :size="n === 1 ? 36 : 20"
-              class="d-block text-center mx-auto mb-9"
-              @click="miniVariant = !miniVariant"
-            ></v-list-item-avatar>
-          </v-list-item>
-
-          <v-list-item link>
+          <v-list-item v-show="fix">
             <v-list-item-content>
               <v-list-item-title class="text-h6">
-                Sandra Adams
+                Red Velvet Cachorras
               </v-list-item-title>
-              <v-list-item-subtitle>sandra_a88@gmail.com</v-list-item-subtitle>
             </v-list-item-content>
           </v-list-item>
         </v-list>
 
-        <v-divider></v-divider>
+        <v-divider v-show="fix"></v-divider>
 
-        <v-list nav dense>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-folder</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>My Files</v-list-item-title>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-account-multiple</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Shared with me</v-list-item-title>
-          </v-list-item>
-          <v-list-item link>
-            <v-list-item-icon>
-              <v-icon>mdi-star</v-icon>
-            </v-list-item-icon>
-            <v-list-item-title>Starred</v-list-item-title>
-          </v-list-item>
-        </v-list>
+        <div
+          class="d-flex flex-column justify-space-between"
+          :style="fix ? 'height: 79%' : 'height: 97%'"
+        >
+          <v-list nav dense>
+            <v-list-item v-show="!fix" link @click="fix = !fix">
+              <v-list-item-icon>
+                <v-icon>mdi-pin</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Fixar barra lateral</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              v-show="fix"
+              link
+              @click="(fix = !fix), (abaFiltros = false)"
+            >
+              <v-list-item-icon>
+                <v-icon>mdi-pin-off</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Desafixar barra lateral</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              v-show="$route.path.includes('/dashboard')"
+              link
+              :to="'/'"
+            >
+              <v-list-item-icon>
+                <v-icon>mdi-home</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Feed</v-list-item-title>
+            </v-list-item>
+            <v-list-item link>
+              <v-list-item-icon>
+                <v-icon>mdi-refresh</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Atualizar</v-list-item-title>
+            </v-list-item>
+            <v-list-item
+              link
+              @click="!fix ? (fix = !fix) : '', (abaFiltros = !abaFiltros)"
+            >
+              <v-list-item-icon>
+                <v-icon>mdi-filter-cog</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Filtros</v-list-item-title>
+              <v-icon v-if="abaFiltros">mdi-chevron-up</v-icon>
+              <v-icon v-if="!abaFiltros">mdi-chevron-down</v-icon>
+            </v-list-item>
+            <v-expand-transition v-if="abaFiltros">
+              <v-card outlined>
+                <v-card-text>//</v-card-text>
+              </v-card>
+            </v-expand-transition>
+            <v-list-item
+              link
+              @click="$vuetify.theme.dark = !$vuetify.theme.dark"
+            >
+              <v-list-item-icon>
+                <v-icon>mdi-theme-light-dark</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Mudar tema</v-list-item-title>
+            </v-list-item>
+            <v-list-item link :to="'/dashboard'">
+              <v-list-item-icon>
+                <v-icon>mdi-cog</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Dashboard</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-spacer />
+          <v-list nav dense>
+            <v-list-item link>
+              <v-list-item-icon>
+                <v-icon>mdi-pencil-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Nova postagem</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </div>
       </v-navigation-drawer>
-    </v-hover>
-    <v-app-bar app elevation="1">
-      <v-toolbar-title>{{$route.name}}</v-toolbar-title>
-    </v-app-bar>
-    <v-main>
-      <router-view />
+      <v-container class="py-8 px-6" fluid>
+        <v-row>
+          <v-col cols="12">
+            <router-view />
+          </v-col>
+        </v-row>
+      </v-container>
+      <v-bottom-navigation
+        v-if="$vuetify.breakpoint.width < 700"
+        v-model="value"
+        height="60px"
+        class="pa-0"
+        dark
+        shift
+        grow
+        app
+      >
+        <v-btn style="height: 100%">
+          <span>Recents</span>
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+        <v-btn style="height: 100%">
+          <span>Recents</span>
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+        <v-btn style="height: 100%">
+          <span>Recents</span>
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+        <v-btn style="height: 100%">
+          <span>Recents</span>
+          <v-icon>mdi-history</v-icon>
+        </v-btn>
+      </v-bottom-navigation>
     </v-main>
-    <v-bottom-navigation
-      v-if="$vuetify.breakpoint.width < 700"
-      v-model="value"
-      height="60px"
-      class="pa-0"
-      dark
-      shift
-      grow
-      app
-    >
-      <v-btn style="height: 100%">
-        <span>Recents</span>
-
-        <v-icon>mdi-history</v-icon>
-      </v-btn>
-      <v-btn style="height: 100%">
-        <span>Recents</span>
-
-        <v-icon>mdi-history</v-icon>
-      </v-btn>
-      <v-btn style="height: 100%">
-        <span>Recents</span>
-
-        <v-icon>mdi-history</v-icon>
-      </v-btn>
-      <v-btn style="height: 100%">
-        <span>Recents</span>
-
-        <v-icon>mdi-history</v-icon>
-      </v-btn>
-    </v-bottom-navigation>
   </v-app>
 </template>
 
 <script>
 export default {
   data: () => ({
-    miniVariant: true,
-    value: 1
+    cards: ['Today', 'Yesterday'],
+    drawer: true,
+    abaFiltros: false,
+    fix: false,
+    expandido: false,
+    value: true
   })
 }
 </script>

@@ -6,10 +6,44 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: () => import(/* webpackChunkName: "home" */ '../views/feed'),
-    children: []
+    name: 'home layout',
+    component: () => import(/* webpackChunkName: "home" */ '../layouts/app'),
+    children: [
+      {
+        path: '',
+        name: 'Feed',
+        component: () => import(/* webpackChunkName: "home" */ '../views/feed')
+      },
+      {
+        path: '/dashboard',
+        name: 'Seu Dashboard',
+        component: () => import(/* webpackChunkName: "dashboard" */ '../layouts/dashboard.vue'),
+        children: [
+          {
+            path: '/dashboard/atividades',
+            name: 'Atividades',
+            component: () => import(/* webpackChunkName: "Atividades" */ '../views/atividades')
+          },
+          {
+            path: '/dashboard/categorias',
+            name: 'Categorias',
+            component: () => import(/* webpackChunkName: "Categorias" */ '../views/categorias')
+          },
+          {
+            path: '/dashboard/usuarios',
+            name: 'Usuários',
+            component: () => import(/* webpackChunkName: "usuarios" */ '../views/usuarios')
+          },
+          {
+            path: '/dashboard/departamentos',
+            name: 'Departamentos',
+            component: () => import(/* webpackChunkName: "departamentos" */ '../views/departamentos')
+          }
+        ]
+      }
+    ]
   }
+
   // {
   //   path: '/about',
   //   name: 'about',
