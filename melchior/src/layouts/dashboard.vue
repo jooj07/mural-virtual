@@ -1,17 +1,17 @@
 <template>
   <v-container :fluid="$route.path !== '/dashboard'">
-    <v-row  v-if="$route.path !== '/dashboard'">
+    <v-row v-if="$route.path !== '/dashboard'">
       <v-col class="d-flex flex-row align-self-center align-center">
-          <v-btn
-            text
-            small
-            style="cursor: pointer"
-            class="px-1"
-            @click="$router.push({ path: '/dashboard' })"
-            ><v-icon class="px-1">mdi-arrow-left</v-icon> Dashboard</v-btn
-          >
-          <span class="px-1">/</span>
-          <span class="text-overline px-1"> {{ $route.name }}</span>
+        <v-btn
+          text
+          small
+          style="cursor: pointer"
+          class="px-1"
+          @click="$router.push({ path: '/dashboard' })"
+          ><v-icon class="px-1">mdi-arrow-left</v-icon> Dashboard</v-btn
+        >
+        <span class="px-1">/</span>
+        <span class="text-overline px-1"> {{ $route.name }}</span>
       </v-col>
     </v-row>
 

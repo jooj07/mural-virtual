@@ -1,7 +1,9 @@
 <template>
-  <v-fade-transition appear>
-    <router-view />
-  </v-fade-transition>
+ <v-app>
+    <v-fade-transition appear>
+      <router-view />
+    </v-fade-transition>
+ </v-app>
 </template>
 
 <script>
@@ -14,4 +16,8 @@
 </script>
 
 <style>
+*{
+  font-family: 'Roboto', sans-serif;
+}
+
 </style>

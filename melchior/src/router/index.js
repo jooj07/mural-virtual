@@ -6,7 +6,6 @@ Vue.use(VueRouter)
 const routes = [
   {
     path: '/',
-    name: 'home layout',
     component: () => import(/* webpackChunkName: "home" */ '../layouts/app'),
     children: [
       {
@@ -14,6 +13,7 @@ const routes = [
         name: 'Feed',
         component: () => import(/* webpackChunkName: "home" */ '../views/feed')
       },
+      // Protegidas
       {
         path: '/dashboard',
         name: 'Seu Dashboard',
@@ -40,6 +40,23 @@ const routes = [
             component: () => import(/* webpackChunkName: "departamentos" */ '../views/departamentos')
           }
         ]
+      }
+      // ---
+    ]
+  },
+  {
+    path: '/autenticacao',
+    component: () => import(/* webpackChunkName: "autenticacao" */ '../layouts/autenticacao'),
+    children: [
+      {
+        path: '',
+        name: 'Login',
+        component: () => import(/* webpackChunkName: "login" */ '../views/login')
+      },
+      {
+        path: '/autenticacao/cadastro',
+        name: 'Cadastro',
+        component: () => import(/* webpackChunkName: "cadastro" */ '../views/cadastro')
       }
     ]
   }

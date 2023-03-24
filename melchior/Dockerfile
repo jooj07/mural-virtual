@@ -6,11 +6,11 @@ COPY package*.json ./
 
 ENV NODE_ENV development
 
-RUN npm install
+RUN yarn
 
 COPY . .
 
-RUN npm run build
+RUN yarn build
 
 EXPOSE 8080
 
