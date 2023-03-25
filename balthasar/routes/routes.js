@@ -89,13 +89,11 @@ module.exports = function (app) {
     })
   // --------------------------------------  crud routes - Posts
   app.get('/api/posts/list',
-    [authJwt.checkToken],
     (req, res, next) => {
       controllersPosts.listPosts(req, res)
     })
 
   app.get('/api/posts/list-priority',
-    [authJwt.checkToken],
     (req, res, next) => {
       controllersPosts.listPriorityPosts(req, res)
     })
