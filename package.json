@@ -7,9 +7,11 @@
     "update-b": "docker-compose up -d --no-deps --build balthasar",
     "update-c": "docker-compose up -d --no-deps --build casper",
     "update-m": "docker-compose up -d --no-deps --build melchior",
-    "dev": "docker-compose up",
-    "off" : "docker-compose down",
-    "backup":"docker exec -it magisistema-casper-1 pg_dump -U postgres -h localhost -Fc eva01 > casper/data/db/backup.bak"
+    "up": "docker-compose up",
+    "down" : "docker-compose down",
+    "off" : "docker-compose stop",
+    "on" : "docker-compose start",
+    "backup":"docker exec -it magi-sistema-casper-1 pg_dump -U postgres -h localhost -Fc eva01 > casper/data/db/backup.bak"
   },
   "keywords": [],
   "author": "",
