@@ -1,20 +1,22 @@
 version: '3'
 services:
   casper:
-      build:
-        context: ./casper
-      ports:
-        - "5433:5432"
-      # env_file: .env
-      environment:
-        POSTGRES_USER: postgres
-        POSTGRES_PASSWORD: 123456
-        POSTGRES_DB: eva01
-      volumes:
-        - /data/db:/var/lib/postgresql/data
+    build:
+      context: ./casper
+    ports:
+      - "5433:5432"
+    # env_file: .env
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 123456
+      POSTGRES_DB: eva01
+    volumes:
+      - /data/db:/var/lib/postgresql/data
   melchior:
     build:
       context: ./melchior
+    environment: 
+      VUE_APP_API_URL: http://localhost:3001
     command: [ "yarn", "serve", "--host", "0.0.0.0" ]
     ports:
       - "8082:8080"
@@ -36,4 +38,3 @@ services:
     command: [ "yarn", "dev" ]
     ports:
       - "3001:3000"
-  
