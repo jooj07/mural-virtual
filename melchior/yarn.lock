@@ -1392,6 +1392,18 @@
   dependencies:
     "@types/node" "*"
 
+"@vee-validate/i18n@^4.8.3":
+  version "4.8.3"
+  resolved "https://registry.yarnpkg.com/@vee-validate/i18n/-/i18n-4.8.3.tgz#3f8a317cae7d8077426caa0bcaf052710e2ebf0d"
+  integrity sha512-0ijwsxc+DHR6YqvzDtaD66IV6KYJUAfCw+npGKCvnr+fGaXbXYNhJ7d+UeT/eE5gaYyfrf6FPKynCCHGxG4ZUQ==
+
+"@vee-validate/rules@^4.8.4":
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/@vee-validate/rules/-/rules-4.8.4.tgz#016ad992725114f5f0c19c412a9206499de6e3b8"
+  integrity sha512-GTtE4XdCMl2xDZDyUmIemALN5oK1giMEh0KqwUipZcCjypLKLXuxjF3M6KFSTOeyY+0o+i4xAzcmuhutsfSi7A==
+  dependencies:
+    vee-validate "^4.8.4"
+
 "@vue/babel-helper-vue-jsx-merge-props@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@vue/babel-helper-vue-jsx-merge-props/-/babel-helper-vue-jsx-merge-props-1.4.0.tgz#8d53a1e21347db8edbe54d339902583176de09f2"
@@ -1667,6 +1679,11 @@
     vue-template-es2015-compiler "^1.9.0"
   optionalDependencies:
     prettier "^1.18.2 || ^2.0.0"
+
+"@vue/devtools-api@^6.5.0":
+  version "6.5.0"
+  resolved "https://registry.yarnpkg.com/@vue/devtools-api/-/devtools-api-6.5.0.tgz#98b99425edee70b4c992692628fa1ea2c1e57d07"
+  integrity sha512-o9KfBeaBmCKl10usN4crU53fYtC1r7jJwdGKjPT24t348rHxgfpZ0xL3Xm/gLUYnc0oTp8LAmrxOeLyu6tbk2Q==
 
 "@vue/eslint-config-standard@^6.1.0":
   version "6.1.0"
@@ -6628,6 +6645,18 @@ vary@~1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/vary/-/vary-1.1.2.tgz#2299f02c6ded30d4a5961b0b9f74524a18f634fc"
   integrity sha512-BNGbWLfd0eUPabhkXUVm0j8uuvREyTh5ovRa/dyow/BqAbZJyC+5fU+IzQOzmAKzYqYRAISoRhdQr3eIZ/PXqg==
+
+vee-validate@<3.0.0:
+  version "2.2.15"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-2.2.15.tgz#dc6c925d21e57288d3308fe5a39a0941036c575a"
+  integrity sha512-4TOsI8XwVkKVLkg8Nhmy+jyoJrR6XcTRDyxBarzcCvYzU61zamipS1WsB6FlDze8eJQpgglS4NXAS6o4NDPs1g==
+
+vee-validate@^4.8.4:
+  version "4.8.4"
+  resolved "https://registry.yarnpkg.com/vee-validate/-/vee-validate-4.8.4.tgz#d7687b4c43db953f614432a39dbf53d56fc133c8"
+  integrity sha512-wlLBy50t4EMEin5oqxS2mxpqW02TkIsk0H3LcivLztNJKKLW17hpPSQtQnn8wjDLoWWZ/CVOfep6aw77aCAavg==
+  dependencies:
+    "@vue/devtools-api" "^6.5.0"
 
 vue-cli-plugin-vuetify@~2.5.8:
   version "2.5.8"
