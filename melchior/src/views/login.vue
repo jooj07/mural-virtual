@@ -14,11 +14,12 @@
                   <v-text-field
                     ref="matricula"
                     v-model="matricula"
+                    :hide-details="!(errors && errors.length)"
+                    :error-messages="errors"
                     label="Matrícula"
                     class="my-2 rounded-lg"
                     outlined
-                    :hide-details="!(errors && errors.length)"
-                    :error-messages="errors"
+                    @keydown.enter="logar"
                   ></v-text-field>
                 </validation-provider>
               </v-col>
@@ -31,21 +32,23 @@
                 >
                   <v-text-field
                     v-model="senha"
+                    :hide-details="!(errors && errors.length)"
+                    :error-messages="errors"
                     label="Senha"
                     class="my-2 rounded-lg"
                     outlined
-                    :hide-details="!(errors && errors.length)"
-                    :error-messages="errors"
+                    @keydown.enter="logar"
                   ></v-text-field>
                 </validation-provider>
               </v-col>
 
               <v-col cols="12" class="d-flex flex-row justify-end mt-2">
-                <v-btn color="primary" fab @click="logar"
-                  ><v-icon>mdi-check-bold</v-icon></v-btn
-                >
+                <v-btn color="primary" fab @click="logar">
+                  <v-icon>mdi-check-bold</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
+            <a @click="$router.push({ path: '/autenticacao/cadastro'})">Não tem login? Cadastre-se aqui</a>
           </v-form>
         </validation-observer>
       </v-col>
@@ -68,8 +71,11 @@ export default {
     async logar () {
       if (await this.$refs.form.validate()) {
         await this.login({
-          login: this.matricula,
-          password: this.senha
+          form: {
+            login: this.matricula,
+            password: this.senha
+          },
+          vm: this.$router
         })
       } else {
         console.log('invalido')

@@ -19,7 +19,7 @@
           <v-list-item v-show="fix">
             <v-list-item-content>
               <v-list-item-title class="text-h6">
-                Red Velvet Cachorras
+                Suzana de Oliveira
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -34,7 +34,7 @@
           <v-list nav dense>
             <v-list-item v-show="!fix" link @click="fix = !fix">
               <v-list-item-icon>
-                <v-icon>mdi-pin</v-icon>
+                <v-icon color="secondary">mdi-pin</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Fixar barra lateral</v-list-item-title>
             </v-list-item>
@@ -44,7 +44,7 @@
               @click="(fix = !fix), (abaFiltros = false)"
             >
               <v-list-item-icon>
-                <v-icon>mdi-pin-off</v-icon>
+                <v-icon color="secondary">mdi-pin-off</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Desafixar barra lateral</v-list-item-title>
             </v-list-item>
@@ -54,13 +54,13 @@
               :to="'/'"
             >
               <v-list-item-icon>
-                <v-icon>mdi-home</v-icon>
+                <v-icon color="secondary">mdi-home</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Feed</v-list-item-title>
             </v-list-item>
             <v-list-item link>
               <v-list-item-icon>
-                <v-icon>mdi-refresh</v-icon>
+                <v-icon color="secondary">mdi-refresh</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Atualizar</v-list-item-title>
             </v-list-item>
@@ -69,7 +69,7 @@
               @click="!fix ? (fix = !fix) : '', (abaFiltros = !abaFiltros)"
             >
               <v-list-item-icon>
-                <v-icon>mdi-filter-cog</v-icon>
+                <v-icon color="secondary">mdi-filter-cog</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Filtros</v-list-item-title>
               <v-icon v-if="abaFiltros">mdi-chevron-up</v-icon>
@@ -77,7 +77,38 @@
             </v-list-item>
             <v-expand-transition v-if="abaFiltros">
               <v-card outlined>
-                <v-card-text>//</v-card-text>
+                <v-card-title>Filtros</v-card-title>
+                <v-card-text>
+                  <v-row no-gutters>
+                    <v-col cols="12" class="my-1">
+                      <v-select
+                        outlined
+                        dense
+                        hide-details
+                        class="elevation-1"
+                        label="filtro"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <v-select
+                        outlined
+                        dense
+                        hide-details
+                        class="elevation-1"
+                        label="filtro"
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <v-select
+                        outlined
+                        dense
+                        hide-details
+                        class="elevation-1"
+                        label="filtro"
+                      ></v-select>
+                    </v-col>
+                  </v-row>
+                </v-card-text>
               </v-card>
             </v-expand-transition>
             <v-list-item
@@ -85,13 +116,13 @@
               @click="$vuetify.theme.dark = !$vuetify.theme.dark"
             >
               <v-list-item-icon>
-                <v-icon>mdi-theme-light-dark</v-icon>
+                <v-icon color="secondary">mdi-theme-light-dark</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Mudar tema</v-list-item-title>
             </v-list-item>
-            <v-list-item link :to="'/dashboard'">
+            <v-list-item link :to="'/dashboard'" >
               <v-list-item-icon>
-                <v-icon>mdi-cog</v-icon>
+                <v-icon color="secondary">mdi-cog</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
@@ -100,7 +131,7 @@
           <v-list nav dense>
             <v-list-item link>
               <v-list-item-icon>
-                <v-icon>mdi-pencil-plus</v-icon>
+                <v-icon color="secondary">mdi-pencil-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Nova postagem</v-list-item-title>
             </v-list-item>

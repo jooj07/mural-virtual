@@ -9,13 +9,36 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    loading: false
+    loading: false,
+    snackbar: {
+      timeout: 2000,
+      color: 'primary',
+      snackbar: false,
+      text: ''
+    }
   },
   getters: {
   },
   mutations: {
     SET_LOADING (state, payload) {
       state.loading = payload
+    },
+    SET_SNACKBAR (state, payload) {
+      if (!payload) {
+        state.snackbar = {
+          timeout: 2000,
+          color: 'primary',
+          snackbar: false,
+          text: ''
+        }
+      } else {
+        state.snackbar = {
+          timeout: payload.timeout || 2000,
+          color: payload.color || 'primary',
+          snackbar: payload.snackbar || false,
+          text: payload.text || ''
+        }
+      }
     }
   },
   actions: {

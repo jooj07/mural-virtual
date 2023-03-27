@@ -1,5 +1,7 @@
 <template>
  <v-app>
+  <loading/>
+  <snackbar/>
     <v-fade-transition appear>
       <router-view />
     </v-fade-transition>
