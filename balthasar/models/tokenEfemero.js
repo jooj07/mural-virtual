@@ -10,9 +10,6 @@ com isso, posso criar um hash único para ser meu token que será usado para atu
 Por isso não posso usar simplesmente o campo ID autogerado, pq vai me gerar apenas um número inteiro
 */
 
-
-
-
 const tokenEfemero = database.define("tokenEfemero", {
   token: {
     type: Sequelize.STRING,
