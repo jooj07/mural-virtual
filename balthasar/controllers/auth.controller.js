@@ -3,6 +3,7 @@ const database = require('../db')
 const Question = require('../models/question')
 const Role = require('../models/role')
 const User = require('../models/user')
+const TokenEfemero = require("../models/tokenEfemero")
 
 const db = database
 const Op = db.Sequelize.Op
@@ -15,11 +16,10 @@ const {
   returnError
 } = require('../utils/generateError')
 
+
+
 const signUp = async (req, res) => {
   try {
-    console.log('--------------------------------')
-    console.log('passei aq')
-    console.log('--------------------------------')
     const userFound = await User.findOne({
       where: {
         login: req.body.login
@@ -85,26 +85,8 @@ const signUp = async (req, res) => {
       await user.setQuestions(securityQuestion.id)
       // await user.setQuestion(securityQuestion.id)
     }
-    if (req.body.roles) {
-      const roles = await Role.findAll({
-        where: {
-          name: {
-            [Op.or]: req.body.roles
-          }
-        }
-      })
-      user.setRole(roles).then(() => {
-        res.send({
-          message: 'User registered successfully!'
-        })
-      })
-    } else {
-      user.setRole([1]).then(() => {
-        return res.status(200).send({
-          message: 'Usuário registrado com sucesso!'
-        })
-      })
-    }
+    await user.addRole([1])
+    return res.status(200).send('Usuário criado com sucesso!')
   } catch (error) {
     returnError(error, res)
   }
@@ -134,8 +116,10 @@ const signIn = async (req, res) => {
     const token = jwt.sign({
       id: userFound.id
     }, config.secret, {
-      expiresIn: 86400 // 24 hours
+      expiresIn: config.jwtValidate
     })
+
+    const tokenEfemero = await TokenEfemero.criarToken(userFound)
 
     let accessRoles = []
     const userRoles = await userFound.getRole()
@@ -143,15 +127,46 @@ const signIn = async (req, res) => {
     accessRoles = userRoles.map(e => {
       return e.name
     })
-    const hasQuestion = await userFound.getQuestion()
+
     return res.status(200).send({
       id: userFound.id,
       login: userFound.login,
-      phone: userFound.phone,
-      email: userFound.email,
-      roles: accessRoles,
-      recoveryPasswordThroughTelegram: !!(hasQuestion && hasQuestion.length),
-      accessToken: token
+      acessos: accessRoles,
+      token,
+      tokenEfemero
+    })
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const tokenQueExpira = async (req, res) => {
+  try {
+    const { tokenRequisicao } = req.body;
+    if (!tokenRequisicao) {
+      genareteError('Token não encontrado!', 403)
+    }
+
+    let tokenEfemero = await TokenEfemero.findOne({ where: { token: tokenRequisicao } })
+
+    if (!tokenEfemero) genareteError('A chave de geração de um novo token não está cadastrada no sistema!', 403)
+
+    if (TokenEfemero.validar(tokenEfemero)) {
+      await TokenEfemero.destroy({ where: { id: tokenEfemero.id } })
+      genareteError('Faça login novamente!', 403)
+    }
+
+    const usuario = await tokenEfemero.getUser()
+
+    let novoToken = jwt.sign({
+      id: usuario.id
+    }, config.secret, {
+      expiresIn: config.jwtValidate
+    })
+
+    return res.status(200).send({
+      token: novoToken,
+      tokenEfemero: tokenEfemero.token
     })
   } catch (error) {
     returnError(error, res)
@@ -160,5 +175,6 @@ const signIn = async (req, res) => {
 
 module.exports = {
   signUp,
-  signIn
+  signIn,
+  tokenQueExpira
 }

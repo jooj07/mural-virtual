@@ -30,6 +30,10 @@ module.exports = function (app) {
     controllersAuth.signIn(req, res)
   })
 
+  app.post('/api/auth/renova-token', (req, res, next) => {
+    controllersAuth.tokenQueExpira(req, res)
+  })
+
   // --------------------------------------  crud routes - category
 
   app.get('/api/categories',

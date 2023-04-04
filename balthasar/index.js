@@ -47,7 +47,7 @@
     tokenEfemero.belongsTo(User, {
       foreignKey: 'userId', targetKey: 'id'
     });
-    User.hasOne(tokenEfemero, {
+    User.hasOne(tokenEfemero , {
       foreignKey: 'userId', targetKey: 'id'
     });
 

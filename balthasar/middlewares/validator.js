@@ -25,10 +25,8 @@ const validateSection = [
 ]
 
 const catchError = (req, res, next) => {
-  console.log(req)
   try {
     const errors = validationResult(req)
-    console.log(errors)
     if (!errors.isEmpty()) {
       returnValidationErrorsAsJSON(errors, res)
     } else {
