@@ -34,7 +34,7 @@ services:
       DB_HOST: casper
       DB_PORT: 5432
       DB_DIALECT: postgres
-      SECRET_kEY: secret-key
+      CHAVE_SECRETA: 8833a7122e4e4cd6f006b62079f8e155a72279dd5547cfeedad56fae79be6dd1d9f0518a1f10e0f3c67fdd6b9a6241c9
     command: [ "yarn", "dev" ]
     ports:
       - "3001:3000"

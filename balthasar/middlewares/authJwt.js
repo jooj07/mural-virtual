@@ -13,7 +13,7 @@ const checkToken = async (req, res, next) => {
       throw err
     }
 
-    jwt.verify(token, config.secret, (err, decoded) => {
+    jwt.verify(token, config.chaveSecreta, (err, decoded) => {
       if (err) {
         const err = new Error('')
         err.msg = 'Sem token informado!'

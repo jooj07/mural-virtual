@@ -1,31 +1,22 @@
 const config = require('../config/auth.config')
-const database = require('../db')
-const Question = require('../models/question')
-const Role = require('../models/role')
 const User = require('../models/user')
 const TokenEfemero = require("../models/tokenEfemero")
-
-const db = database
-const Op = db.Sequelize.Op
-
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
-
 const {
   genareteError,
   returnError
 } = require('../utils/generateError')
 
 
-
 const signUp = async (req, res) => {
   try {
-    const userFound = await User.findOne({
+    const usuarioEncontrado = await User.findOne({
       where: {
         login: req.body.login
       }
     })
-    if (userFound) {
+    if (usuarioEncontrado) {
       genareteError('Usuário Já cadastrado com este login!', 404)
     }
     // email
@@ -39,27 +30,8 @@ const signUp = async (req, res) => {
         genareteError('Usuário Já cadastrado com este email!', 404)
       }
     }
-    // phone
-    if (req.body.phone) {
-      const userFoundByPhone = await User.findOne({
-        where: {
-          phone: req.body.phone
-        }
-      })
-      if (userFoundByPhone) {
-        genareteError('Usuário já encontrado com este telefone!', 404)
-      }
-    }
-    // validar aq
-    // let err = new Error('')
-    // err.msg = 'Usuário Já cadastrado com este login!'
-    // err.code = 404
-    // throw err
-    const userObject = {}
 
-    if (req.body.phone) {
-      userObject.phone = req.body.phone
-    }
+    const userObject = {}
 
     if (req.body.email) {
       userObject.email = req.body.email
@@ -71,20 +43,6 @@ const signUp = async (req, res) => {
 
     const user = await User.create(userObject)
 
-    if (req.body.question) {
-      // TODO: futuramente validação de telefone
-      if (!req.body.answer) {
-        genareteError('Se você quer definir uma pergunta de segurança, antes defina uma resposta.', 404)
-      }
-
-      const securityQuestion = await Question.create({
-        question: req.body.question,
-        answer: req.body.answer
-      })
-
-      await user.setQuestions(securityQuestion.id)
-      // await user.setQuestion(securityQuestion.id)
-    }
     await user.addRole([1])
     return res.status(200).send('Usuário criado com sucesso!')
   } catch (error) {
@@ -94,43 +52,43 @@ const signUp = async (req, res) => {
 
 const signIn = async (req, res) => {
   try {
-    const userFound = await User.findOne({
+    const usuarioEncontrado = await User.findOne({
       where: {
         login: req.body.login
       }
     })
 
-    if (!userFound) {
+    if (!usuarioEncontrado) {
       genareteError('Usuário não encontrado!', 404)
     }
 
-    const checkThePassword = bcrypt.compareSync(
+    const checarSenha = bcrypt.compareSync(
       req.body.password,
-      userFound.password
+      usuarioEncontrado.password
     )
 
-    if (!checkThePassword) {
+    if (!checarSenha) {
       genareteError('Senha incorreta', 401)
     }
 
     const token = jwt.sign({
-      id: userFound.id
-    }, config.secret, {
+      id: usuarioEncontrado.id
+    }, config.chaveSecreta, {
       expiresIn: config.jwtValidate
     })
 
-    const tokenEfemero = await TokenEfemero.criarToken(userFound)
+    const tokenEfemero = await TokenEfemero.criarToken(usuarioEncontrado)
 
     let accessRoles = []
-    const userRoles = await userFound.getRole()
+    const userRoles = await usuarioEncontrado.getRole()
 
     accessRoles = userRoles.map(e => {
       return e.name
     })
 
     return res.status(200).send({
-      id: userFound.id,
-      login: userFound.login,
+      id: usuarioEncontrado.id,
+      login: usuarioEncontrado.login,
       acessos: accessRoles,
       token,
       tokenEfemero
@@ -160,7 +118,7 @@ const tokenQueExpira = async (req, res) => {
 
     let novoToken = jwt.sign({
       id: usuario.id
-    }, config.secret, {
+    }, config.chaveSecreta, {
       expiresIn: config.jwtValidate
     })
 

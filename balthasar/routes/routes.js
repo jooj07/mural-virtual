@@ -14,16 +14,16 @@ module.exports = function (app) {
     next()
   })
 
-  // --------------------------------------  crud routes - users
+  // --------------------------------------  rotas de usuário
 
-  app.post('/api/auth/signup', [
+  app.post('/api/auth/cadastro', [
     validator.validateSignUp,
     validator.catchError
   ], (req, res, next) => {
     controllersAuth.signUp(req, res)
   })
 
-  app.post('/api/auth/signin', [
+  app.post('/api/auth/logar', [
     validator.validateSignIn,
     validator.catchError
   ], (req, res, next) => {
@@ -34,14 +34,14 @@ module.exports = function (app) {
     controllersAuth.tokenQueExpira(req, res)
   })
 
-  // --------------------------------------  crud routes - category
+  // --------------------------------------  rotas de categorias
 
-  app.get('/api/categories',
+  app.get('/api/listar-categorias',
     (req, res, next) => {
       controllersCategories.listCategories(req, res)
     })
 
-  app.post('/api/categories/new',
+  app.post('/api/categorias/nova',
     [
       validator.validateCategory,
       validator.catchError
@@ -50,26 +50,26 @@ module.exports = function (app) {
       controllersCategories.newCategory(req, res)
     })
 
-  app.put('/api/categories/edit/:id',
+  app.put('/api/categorias/editar/:id',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.editCategory(req, res)
     })
 
-  app.delete('/api/categories/delete/:id',
+  app.delete('/api/categorias/deletar/:id',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.deleteCategory(req, res)
     })
-  // --------------------------------------  crud routes - sections
+  // -------------------------------------- rotas de departamentos
 
-  app.get('/api/sections',
+  app.get('/api/departamentos',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.listSection(req, res)
     })
 
-  app.post('/api/sections/new',
+  app.post('/api/departamentos/nova',
     [
       authJwt.checkToken,
       authJwt.checkAdm,
@@ -80,18 +80,18 @@ module.exports = function (app) {
       controllersSections.newSection(req, res)
     })
 
-  app.put('/api/sections/edit/:id',
+  app.put('/api/departamentos/editar/:id',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.editSections(req, res)
     })
 
-  app.delete('/api/sections/delete/:id',
+  app.delete('/api/departamentos/deletar/:id',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.deleteSection(req, res)
     })
-  // --------------------------------------  crud routes - Posts
+  // -------------------------------------- rotas de posts
   app.get('/api/posts/list',
     (req, res, next) => {
       controllersPosts.listPosts(req, res)
@@ -120,7 +120,7 @@ module.exports = function (app) {
       controllersPosts.deletePost(req, res)
     })
 
-  // --------------------------------------  test routes
+  // --------------------------------------  rotas para teste, vai desaparecer depois q finalizar
   app.get(
     '/api/test/all',
     controller.allAccess)
