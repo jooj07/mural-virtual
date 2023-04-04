@@ -16,7 +16,19 @@
   const UserSection = require('/workspaces/models/userSection.js')
   const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
   try {
-    await database.sync()
+
+    await database.sync({ alter: true })
+
+    /*
+    https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization :
+    User.sync({ force: true }) - This creates the table, dropping it first if it already existed
+
+    User.sync({ alter: true }) - This checks what is the current state of the table in the database 
+    (which columns it has, what are their data types, etc), and then performs the necessary changes 
+    in the table to make it match the model.
+    
+    */
+  //  criando as relações
     Section.belongsToMany(Post, {
       through: PostSection,
       onDelete: 'CASCADE',
@@ -47,7 +59,7 @@
     tokenEfemero.belongsTo(User, {
       foreignKey: 'userId', targetKey: 'id'
     });
-    User.hasOne(tokenEfemero , {
+    User.hasOne(tokenEfemero, {
       foreignKey: 'userId', targetKey: 'id'
     });
 
@@ -90,6 +102,7 @@
       onDelete: 'CASCADE',
       as: 'role'
     })
+    // Cria os acessos
     Role.findOrCreate({
       where: { name: 'usuario' }
     })
@@ -100,21 +113,6 @@
       where: { name: 'administrador' }
     })
 
-    // await User.create({
-    //   name:'joo',
-    //   login: 'joao1',
-    //   password: 'dummy'
-    // })
-    // await User.create({
-    //   name:'joo2',
-    //   login: 'joao2',
-    //   password: 'dummy'
-    // })
-
-    // const user2 = await User.findByPk(2)
-    // const user1 = await User.findByPk(1)
-    // await user2.addRole(3)
-    // await user1.addRole(2)
   } catch (error) {
     console.log(error)
   }
@@ -127,7 +125,7 @@ const app = express()
 // const corsOptions = {
 //   origin: 'http://localhost:8081'
 // }
-app.use(cors({origin: '*'}));
+app.use(cors({ origin: '*' }));
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
   extended: true
@@ -135,15 +133,13 @@ app.use(bodyParser.urlencoded({
 
 app.get('/', (req, res) => {
   res.json({
-    message: 'API executando'
+    message: 'API executando, tudo segue normal (por enquanto)'
   })
 })
 
-// routes
+// rotas de acesso
 require('./routes/routes')(app)
-// require('./app/routes/user.routes')(app);
 
-// set port, listen for requests
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
   console.log(`Servidor executando em http://localhost:${PORT}.`)
