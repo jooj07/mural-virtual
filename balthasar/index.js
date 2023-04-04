@@ -14,6 +14,7 @@
   const UserQuestion = require('/workspaces/models/userQuestions.js')
   const UserRole = require('/workspaces/models/userRole.js')
   const UserSection = require('/workspaces/models/userSection.js')
+  const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
   try {
     await database.sync()
     Section.belongsToMany(Post, {
@@ -42,6 +43,13 @@
       onDelete: 'CASCADE',
       as: 'section'
     })
+
+    tokenEfemero.belongsTo(User, {
+      foreignKey: 'userId', targetKey: 'id'
+    });
+    User.hasOne(tokenEfemero, {
+      foreignKey: 'userId', targetKey: 'id'
+    });
 
     Question.belongsToMany(User, {
       through: UserQuestion,
