@@ -5,6 +5,7 @@ const controllersSections = require('../controllers/section.controller')
 const controllersPosts = require('../controllers/post.controllers')
 const validator = require('../middlewares/validator')
 const authJwt = require('../middlewares/authJwt')
+const swaggerUi = require('swagger-ui-express')
 module.exports = function (app) {
   app.use(function (req, res, next) {
     res.header(
@@ -144,4 +145,6 @@ module.exports = function (app) {
   app.get('/api/feed/list')
   app.get('/api/feed/list-categories')
   app.get('/api/feed/list-sections')
+  // --------------------------------------  documentação
+  app.get('/api/api-docs', swaggerUi.serve, swaggerUi.setup(require('../swagger.json')))
 }

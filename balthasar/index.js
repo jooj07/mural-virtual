@@ -16,19 +16,18 @@
   const UserSection = require('/workspaces/models/userSection.js')
   const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
   try {
-
     await database.sync({ alter: true })
 
     /*
     https://sequelize.org/docs/v6/core-concepts/model-basics/#model-synchronization :
     User.sync({ force: true }) - This creates the table, dropping it first if it already existed
 
-    User.sync({ alter: true }) - This checks what is the current state of the table in the database 
-    (which columns it has, what are their data types, etc), and then performs the necessary changes 
+    User.sync({ alter: true }) - This checks what is the current state of the table in the database
+    (which columns it has, what are their data types, etc), and then performs the necessary changes
     in the table to make it match the model.
-    
+
     */
-  //  criando as relações
+    //  criando as relações
     Section.belongsToMany(Post, {
       through: PostSection,
       onDelete: 'CASCADE',
@@ -58,10 +57,10 @@
 
     tokenEfemero.belongsTo(User, {
       foreignKey: 'userId', targetKey: 'id'
-    });
+    })
     User.hasOne(tokenEfemero, {
       foreignKey: 'userId', targetKey: 'id'
-    });
+    })
 
     Question.belongsToMany(User, {
       through: UserQuestion,
@@ -112,7 +111,6 @@
     Role.findOrCreate({
       where: { name: 'administrador' }
     })
-
   } catch (error) {
     console.log(error)
   }
@@ -125,7 +123,7 @@ const app = express()
 // const corsOptions = {
 //   origin: 'http://localhost:8081'
 // }
-app.use(cors({ origin: '*' }));
+app.use(cors({ origin: '*' }))
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({
   extended: true

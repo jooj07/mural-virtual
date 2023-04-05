@@ -1,13 +1,12 @@
 const config = require('../config/auth.config')
 const User = require('../models/user')
-const TokenEfemero = require("../models/tokenEfemero")
+const TokenEfemero = require('../models/tokenEfemero')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const {
   genareteError,
   returnError
 } = require('../utils/generateError')
-
 
 const signUp = async (req, res) => {
   try {
@@ -100,12 +99,12 @@ const signIn = async (req, res) => {
 
 const tokenQueExpira = async (req, res) => {
   try {
-    const { tokenRequisicao } = req.body;
+    const { tokenRequisicao } = req.body
     if (!tokenRequisicao) {
       genareteError('Token não encontrado!', 403)
     }
 
-    let tokenEfemero = await TokenEfemero.findOne({ where: { token: tokenRequisicao } })
+    const tokenEfemero = await TokenEfemero.findOne({ where: { token: tokenRequisicao } })
 
     if (!tokenEfemero) genareteError('A chave de geração de um novo token não está cadastrada no sistema!', 403)
 
@@ -116,7 +115,7 @@ const tokenQueExpira = async (req, res) => {
 
     const usuario = await tokenEfemero.getUser()
 
-    let novoToken = jwt.sign({
+    const novoToken = jwt.sign({
       id: usuario.id
     }, config.chaveSecreta, {
       expiresIn: config.jwtValidate

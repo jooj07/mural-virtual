@@ -11,12 +11,14 @@
     "restart-b": "docker-compose restart balthasar",
     "restart-c": "docker-compose restart casper",
     "up": "docker-compose up",
-    "down" : "docker-compose down",
-    "off" : "docker-compose stop",
-    "on" : "docker-compose start",
-    "backup":"docker exec -it magi-sistema-casper-1 pg_dump -U postgres -h localhost -Fc eva01 > casper/data/db/backup.bak"
+    "down": "docker-compose down",
+    "off": "docker-compose stop",
+    "on": "docker-compose start",
+    "backup": "docker exec -it magi-sistema-casper-1 pg_dump -U postgres -h localhost -Fc eva01 > casper/data/db/backup.bak"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+  }
 }
