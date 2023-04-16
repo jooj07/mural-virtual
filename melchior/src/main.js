@@ -7,6 +7,7 @@ import vuetify from './plugins/vuetify'
 import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import './plugins/veeValidade'
+import './plugins/cookie'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 
 const loading = () => import('./components/loading.vue')

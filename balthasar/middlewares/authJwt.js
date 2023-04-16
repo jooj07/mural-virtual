@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken')
 
 const checkToken = async (req, res, next) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]
+    const token = req.headers['x-token']
 
     if (!token) {
       const err = new Error('')

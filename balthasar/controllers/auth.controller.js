@@ -114,6 +114,10 @@ const tokenQueExpira = async (req, res) => {
     }
 
     const usuario = await tokenEfemero.getUser()
+    const userRoles = await usuario.getRole()
+    const accessRoles = userRoles.map(e => {
+      return e.name
+    })
 
     const novoToken = jwt.sign({
       id: usuario.id
@@ -122,6 +126,10 @@ const tokenQueExpira = async (req, res) => {
     })
 
     return res.status(200).send({
+      acessos: accessRoles,
+      id: usuario.id,
+      login: usuario.login,
+      nome: usuario.name,
       token: novoToken,
       tokenEfemero: tokenEfemero.token
     })

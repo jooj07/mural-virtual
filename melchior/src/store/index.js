@@ -7,7 +7,7 @@ import feed from './feed'
 
 Vue.use(Vuex)
 
-export default new Vuex.Store({
+const store = new Vuex.Store({
   state: {
     loading: false,
     snackbar: {
@@ -53,3 +53,5 @@ export default new Vuex.Store({
     feed
   }
 })
+
+export default store
