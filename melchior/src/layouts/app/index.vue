@@ -185,6 +185,9 @@ export default {
     fix: false,
     expandido: false,
     value: true
-  })
+  }),
+  computed: {
+    ...mapState('feed', ['posts'])
+  },
 }
 </script>
