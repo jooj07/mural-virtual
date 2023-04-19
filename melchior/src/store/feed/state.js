@@ -1,3 +1,5 @@
 export default {
-  posts: ['aaa']
+  posts: null,
+  departamentos: [],
+  categorias: []
 }

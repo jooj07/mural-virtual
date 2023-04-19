@@ -73,10 +73,12 @@ export default {
   },
   async created () {
     const a = await this.listarPosts()
+    await this.obterFiltroDepartamentos()
+    await this.obterFiltroCategorias()
     console.log(a)
   },
   methods: {
-    ...mapActions('feed', ['listarPosts'])
+    ...mapActions('feed', ['listarPosts', 'obterFiltroDepartamentos', 'obterFiltroCategorias'])
   }
 }
 </script>

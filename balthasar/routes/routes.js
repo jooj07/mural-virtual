@@ -52,27 +52,25 @@ module.exports = function (app) {
     })
 
   app.put('/api/categorias/editar/:id',
-    [authJwt.checkToken, authJwt.checkAdm],
+    [authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.editCategory(req, res)
     })
 
   app.delete('/api/categorias/deletar/:id',
-    [authJwt.checkToken, authJwt.checkAdm],
+    [authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.deleteCategory(req, res)
     })
   // -------------------------------------- rotas de departamentos
 
   app.get('/api/departamentos',
-    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.listSection(req, res)
     })
 
   app.post('/api/departamentos/nova',
     [
-      authJwt.checkToken,
       authJwt.checkAdm,
       validator.validateCategory,
       validator.catchError
@@ -82,13 +80,13 @@ module.exports = function (app) {
     })
 
   app.put('/api/departamentos/editar/:id',
-    [authJwt.checkToken, authJwt.checkAdm],
+    [authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.editSections(req, res)
     })
 
   app.delete('/api/departamentos/deletar/:id',
-    [authJwt.checkToken, authJwt.checkAdm],
+    [authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.deleteSection(req, res)
     })
@@ -104,19 +102,19 @@ module.exports = function (app) {
     })
 
   app.put('/api/posts/edit',
-    [authJwt.checkToken, authJwt.checkUserAndAdmin],
+    [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.alterPost(req, res)
     })
 
   app.post('/api/posts/new',
-    [authJwt.checkToken, authJwt.checkUserAndAdmin],
+    [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.newPost(req, res)
     })
 
   app.delete('/api/posts/delete/:id',
-    [authJwt.checkToken, authJwt.checkUserAndAdmin],
+    [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.deletePost(req, res)
     })
@@ -132,12 +130,12 @@ module.exports = function (app) {
   )
   app.get(
     '/api/test/mod',
-    [authJwt.checkToken, authJwt.checkUser],
+    [authJwt.checkUser],
     controller.moderatorBoard
   )
   app.get(
     '/api/test/admin',
-    [authJwt.checkToken, authJwt.checkUserAndAdmin],
+    [authJwt.checkUserAndAdmin],
     controller.adminBoard
   )
 

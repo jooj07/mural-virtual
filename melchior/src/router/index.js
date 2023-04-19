@@ -77,13 +77,21 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
   // if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
   // else
   console.log('GLOBAL')
-  console.log(store.state.loginCadastro.state.usuarioLogado)
-  if (to.meta.logado && !localStorage.getItem('RFSTKN')) {
-    next('/403')
+  if (to.meta.logado) {
+    if (!localStorage.getItem('RFSTKN')) next('/403')
+
+    if (localStorage.getItem('RFSTKN') && !store.state.usuarioLogado) {
+      await store.dispatch('loginCadastro/renovarToken')
+    }
+    console.log(store.state.loginCadastro)
+
+    if (to.meta.adm) {
+      // if (store.state.loginCadastro.state.usuarioLogado.tipo !== 'adm') next('/403')
+    }
   } else {
     next()
   }
