@@ -37,9 +37,14 @@ module.exports = function (app) {
 
   // --------------------------------------  rotas de categorias
 
-  app.get('/api/listar-categorias',
+  app.get('/api/categorias',
     (req, res, next) => {
       controllersCategories.listCategories(req, res)
+    })
+
+  app.get('/api/categoria-exibir/:id',
+    (req, res, next) => {
+      controllersCategories.showCategory(req, res)
     })
 
   app.post('/api/categorias/nova',
@@ -52,13 +57,13 @@ module.exports = function (app) {
     })
 
   app.put('/api/categorias/editar/:id',
-    [authJwt.checkAdm],
+    // [authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.editCategory(req, res)
     })
 
   app.delete('/api/categorias/deletar/:id',
-    [authJwt.checkAdm],
+    // [authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.deleteCategory(req, res)
     })
@@ -69,9 +74,14 @@ module.exports = function (app) {
       controllersSections.listSection(req, res)
     })
 
+  app.get('/api/departamento-exibir/:id',
+    (req, res, next) => {
+      controllersSections.showSection(req, res)
+    })
+
   app.post('/api/departamentos/nova',
     [
-      authJwt.checkAdm,
+      // authJwt.checkAdm,
       validator.validateCategory,
       validator.catchError
     ],
@@ -80,13 +90,13 @@ module.exports = function (app) {
     })
 
   app.put('/api/departamentos/editar/:id',
-    [authJwt.checkAdm],
+    // [authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.editSections(req, res)
     })
 
   app.delete('/api/departamentos/deletar/:id',
-    [authJwt.checkAdm],
+    // [authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.deleteSection(req, res)
     })
@@ -102,19 +112,19 @@ module.exports = function (app) {
     })
 
   app.put('/api/posts/edit',
-    [authJwt.checkUserAndAdmin],
+    // [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.alterPost(req, res)
     })
 
   app.post('/api/posts/new',
-    [authJwt.checkUserAndAdmin],
+    // [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.newPost(req, res)
     })
 
   app.delete('/api/posts/delete/:id',
-    [authJwt.checkUserAndAdmin],
+    // [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.deletePost(req, res)
     })

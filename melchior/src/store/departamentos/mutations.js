@@ -1,3 +1,3 @@
-export const SET_CATEGORIAS = async (state, payload) => {
-  state.loading = payload
+export const SET_DEPARTAMENTOS = async (state, payload) => {
+  state.departamentosListados = payload
 }

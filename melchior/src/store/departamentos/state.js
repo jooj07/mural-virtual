@@ -1,7 +1,3 @@
-export const state = {
-  registros: []
-}
-
 export default {
-  state
+  departamentosListados: null
 }

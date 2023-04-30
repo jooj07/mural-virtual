@@ -12,11 +12,13 @@ import { ValidationProvider, ValidationObserver } from 'vee-validate'
 
 const loading = () => import('./components/loading.vue')
 const snackbar = () => import('./components/snackbar.vue')
+const cardExibicao = () => import('./components/card_exibicao.vue')
 
 Vue.component('loading', loading)
 Vue.component('snackbar', snackbar)
 Vue.component('validation-provider', ValidationProvider)
 Vue.component('validation-observer', ValidationObserver)
+Vue.component('card-exibicao', cardExibicao)
 
 new Vue({
   router,

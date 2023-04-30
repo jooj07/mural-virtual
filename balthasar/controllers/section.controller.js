@@ -83,12 +83,32 @@ const listSection = async (req, res) => {
     }
 
     const records = await Section.findAndCountAll({
-      limit: 2,
-      offset: 0,
-      where // conditions
+      limit: 10,
+      offset: req.query.offset || 0,
+      where, // conditions
+      order: [
+        ['id', 'ASC']
+      ]
     })
 
     return res.json(records)
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const showSection = async (req, res) => {
+  try {
+    if (!req.params.id) {
+      genareteError('Informe o ID do departamento!', 404)
+    }
+    if (req.params.id && isNaN(req.params.id)) {
+      genareteError('Informe o ID do departamento!', 404)
+    }
+
+    const item = await Section.findByPk(req.params.id)
+
+    return res.json(item)
   } catch (error) {
     returnError(error, res)
   }
@@ -114,5 +134,6 @@ module.exports = {
   newSection,
   editSections,
   listSection,
-  deleteSection
+  deleteSection,
+  showSection
 }

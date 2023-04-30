@@ -27,7 +27,7 @@ const listPosts = async (req, res) => {
     }
 
     const records = await Post.findAndCountAll({
-      limit: 2,
+      limit: 10,
       offset: 0,
       where // conditions
     })
@@ -41,7 +41,7 @@ const listPosts = async (req, res) => {
 const listPriorityPosts = async (req, res) => {
   try {
     const recordsWithPriority = await Post.findAndCountAll({
-      limit: 2,
+      limit: 10,
       offset: 0,
       where: {
         priority: {

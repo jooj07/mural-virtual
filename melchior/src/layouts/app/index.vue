@@ -177,6 +177,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   data: () => ({
     cards: ['Today', 'Yesterday'],
@@ -188,6 +189,6 @@ export default {
   }),
   computed: {
     ...mapState('feed', ['posts'])
-  },
+  }
 }
 </script>

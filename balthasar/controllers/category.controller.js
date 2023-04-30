@@ -58,6 +58,7 @@ const editCategory = async (req, res) => {
     }
 
     await categoryFound.update({
+      // id: req.params.id,
       name: req.body.name,
       description: req.body.description
     })
@@ -85,12 +86,32 @@ const listCategories = async (req, res) => {
     console.log(where)
 
     const records = await Category.findAndCountAll({
-      limit: 2,
-      offset: 0,
-      where // conditions
+      limit: 10,
+      offset: req.query.offset || 0,
+      where, // conditions
+      order: [
+        ['id', 'ASC']
+      ]
     })
 
     return res.json(records)
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const showCategory = async (req, res) => {
+  try {
+    if (!req.params.id) {
+      genareteError('Informe o ID da categoria!', 404)
+    }
+    if (req.params.id && isNaN(req.params.id)) {
+      genareteError('Informe o ID da categoria!', 404)
+    }
+
+    const item = await Category.findByPk(req.params.id)
+
+    return res.json(item)
   } catch (error) {
     returnError(error, res)
   }
@@ -116,5 +137,6 @@ module.exports = {
   newCategory,
   editCategory,
   listCategories,
-  deleteCategory
+  deleteCategory,
+  showCategory
 }

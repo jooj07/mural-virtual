@@ -77,27 +77,27 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
-router.beforeEach(async (to, from, next) => {
-  // if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-  // else
-  console.log('GLOBAL')
-  if (to.meta.logado) {
-    if (!localStorage.getItem('RFSTKN')) next('/403')
+// router.beforeEach(async (to, from, next) => {
+//   // if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
+//   // else
+//   console.log('GLOBAL')
+//   if (to.meta.logado) {
+//     if (!localStorage.getItem('RFSTKN')) next('/403')
 
-    if (localStorage.getItem('RFSTKN') && !store.state.usuarioLogado) {
-      await store.dispatch('loginCadastro/renovarToken')
-    }
-    console.log(store.state.loginCadastro)
+//     if (localStorage.getItem('RFSTKN') && !store.state.usuarioLogado) {
+//       await store.dispatch('loginCadastro/renovarToken')
+//     }
+//     console.log(store.state.loginCadastro)
 
-    if (to.meta.adm) {
-      // if (store.state.loginCadastro.state.usuarioLogado.tipo !== 'adm') next('/403')
-    }
-  } else {
-    next()
-  }
-  // else if(to.meta.adm && localStorage.getItem('RFSTKN') && store.state.loginCadastro.usuarioLogado.tipo !== 'adm') {
+//     if (to.meta.adm) {
+//       // if (store.state.loginCadastro.state.usuarioLogado.tipo !== 'adm') next('/403')
+//     }
+//   } else {
+//     next()
+//   }
+//   // else if(to.meta.adm && localStorage.getItem('RFSTKN') && store.state.loginCadastro.usuarioLogado.tipo !== 'adm') {
 
-  // }
-})
+//   // }
+// })
 
 export default router
