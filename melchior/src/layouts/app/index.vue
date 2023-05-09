@@ -1,6 +1,163 @@
 <template>
   <v-app id="inspire">
     <v-main>
+      <v-dialog v-model="overlayEditor" persistent max-width="800">
+        <v-overlay :value="overlayEditor">
+          <v-card
+            :light="!$vuetify.theme.dark"
+            max-width="800"
+            max-height="600"
+            style="overflow: auto"
+          >
+            <v-card-title> Título do Modal </v-card-title>
+            <v-card-text>
+              <validation-observer ref="formularioPost">
+                <v-form>
+                  <v-row>
+                    <v-col cols="12" class="my-1">
+                      <validation-provider
+                        name="Categoria"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-select
+                          v-model="categoriaSelecionadaPost"
+                          :items="categoriasListadasFiltro"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          outlined
+                          multiple
+                          dense
+                          class="elevation-1"
+                          label="Categoria"
+                          item-text="name"
+                          item-value="id"
+                        >
+                          <template v-slot:append-item>
+                            <v-divider class="mb-2"></v-divider>
+                            <v-pagination
+                              v-model="pagina"
+                              :length="
+                                Math.ceil(categoriasListadas['count'] / 10)
+                              "
+                              :total-visible="5"
+                              class="flex-grow-1"
+                              circle
+                              color="primary"
+                              @input="categoriasRequisicao(pagina)"
+                            ></v-pagination>
+                          </template>
+                        </v-select>
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <validation-provider
+                        name="Departamento"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-select
+                          v-model="departamentoSelecionadoPost"
+                          :items="departamentosListadosFiltro"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          outlined
+                          multiple
+                          dense
+                          class="elevation-1"
+                          label="Departamento"
+                          item-text="name"
+                          item-value="id"
+                        >
+                          <template v-slot:prepend-item> </template>
+                          <template v-slot:append-item>
+                            <v-divider class="mb-2"></v-divider>
+                            <v-pagination
+                              v-model="paginaDepartamentos"
+                              :length="
+                                Math.ceil(departamentosListados['count'] / 10)
+                              "
+                              :total-visible="5"
+                              class="flex-grow-1"
+                              circle
+                              color="primary"
+                              @input="
+                                departamentosRequisicao(paginaDepartamentos)
+                              "
+                            ></v-pagination>
+                          </template>
+                        </v-select>
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <v-menu
+                        ref="menu"
+                        v-model="menu"
+                        :close-on-content-click="false"
+                        :return-value.sync="date"
+                        transition="scale-transition"
+                        offset-y
+                        min-width="auto"
+                      >
+                        <template v-slot:activator="{ on, attrs }">
+                          <validation-provider
+                            name="Data de expiração"
+                            rules="required"
+                            v-slot="{ errors }"
+                          >
+                            <v-text-field
+                              v-model="date"
+                              :hide-details="!(errors && errors.length)"
+                              :error-messages="errors"
+                              label="Data de expiraçao deste post"
+                              prepend-inner-icon="mdi-calendar"
+                              class="elevation-1"
+                              dense
+                              outlined
+                              readonly
+                              v-bind="attrs"
+                              v-on="on"
+                            ></v-text-field>
+                          </validation-provider>
+                        </template>
+                        <v-date-picker v-model="date" no-title scrollable>
+                          <v-spacer></v-spacer>
+                          <v-btn text color="primary" @click="menu = false">
+                            Cancel
+                          </v-btn>
+                          <v-btn
+                            text
+                            color="primary"
+                            @click="$refs.menu.save(date)"
+                          >
+                            OK
+                          </v-btn>
+                        </v-date-picker>
+                      </v-menu>
+                    </v-col>
+                    <v-col cols="12">
+                      <p>Conteúdo da postagem</p>
+                      <editor v-model="conteudo" />
+                    </v-col>
+                    <v-col cols="12">
+                      <p>Informações extras</p>
+                      <editor v-model="informacoesExtras" />
+                    </v-col>
+                  </v-row>
+                </v-form>
+              </validation-observer>
+            </v-card-text>
+            <v-card-actions>
+              <v-btn color="primary" text @click="realizarPostagem()">
+                Salvar
+              </v-btn>
+              <v-btn color="primary" text @click="cancelarPostagem()">
+                Fechar
+              </v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-overlay>
+      </v-dialog>
       <v-navigation-drawer
         v-if="$vuetify.breakpoint.width >= 700"
         v-model="drawer"
@@ -58,7 +215,7 @@
               </v-list-item-icon>
               <v-list-item-title>Feed</v-list-item-title>
             </v-list-item>
-            <v-list-item link>
+            <v-list-item link @click="atualizarTudo()">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-refresh</v-icon>
               </v-list-item-icon>
@@ -118,12 +275,11 @@
                         dense
                         hide-details
                         class="elevation-1"
-                        label="Categoria"
+                        label="Departamento"
                         item-text="name"
                         item-value="id"
                       >
-                        <template v-slot:prepend-item>
-                        </template>
+                        <template v-slot:prepend-item> </template>
                         <template v-slot:append-item>
                           <v-divider class="mb-2"></v-divider>
                           <v-pagination
@@ -167,7 +323,7 @@
           </v-list>
           <v-spacer />
           <v-list nav dense>
-            <v-list-item link>
+            <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-pencil-plus</v-icon>
               </v-list-item-icon>
@@ -219,16 +375,29 @@ import { mapActions, mapState } from 'vuex'
 export default {
   name: 'feed',
   data: () => ({
+    // post
+    categoriaSelecionadaPost: [],
+    departamentoSelecionadoPost: [],
+    overlayEditor: false,
+    conteudo: null,
+    informacoesExtras: null,
+    date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .substr(0, 10),
+    menu: false,
+
+    // filtro
+    categoriaSelecionada: [],
+    departamentoSelecionado: [],
     pagina: 1,
-    cards: ['Today', 'Yesterday'],
+    paginaDepartamentos: 1,
+
+    // controle
     drawer: true,
     abaFiltros: false,
     fix: false,
     expandido: false,
-    value: true,
-    categoriaSelecionada: [],
-    departamentoSelecionado: [],
-    paginaDepartamentos: 1
+    value: true
   }),
   async created () {
     await this.listarCategorias()
@@ -293,6 +462,34 @@ export default {
           this.categoriaSelecionada = this.categoriasListadasFiltro.slice()
         }
       })
+    },
+    async atualizarTudo () {
+      await this.listarCategorias()
+      await this.listarDepartamentos()
+    },
+    async realizarPostagem () {
+      if (await this.$refs.formularioPost.validate()) {
+        // await this.postar({
+        //   content: this.conteudo,
+        //   extra_information: this.informacoesExtras,
+        //   expiration_date: this.date,
+        //   categories: this.categoriaSelecionadaPost,
+        //   departments: this.departamentoSelecionadoPost,
+        // });
+        this.overlayEditor = false
+      }
+    },
+    cancelarPostagem () {
+      this.categoriaSelecionadaPost = []
+      this.departamentoSelecionadoPost = []
+      this.overlayEditor = false
+      this.conteudo = null
+      this.informacoesExtras = null
+      this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10)
+      this.menu = false
+      this.overlayEditor = false
     }
   }
 }

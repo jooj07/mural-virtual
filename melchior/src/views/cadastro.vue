@@ -101,6 +101,7 @@ export default {
           password: this.senha,
           login: this.matricula
         })
+        this.$router.push({ path: '/autenticacao' })
       }
     }
   }
