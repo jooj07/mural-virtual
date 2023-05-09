@@ -43,16 +43,6 @@ const editCategory = async (req, res) => {
 
     const categoryFound = await Category.findByPk(req.params.id)
 
-    const checkIfAlreadyExists = await Category.findOne({
-      where: {
-        name: req.body.name
-      }
-    })
-
-    if (checkIfAlreadyExists) {
-      genareteError('Categoria já existe com esse nome!', 404)
-    }
-
     if (!categoryFound) {
       genareteError('Categoria não encontrada para editar!', 404)
     }

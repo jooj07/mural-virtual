@@ -1,7 +1,12 @@
 <template>
   <div>
-    <v-card class="mx-auto rounded-xl elevation-2" dense outlined max-width="500">
-      <v-card-title  class="py-1 text-h5 text-center font-weight-black">
+    <v-card
+      class="mx-auto rounded-xl elevation-2"
+      dense
+      outlined
+      max-width="500"
+    >
+      <v-card-title class="py-1 text-h5 text-center font-weight-black">
         {{ titulo }}
       </v-card-title>
       <v-card-text class="py-0">
@@ -13,7 +18,9 @@
       </v-card-text>
       <v-card-actions class="py-1" v-if="actions">
         <v-spacer></v-spacer>
-        <v-btn color="primary" icon @click="$emit('acao', id)"><v-icon>mdi-pencil</v-icon></v-btn>
+        <v-btn color="primary" icon @click="$emit('acao', id)"
+          ><v-icon>mdi-pencil</v-icon></v-btn
+        >
       </v-card-actions>
     </v-card>
   </div>

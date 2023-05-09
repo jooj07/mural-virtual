@@ -1,3 +1,4 @@
 export default {
-  categoriasListadas: null
+  categoriasListadas: null,
+  categoriasListadasFiltro: []
 }

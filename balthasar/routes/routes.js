@@ -3,6 +3,7 @@ const controllersCategories = require('../controllers/category.controller')
 const controller = require('../controllers/user.controller')
 const controllersSections = require('../controllers/section.controller')
 const controllersPosts = require('../controllers/post.controllers')
+const controllersCounters = require('../controllers/counters.controller')
 const validator = require('../middlewares/validator')
 const authJwt = require('../middlewares/authJwt')
 const swaggerUi = require('swagger-ui-express')
@@ -127,6 +128,11 @@ module.exports = function (app) {
     // [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.deletePost(req, res)
+    })
+  // -------------------------------------- rotas de totalizadores
+  app.get('/api/totalizadores',
+    (req, res, next) => {
+      controllersCounters.count(req, res)
     })
 
   // --------------------------------------  rotas para teste, vai desaparecer depois q finalizar

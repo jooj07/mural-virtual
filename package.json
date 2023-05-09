@@ -10,7 +10,7 @@
     "restart-m": "docker-compose restart melchior",
     "restart-b": "docker-compose restart balthasar",
     "restart-c": "docker-compose restart casper",
-    "up": "docker-compose up",
+    "up": "docker-compose up ",
     "down": "docker-compose down",
     "off": "docker-compose stop",
     "on": "docker-compose start",

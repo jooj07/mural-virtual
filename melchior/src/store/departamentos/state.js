@@ -1,3 +1,4 @@
 export default {
-  departamentosListados: null
+  departamentosListados: null,
+  departamentosListadosFiltro: []
 }

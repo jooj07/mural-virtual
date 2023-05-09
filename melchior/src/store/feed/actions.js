@@ -38,7 +38,7 @@ export const obterFiltroDepartamentos = async ({ commit }) => {
 export const obterFiltroCategorias = async ({ commit }) => {
   try {
     commit('SET_LOADING', true, { root: true })
-    const dados = await instance.get('/api/listar-categorias')
+    const dados = await instance.get('/api/categorias')
     if (dados && dados.response && dados.response.status && dados.response.status !== 404) {
       await commit('SET_CATEGORIAS', dados.response.data)
     }

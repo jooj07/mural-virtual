@@ -82,30 +82,68 @@
                   <v-row no-gutters>
                     <v-col cols="12" class="my-1">
                       <v-select
+                        v-model="categoriaSelecionada"
+                        :items="categoriasListadasFiltro"
                         outlined
+                        multiple
                         dense
                         hide-details
                         class="elevation-1"
-                        label="filtro"
-                      ></v-select>
+                        label="Categoria"
+                        item-text="name"
+                        item-value="id"
+                      >
+                        <template v-slot:append-item>
+                          <v-divider class="mb-2"></v-divider>
+                          <v-pagination
+                            v-model="pagina"
+                            :length="
+                              Math.ceil(categoriasListadas['count'] / 10)
+                            "
+                            :total-visible="5"
+                            class="flex-grow-1"
+                            circle
+                            color="primary"
+                            @input="categoriasRequisicao(pagina)"
+                          ></v-pagination>
+                        </template>
+                      </v-select>
                     </v-col>
                     <v-col cols="12" class="my-1">
                       <v-select
+                        v-model="departamentoSelecionado"
+                        :items="departamentosListadosFiltro"
                         outlined
+                        multiple
                         dense
                         hide-details
                         class="elevation-1"
-                        label="filtro"
-                      ></v-select>
+                        label="Categoria"
+                        item-text="name"
+                        item-value="id"
+                      >
+                        <template v-slot:prepend-item>
+                        </template>
+                        <template v-slot:append-item>
+                          <v-divider class="mb-2"></v-divider>
+                          <v-pagination
+                            v-model="paginaDepartamentos"
+                            :length="
+                              Math.ceil(departamentosListados['count'] / 10)
+                            "
+                            :total-visible="5"
+                            class="flex-grow-1"
+                            circle
+                            color="primary"
+                            @input="
+                              departamentosRequisicao(paginaDepartamentos)
+                            "
+                          ></v-pagination>
+                        </template>
+                      </v-select>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <v-select
-                        outlined
-                        dense
-                        hide-details
-                        class="elevation-1"
-                        label="filtro"
-                      ></v-select>
+                      botão de limpar e de pesquisar aqui em breve
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -120,7 +158,7 @@
               </v-list-item-icon>
               <v-list-item-title>Mudar tema</v-list-item-title>
             </v-list-item>
-            <v-list-item link :to="'/dashboard'" >
+            <v-list-item link :to="'/dashboard'">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-cog</v-icon>
               </v-list-item-icon>
@@ -177,18 +215,85 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import { mapActions, mapState } from 'vuex'
 export default {
+  name: 'feed',
   data: () => ({
+    pagina: 1,
     cards: ['Today', 'Yesterday'],
     drawer: true,
     abaFiltros: false,
     fix: false,
     expandido: false,
-    value: true
+    value: true,
+    categoriaSelecionada: [],
+    departamentoSelecionado: [],
+    paginaDepartamentos: 1
   }),
+  async created () {
+    await this.listarCategorias()
+    await this.listarDepartamentos()
+  },
   computed: {
-    ...mapState('feed', ['posts'])
+    ...mapState('categorias', [
+      'categoriasListadasFiltro',
+      'categoriasListadas'
+    ]),
+    ...mapState('departamentos', [
+      'departamentosListadosFiltro',
+      'departamentosListados'
+    ]),
+    ...mapState('feed', ['posts']),
+    todos () {
+      return (
+        this.categoriaSelecionada.length ===
+        this.categoriasListadasFiltro.length
+      )
+    },
+    todosDepartamentos () {
+      return (
+        this.departamentoSelecionado.length ===
+        this.departamentosListadosFiltro.length
+      )
+    },
+    alguns () {
+      return this.categoriaSelecionada.length > 0 && !this.todos
+    },
+    algunsDepartamentos () {
+      return (
+        this.departamentoSelecionado.length > 0 && !this.todosDepartamentos
+      )
+    },
+    icon () {
+      if (this.todos) return 'mdi-close-box'
+      if (this.alguns) return 'mdi-minus-box'
+      return 'mdi-checkbox-blank-outline'
+    },
+    iconDepartamentos () {
+      if (this.todosDepartamentos) return 'mdi-close-box'
+      if (this.algunsDepartamentos) return 'mdi-minus-box'
+      return 'mdi-checkbox-blank-outline'
+    }
+  },
+
+  methods: {
+    ...mapActions('departamentos', ['listarDepartamentos']),
+    ...mapActions('categorias', ['listarCategorias']),
+    async categoriasRequisicao (pagina) {
+      await this.listarCategorias({ offset: pagina * 10 - 10 })
+    },
+    async departamentosRequisicao (pagina) {
+      await this.listarDepartamentos({ offset: pagina * 10 - 10 })
+    },
+    toggle () {
+      this.$nextTick(() => {
+        if (this.todos) {
+          this.categoriaSelecionada = []
+        } else {
+          this.categoriaSelecionada = this.categoriasListadasFiltro.slice()
+        }
+      })
+    }
   }
 }
 </script>

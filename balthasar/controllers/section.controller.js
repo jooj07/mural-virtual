@@ -43,16 +43,6 @@ const editSections = async (req, res) => {
 
     const SectionFound = await Section.findByPk(req.params.id)
 
-    const checkIfAlreadyExists = await Section.findOne({
-      where: {
-        name: req.body.name
-      }
-    })
-
-    if (checkIfAlreadyExists) {
-      genareteError('Departamento já existe com esse nome!', 404)
-    }
-
     if (!SectionFound) {
       genareteError('Departamento não encontrado para editar!', 404)
     }

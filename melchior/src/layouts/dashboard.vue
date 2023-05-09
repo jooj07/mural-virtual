@@ -48,35 +48,22 @@
 
 <script>
 import opcaoDashboard from '@/components/opcao_dashboard.vue'
+import { mapState, mapActions } from 'vuex'
 export default {
   name: 'dashboard',
   components: {
     bloco: opcaoDashboard
   },
-  data: () => ({
-    opcoes: [
-      {
-        titulo: 'Atividades Cadastradas',
-        link: '/dashboard/atividades',
-        contador: 10
-      },
-      {
-        titulo: 'Categorias Cadastradas',
-        link: '/dashboard/categorias',
-        contador: 10
-      },
-      {
-        titulo: 'Usuários Cadastrados',
-        link: '/dashboard/usuarios',
-        contador: 10
-      },
-      {
-        titulo: 'Departamentos Cadastrados',
-        link: '/dashboard/departamentos',
-        contador: 10
-      }
-    ]
-  })
+  data: () => ({}),
+  async created () {
+    await this.obterOpcoes()
+  },
+  computed: {
+    ...mapState(['opcoes'])
+  },
+  methods: {
+    ...mapActions(['obterOpcoes'])
+  }
 }
 </script>
 

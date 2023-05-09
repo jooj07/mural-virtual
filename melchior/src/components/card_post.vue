@@ -1,11 +1,11 @@
 <template>
   <div>
     <v-card class="mx-auto rounded-xl elevation-2" outlined max-width="500">
-        <v-card-title class="text-h5 text-center font-weight-black">
-          {{ titulo }}
-        </v-card-title>
-      <v-card-text class="text-center ">
-        <p>{{autor}}</p>
+      <v-card-title class="text-h5 text-center font-weight-black">
+        {{ titulo }}
+      </v-card-title>
+      <v-card-text class="text-center">
+        <p>{{ autor }}</p>
         {{ textoCurto }}
       </v-card-text>
       <v-card-actions>
@@ -35,5 +35,4 @@ export default {
 </script>
 
 <style>
-
 </style>

@@ -1,11 +1,11 @@
 <template>
- <v-app>
-  <loading/>
-  <snackbar/>
+  <v-app>
+    <loading />
+    <snackbar />
     <v-fade-transition appear>
       <router-view />
     </v-fade-transition>
- </v-app>
+  </v-app>
 </template>
 
 <script>
@@ -18,8 +18,7 @@
 </script>
 
 <style>
-*{
-  font-family: 'Roboto', sans-serif;
+* {
+  font-family: "Roboto", sans-serif;
 }
-
 </style>

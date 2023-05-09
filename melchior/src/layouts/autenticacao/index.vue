@@ -1,5 +1,5 @@
 <template>
-  <v-container >
+  <v-container>
     <v-row
       class="d-flex flex-row justify-center align-center"
       style="height: 100vh !important"
@@ -23,5 +23,4 @@ export default {}
 </script>
 
 <style>
-
 </style>
