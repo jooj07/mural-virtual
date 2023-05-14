@@ -2,8 +2,8 @@ import axios from 'axios'
 import Vue from 'vue'
 import VueCookies from 'vue-cookies'
 import router from '@/router/index.js'
+import store from '../store/index.js'
 Vue.use(VueCookies)
-
 export const instance = axios.create({
   baseURL: process.env.VUE_APP_API_URL,
   timeout: 10000,
@@ -15,6 +15,13 @@ const RFSTKN = localStorage.getItem('RFSTKN') || null
 // Interceptador de resposta
 instance.interceptors.response.use(
   async (response) => {
+    const usuarioLogadoVuex = store.state.loginCadastro.usuarioLogado
+    if (!usuarioLogadoVuex) {
+      const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado')) || null
+      if (usuarioLogado) {
+        store.commit('loginCadastro/SET_USUARIO', usuarioLogado)
+      }
+    }
     return response
   },
   async (error) => {
@@ -28,14 +35,17 @@ instance.interceptors.response.use(
         const res = await instance.post('/api/auth/renova-token', {
           tokenRequisicao: RFSTKN
         })
+
         // Se o refresh token for válido, atualizar o token no armazenamento local e no cabeçalho da requisição
         if (res.status === 200) {
           instance.defaults.headers.common['x-token'] = `${res.data.token}`
+          store.commit('loginCadastro/SET_USUARIO', res.data)
           return instance(originalRequest)
         }
       } catch (error) {
         delete axios.defaults.headers.common['x-token']
         localStorage.removeItem('RFSTKN')
+        localStorage.removeItem('usuarioLogado')
         router.push('/autenticacao')
       }
     }

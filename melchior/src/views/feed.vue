@@ -1,8 +1,8 @@
 <template >
   <v-container>
     <v-row>
-      <v-col cols="12" lg="4" xl="4" xs="12" md="6" v-for="post in posts" :key="post.id">
-        <card-post :titulo="post.titulo" :textoCurto="post.textoCurto" :autor="post.autor" />
+      <v-col cols="12" lg="4" xl="4" xs="12" md="6" v-for="post in posts['rows']" :key="post.id">
+        <card-post :titulo="post.name" :textoCurto="post.description" :autor="post.user[0].name" />
       </v-col>
     </v-row>
   </v-container>
@@ -14,56 +14,6 @@ import card_post from '../components/card_post.vue'
 export default {
   name: 'Home',
   data: () => ({
-    posts: [
-      {
-        id: 1,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      },
-      {
-        id: 2,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      },
-      {
-        id: 3,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      },
-      {
-        id: 4,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      },
-      {
-        id: 5,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      },
-      {
-        id: 6,
-        titulo:
-          'NOVO CURSO DE ESPECIALIZAÇÃO EM DESENVOLVIMENTO DE SOFTWARE PARA DISPOSITIVOS MÓVEIS',
-        autor: 'João/ DEPEX',
-        textoCurto:
-          'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed fermentum libero in velit tincidunt lacinia. Nullam ultricies, metus ut volutpat interdum, odio diam placerat diam, vitae molestie sapien ipsum ut mauris.'
-      }
-    ]
   }),
   components: {
     'card-post': card_post
@@ -72,10 +22,9 @@ export default {
     ...mapState('feed', ['posts'])
   },
   async created () {
-    const a = await this.listarPosts()
     await this.obterFiltroDepartamentos()
     await this.obterFiltroCategorias()
-    console.log(a)
+    await this.listarPosts()
   },
   methods: {
     ...mapActions('feed', ['listarPosts', 'obterFiltroDepartamentos', 'obterFiltroCategorias'])

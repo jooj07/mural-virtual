@@ -16,6 +16,42 @@
                   <v-row>
                     <v-col cols="12" class="my-1">
                       <validation-provider
+                        name="Título"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="titulo"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          outlined
+                          multiple
+                          dense
+                          class="elevation-1"
+                          label="Título"
+                        />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <validation-provider
+                        name="Descição"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="postDescricao"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          outlined
+                          multiple
+                          dense
+                          class="elevation-1"
+                          label="Descrição"
+                        />
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <validation-provider
                         name="Categoria"
                         rules="required"
                         v-slot="{ errors }"
@@ -378,13 +414,13 @@ export default {
     // post
     categoriaSelecionadaPost: [],
     departamentoSelecionadoPost: [],
-    overlayEditor: false,
+    titulo: null,
+    postDescricao: null,
     conteudo: null,
     informacoesExtras: null,
     date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .substr(0, 10),
-    menu: false,
 
     // filtro
     categoriaSelecionada: [],
@@ -393,6 +429,8 @@ export default {
     paginaDepartamentos: 1,
 
     // controle
+    menu: false,
+    overlayEditor: false,
     drawer: true,
     abaFiltros: false,
     fix: false,
@@ -448,6 +486,7 @@ export default {
   methods: {
     ...mapActions('departamentos', ['listarDepartamentos']),
     ...mapActions('categorias', ['listarCategorias']),
+    ...mapActions('feed', ['postar']),
     async categoriasRequisicao (pagina) {
       await this.listarCategorias({ offset: pagina * 10 - 10 })
     },
@@ -469,14 +508,26 @@ export default {
     },
     async realizarPostagem () {
       if (await this.$refs.formularioPost.validate()) {
-        // await this.postar({
-        //   content: this.conteudo,
-        //   extra_information: this.informacoesExtras,
-        //   expiration_date: this.date,
-        //   categories: this.categoriaSelecionadaPost,
-        //   departments: this.departamentoSelecionadoPost,
-        // });
+        const body = {
+          name: this.titulo || null,
+          description: this.postDescricao || null,
+          content: this.conteudo || null,
+          expiresAt: this.date || null,
+          active: true,
+          moreInfo: this.informacoesExtras || null,
+          priority: 1, // mudar
+          status: 1, // mudar
+          category: this.categoriaSelecionadaPost || null,
+          section: this.departamentoSelecionadoPost || null,
+          userId: 1 // mudar
+        }
+        await this.postar(body)
+        // window.console.log(body)
         this.overlayEditor = false
+      } else {
+        setTimeout(() => {
+          this.$refs.formularioPost.reset()
+        }, 1500)
       }
     },
     cancelarPostagem () {

@@ -1,6 +1,5 @@
 const Sequelize = require('sequelize')
 const database = require('../db')
-
 const Post = database.define('Post', {
   id: {
     type: Sequelize.INTEGER,
@@ -48,19 +47,20 @@ const Post = database.define('Post', {
 Post.associate = (models) => {
   // associations can be defined here
   Post.belongsToMany(models.Category, {
-    through: 'PostCategory',
+    through: models.PostCategory,
     onDelete: 'CASCADE',
-    as: 'category'
+    as: 'categories'
   })
   Post.belongsToMany(models.Section, {
-    through: 'PostSection',
+    through: models.PostSection,
     onDelete: 'CASCADE',
-    as: 'section'
+    as: 'sections'
   })
   Post.belongsToMany(models.User, {
-    through: 'UserPost',
+    through: models.UserPost,
     onDelete: 'CASCADE',
-    as: 'user'
+    as: 'users'
   })
 }
+
 module.exports = Post

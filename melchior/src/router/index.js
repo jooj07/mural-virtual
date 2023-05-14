@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '../store/index.js'
 
 Vue.use(VueRouter)
-console.log(store)
 const routes = [
   {
     path: '/',
@@ -77,27 +75,37 @@ const router = new VueRouter({
   base: process.env.BASE_URL,
   routes
 })
+
 // router.beforeEach(async (to, from, next) => {
-//   // if (to.name !== 'Login' && !isAuthenticated) next({ name: 'Login' })
-//   // else
-//   console.log('GLOBAL')
-//   if (to.meta.logado) {
-//     if (!localStorage.getItem('RFSTKN')) next('/403')
+//   const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado')) || null
+//   const acessos = []
 
-//     if (localStorage.getItem('RFSTKN') && !store.state.usuarioLogado) {
-//       await store.dispatch('loginCadastro/renovarToken')
-//     }
-//     console.log(store.state.loginCadastro)
-
-//     if (to.meta.adm) {
-//       // if (store.state.loginCadastro.state.usuarioLogado.tipo !== 'adm') next('/403')
-//     }
-//   } else {
-//     next()
+//   if (usuarioLogado && usuarioLogado.length > 0 && usuarioLogado.acessos && usuarioLogado.acessos.length > 0) {
+//     usuarioLogado.acessos.forEach(acesso => {
+//       acessos.push(acesso)
+//     })
 //   }
-//   // else if(to.meta.adm && localStorage.getItem('RFSTKN') && store.state.loginCadastro.usuarioLogado.tipo !== 'adm') {
 
-//   // }
+//   window.console.log('acessos', acessos)
+
+//   if (to.matched.some(record => record.meta.logado) && !usuarioLogado) {
+//     next(false)
+//     router.push({ path: '/' })
+//     return
+//   }
+
+//   if (to.matched.some(record => record.meta.adm) && (!usuarioLogado || !acessos.includes('administrador'))) {
+//     next({ path: '/' })
+//     return
+//   }
+
+//   if (to.matched.some(record => record.meta.servidor) && !acessos.includes('servidor')) {
+//     // Se não estamos no modo de servidor, navegar para a página de login
+//     next({ path: '/' })
+//     return
+//   }
+
+//   next()
 // })
 
 export default router

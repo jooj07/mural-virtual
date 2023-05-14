@@ -2,12 +2,26 @@ import { instance } from '@/plugins/axios'
 
 export const listarPosts = async ({ commit }) => {
   try {
-    await instance.get('/api/test/user')
-    commit('SET_POSTS', null)
-    // if (resposta && resposta.data) {
-    // }
+    commit('SET_LOADING', true, { root: true })
+    const dados = await instance.get('/api/posts/list')
+    window.console.log(dados)
+    if (dados && dados && dados.status && dados.status !== 404) {
+      await commit('SET_POSTS', dados.data)
+    }
   } catch (error) {
-    console.log(error.message)
+    if (error && error && error.data) {
+      console.error(error.data || error.data.message)
+      commit('SET_SNACKBAR', {
+        timeout: 3000,
+        color: 'error',
+        snackbar: true,
+        text: error.data || error.data.message
+      }, { root: true })
+    } else {
+      console.error(error.message)
+    }
+  } finally {
+    commit('SET_LOADING', false, { root: true })
   }
 }
 
@@ -50,6 +64,28 @@ export const obterFiltroCategorias = async ({ commit }) => {
         color: 'error',
         snackbar: true,
         text: error.response.data || error.response.data.message
+      }, { root: true })
+    } else {
+      console.error(error.message)
+    }
+  } finally {
+    commit('SET_LOADING', false, { root: true })
+  }
+}
+
+export const postar = async ({ commit }, form) => {
+  try {
+    commit('SET_LOADING', true, { root: true })
+    await instance.post('/api/posts/new', form)
+  } catch (error) {
+    console.log(error)
+    if (error && error && error.data) {
+      console.error(error.data || error.data.message)
+      commit('SET_SNACKBAR', {
+        timeout: 3000,
+        color: 'error',
+        snackbar: true,
+        text: error.data || error.data.message
       }, { root: true })
     } else {
       console.error(error.message)

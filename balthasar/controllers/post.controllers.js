@@ -1,6 +1,8 @@
 const database = require('../db')
 const Post = require('../models/post')
 const User = require('../models/user')
+const CategoryModel = require('../models/category')
+const SectionModel = require('../models/section')
 const db = database
 const Op = db.Sequelize.Op
 
@@ -29,8 +31,21 @@ const listPosts = async (req, res) => {
     const records = await Post.findAndCountAll({
       limit: 10,
       offset: 0,
-      where // conditions
+      where, // conditions
+      include: [
+        {
+          model: User,
+          as: 'user',
+          attributes: ['id', 'name'] // escolha os atributos que deseja retornar do usuário
+        }
+      ]
     })
+    for (const iterator of records.rows) {
+      console.log(iterator.category)
+      // iterator.dataValues.category = await iterator.getCategory()
+      // iterator.dataValues.section = await iterator.getSection()
+      // iterator.dataValues.user = await iterator.getUser()
+    }
 
     return res.json(records)
   } catch (error) {
@@ -159,65 +174,57 @@ const newPost = async (req, res) => {
         'removeUser',        'createUser'
       ]
     */
+    const {
+      name,
+      description,
+      content,
+      expiresAt,
+      active,
+      moreInfo,
+      priority,
+      status, // 1-rascunho, 2-finalizado
+      category,
+      section,
+      userId
+    } = req.body
     // Usuário
-    const userRequest = req.headers['x-user']
+    const userRequest = userId
+
     const userFound = await User.findByPk(Number(userRequest))
     if (!userFound) genareteError('Você não está logado!', 401)
-    // Title
-    const {
-      name
-    } = req.body
+
     //  Autor
     const isThereAnyPost = await Post.findOne({
-      name
+      where: {
+        name
+      }
     })
-    if (isThereAnyPost) genareteError('Já existe um post como esse!', 500)
+    if (isThereAnyPost) genareteError('Já existe um post com este título!', 500)
+
     const postCreated = await Post.create({
-      name
+      name,
+      description,
+      content,
+      expiresAt,
+      active,
+      moreInfo,
+      priority,
+      status
     })
+
+    for (const i of category) {
+      const categoryFound = await CategoryModel.findByPk(Number(i))
+      if (!categoryFound) genareteError('Categoria não encontrada!', 500)
+      await postCreated.setCategory(categoryFound.id)
+    }
+    for (const i of section) {
+      const sectionFound = await SectionModel.findByPk(Number(i))
+      if (!sectionFound) genareteError('Departamento não encontrado!', 500)
+      await postCreated.setSection(sectionFound.id)
+    }
 
     await postCreated.setUser(userFound.id)
 
-    // const a = {
-    //   id: {
-    //     type: 'Sequelize.INTEGER',
-    //     primaryKey: true,
-    //     autoIncrement: true
-    //   },
-    //   name: {
-    //     type: 'Sequelize.STRING',
-    //     allowNull: false
-    //   },
-    //   description: {
-    //     type: 'Sequelize.STRING',
-    //     allowNull: true
-    //   },
-    //   content: {
-    //     type: 'Sequelize.BLOB',
-    //     allowNull: true
-    //   },
-    //   expiresAt: {
-    //     type: 'Sequelize.DATE',
-    //     allowNull: true
-    //   },
-    //   active: {
-    //     type: 'Sequelize.BOOLEAN',
-    //     defaultValue: true
-    //   },
-    //   moreInfo: {
-    //     type: 'Sequelize.BLOB',
-    //     allowNull: true
-    //   },
-    //   priority: {
-    //     type: 'Sequelize.INTEGER',
-    //     defaultValue: 0
-    //   },
-    //   status: {
-    //     type: 'Sequelize.INTEGER',
-    //     allowNull: false,
-    //     defaultValue: 1 // em aprovação
-    //   }
-    // }
     await postCreated.save()
     return res.status(200).send('Post salvo com sucesso!')
   } catch (error) {
