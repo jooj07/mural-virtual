@@ -486,7 +486,8 @@ export default {
   methods: {
     ...mapActions('departamentos', ['listarDepartamentos']),
     ...mapActions('categorias', ['listarCategorias']),
-    ...mapActions('feed', ['postar']),
+    ...mapActions('feed', ['postar', 'listarPosts']),
+
     async categoriasRequisicao (pagina) {
       await this.listarCategorias({ offset: pagina * 10 - 10 })
     },
@@ -505,6 +506,7 @@ export default {
     async atualizarTudo () {
       await this.listarCategorias()
       await this.listarDepartamentos()
+      await this.listarPosts()
     },
     async realizarPostagem () {
       if (await this.$refs.formularioPost.validate()) {

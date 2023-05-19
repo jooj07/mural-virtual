@@ -1,7 +1,7 @@
 const Sequelize = require('sequelize')
 const database = require('../db')
 
-const PostCategory = database.define('PostCategory', {
+const PostCategory = database.define('PostCategories', {
   id: {
     allowNull: false,
     autoIncrement: true,

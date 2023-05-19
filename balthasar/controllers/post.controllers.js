@@ -3,6 +3,7 @@ const Post = require('../models/post')
 const User = require('../models/user')
 const CategoryModel = require('../models/category')
 const SectionModel = require('../models/section')
+const { QueryTypes } = require('sequelize')
 const db = database
 const Op = db.Sequelize.Op
 
@@ -28,10 +29,10 @@ const listPosts = async (req, res) => {
       }
     }
 
-    const records = await Post.findAndCountAll({
+    const arecords = await Post.findAndCountAll({
       limit: 10,
       offset: 0,
-      where, // conditions
+      where,
       include: [
         {
           model: User,
@@ -40,14 +41,20 @@ const listPosts = async (req, res) => {
         }
       ]
     })
-    for (const iterator of records.rows) {
-      console.log(iterator.category)
-      // iterator.dataValues.category = await iterator.getCategory()
-      // iterator.dataValues.section = await iterator.getSection()
-      // iterator.dataValues.user = await iterator.getUser()
-    }
+    const count = await Post.count()
+    const records = JSON.parse(JSON.stringify(arecords))
+    const aupdatedRows = await Promise.all(records.rows.map(async (iterator) => {
+      const categories = await db.query(`SELECT * FROM "PostCategories" where "PostId" = ${iterator.id}`, { type: QueryTypes.SELECT })
+      const sections = await db.query(`SELECT * FROM "PostSections" where "PostId" = ${iterator.id}`, { type: QueryTypes.SELECT })
 
-    return res.json(records)
+      iterator.categories = categories
+      iterator.sections = sections
+
+      return iterator
+    }))
+    const updatedRows = JSON.parse(JSON.stringify(aupdatedRows))
+
+    return res.json({ count, rows: updatedRows })
   } catch (error) {
     returnError(error, res)
   }
