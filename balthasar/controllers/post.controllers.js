@@ -17,19 +17,72 @@ const listPosts = async (req, res) => {
   try {
     // TODO Pesquisa por departamento
     // TODO Pesquisa por categoria
-    const where = {}
+    let where = {}
+    let arecords = null
     if (req.query.name) {
       where.name = {
-        [Op.startsWith]: `${req.query.name}`
+        [Op.substring]: `${req.query.name}`
       }
     }
-    if (req.query.createdAt) {
-      where.createdAt = {
-        [Op.startsWith]: `${req.query.createdAt}`
-      }
-    }
+    if (req.query.category || req.query.section) {
+      let categories = null
+      let sections = null
+      let ids = []
 
-    const arecords = await Post.findAndCountAll({
+      if (req.query.category && req.query.category.length) {
+        categories = await CategoryModel.findAll({
+          where: {
+            id: {
+              [Op.in]: req.query.category
+            }
+          }
+        })
+      }
+
+      if (req.query.section && req.query.section.length) {
+        sections = await SectionModel.findAll({
+          where: {
+            id: {
+              [Op.in]: req.query.section
+            }
+          }
+        })
+      }
+
+      if (categories && categories.length) {
+        const sql = `SELECT "PostId" FROM "PostCategories" where "CategoryId" in (${categories.map(x => x.id)})`
+        const search = await db.query(sql, { type: QueryTypes.SELECT })
+        const array = search.map(x => x.PostId)
+        ids = ids.concat(array)
+      }
+      if (sections && sections.length) {
+        const sql = `SELECT "PostId" FROM "PostSections" where "SectionId" in (${sections.map(x => x.id)})`
+        const search = await db.query(sql, { type: QueryTypes.SELECT })
+        const array = search.map(x => x.PostId)
+        ids = ids.concat(array)
+      }
+
+      let arraySemRepeticoes = []
+      if (ids && ids.length) {
+        arraySemRepeticoes = ids.filter((item, index) => {
+          return ids.indexOf(item) === index
+        })
+      }
+
+      if (arraySemRepeticoes && arraySemRepeticoes.length) {
+        where.id = {
+          [Op.in]: arraySemRepeticoes
+        }
+      }
+
+      if (req.query.id) {
+        where = {}
+        where.id = {
+          [Op.eq]: `${req.query.id}`
+        }
+      }
+    }
+    arecords = await Post.findAll({
       limit: 10,
       offset: 0,
       where,
@@ -41,9 +94,11 @@ const listPosts = async (req, res) => {
         }
       ]
     })
-    const count = await Post.count()
+
+    const count = arecords.length
     const records = JSON.parse(JSON.stringify(arecords))
-    const aupdatedRows = await Promise.all(records.rows.map(async (iterator) => {
+
+    const aupdatedRows = await Promise.all(records.map(async (iterator) => {
       const categories = await db.query(`SELECT * FROM "PostCategories" where "PostId" = ${iterator.id}`, { type: QueryTypes.SELECT })
       const sections = await db.query(`SELECT * FROM "PostSections" where "PostId" = ${iterator.id}`, { type: QueryTypes.SELECT })
 
