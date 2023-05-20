@@ -107,6 +107,11 @@ module.exports = function (app) {
       controllersPosts.listPosts(req, res)
     })
 
+  app.get('/api/posts/list/:id',
+    (req, res, next) => {
+      controllersPosts.listPosts(req, res)
+    })
+
   app.get('/api/posts/list-priority',
     (req, res, next) => {
       controllersPosts.listPriorityPosts(req, res)

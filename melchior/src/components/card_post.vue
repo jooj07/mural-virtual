@@ -9,7 +9,7 @@
         {{ textoCurto }}
       </v-card-text>
       <v-card-actions>
-        <v-btn color="primary" text>Confira</v-btn>
+        <v-btn color="primary" text @click="$emit('exibir', id)">Confira</v-btn>
       </v-card-actions>
     </v-card>
   </div>
@@ -29,6 +29,10 @@ export default {
     autor: {
       type: String,
       required: true
+    },
+    id: {
+      type: Number,
+      required: false
     }
   }
 }
