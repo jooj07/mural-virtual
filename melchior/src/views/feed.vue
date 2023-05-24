@@ -275,7 +275,7 @@
         class="d-flex flex-column align-center"
       >
         <v-chip-group>
-          <v-chip v-for="(tag, index) in postExibindo.sections" :key="index" color="secondary">
+          <v-chip v-for="(tag, index) in postExibindo.sections" :key="index" color="primary">
             {{ tag.name }}
           </v-chip>
         </v-chip-group>
