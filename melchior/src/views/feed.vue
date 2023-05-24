@@ -1,5 +1,76 @@
 <template >
   <v-container>
+    <div
+      v-if="postExibindo"
+      class="d-flex justify-space-between align-center text-center"
+    >
+      <v-btn class="mx-2" fab dark color="primary" @click="reset()">
+        <v-icon dark> mdi-arrow-left </v-icon>
+      </v-btn>
+      <div>
+        <v-menu
+          :close-on-content-click="false"
+          transition="slide-y-transition"
+          bottom
+          offset-y
+          nudge-bottom="6"
+        >
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              class="mx-2"
+              fab
+              dark
+              color="primary"
+              small
+              v-bind="attrs"
+              v-on="on"
+            >
+              <v-icon>mdi-magnify-plus-outline</v-icon>
+            </v-btn>
+          </template>
+          <div
+            class="d-flex justify-space-between align-center text-center pt-4"
+          >
+            <v-btn
+              class="mx-2 elevation-0"
+              fab
+              dark
+              small
+              color="primary"
+              @click="aumentarTexto()"
+            >
+              <v-icon dark> mdi-magnify-plus-outline </v-icon>
+            </v-btn>
+            <v-btn
+              class="mx-2 elevation-0"
+              fab
+              dark
+              color="primary"
+              small
+              @click="diminuirTexto()"
+            >
+              <v-icon dark> mdi-magnify-minus-outline </v-icon>
+            </v-btn>
+          </div>
+          <v-list>
+            <v-list-item class="px-0">
+              <v-list-item-content>
+                <v-slider
+                  v-model="tamanhoFonte"
+                  dense
+                  hide-details
+                  vertical
+                  max="125"
+                  min="5"
+                  thumb-label
+                  ticks
+                ></v-slider>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </div>
+    </div>
     <v-row v-if="!postExibindo">
       <v-col
         cols="12"
@@ -182,54 +253,84 @@
         </v-form>
       </validation-observer>
     </v-row>
-    <v-row v-if="postExibindo && !editarPost">
-      <v-form>
-        <v-row class="text-center">
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <h1>{{ titulo }}</h1>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <h3>{{ postDescricao }}</h3>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <h6>{{ postExibindo.user[0].name }}</h6>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <p>{{ date }}</p>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <v-chip-group active-class="primary--text">
+    <v-row
+      v-if="postExibindo && !editarPost"
+      class="d-flex justify-center align-center text-center"
+    >
+      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0">
+        <h1 class="text-h1 font-weight-black">{{ titulo }}</h1>
+      </v-col>
+      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0 text-h5">
+        <h3>{{ postDescricao }}</h3>
+      </v-col>
+      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0">
+        <h5>{{ postExibindo.user[0].name }} - {{ format(date) }}</h5>
+      </v-col>
+      <v-col
+        cols="12"
+        md="12"
+        sm="12"
+        lg="12"
+        xl="12"
+        class="d-flex flex-column align-center"
+      >
+        <v-chip-group>
+          <v-chip v-for="(tag, index) in postExibindo.sections" :key="index" color="secondary">
+            {{ tag.name }}
+          </v-chip>
+        </v-chip-group>
+        <v-chip-group>
+          <v-chip v-for="(tag, index) in postExibindo.categories" :key="index" color="secondary">
+            {{ tag.name }}
+          </v-chip>
+        </v-chip-group>
+      </v-col>
+      <v-col
+        v-if="conteudo"
+        cols="12"
+        md="12"
+        sm="12"
+        lg="12"
+        xl="12"
+        style="border-bottom: 1px solid silver; border-top: 1px solid silver"
+      >
+        <p v-html="conteudo" :style="`font-size: ${tamanhoFonte}px`"></p>
+      </v-col>
+      <v-col
+        v-if="informacoesExtras"
+        cols="12"
+        md="12"
+        sm="12"
+        lg="12"
+        xl="12"
+        class="px-0"
+      >
+        <v-expansion-panels flat v-if="informacoesExtras">
+          <v-expansion-panel class="px-0">
+            <v-expansion-panel-header class="px-0">
               <v-chip
-                v-for="(tag, index) in postExibindo.sections"
-                :key="index"
+                large
+                class="ma-2"
+                color="transparent"
+                label
+                text-color="white"
               >
-                {{ tag.name }}
+                <v-icon left color="primary"> mdi-label </v-icon>
+                <span class="primary--text">Mais informações</span>
               </v-chip>
-            </v-chip-group>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <v-chip-group active-class="primary--text">
-              <v-chip
-                v-for="(tag, index) in postExibindo.categories"
-                :key="index"
-              >
-                {{ tag.name }}
-              </v-chip>
-            </v-chip-group>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <p v-html="conteudo"></p>
-          </v-col>
-          <v-col cols="12" md="12" sm="12" lg="12" xl="12">
-            <p v-html="informacoesExtras"></p>
-          </v-col>
-        </v-row>
-      </v-form>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content>
+              <p v-html="informacoesExtras" :style="`font-size: ${tamanhoFonte}px`"></p>
+            </v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-col>
     </v-row>
   </v-container>
 </template>
 
 <script>
+import dayjs from '../plugins/dayJs'
 import { mapActions, mapState } from 'vuex'
 import { Buffer } from 'buffer'
 import card_post from '../components/card_post.vue'
@@ -245,7 +346,9 @@ export default {
     date: null,
     menu: false,
     conteudo: null,
-    informacoesExtras: null
+    informacoesExtras: null,
+    tamanhoFonte: 20,
+    expand: false
   }),
   components: {
     'card-post': card_post
@@ -265,6 +368,9 @@ export default {
       'obterFiltroCategorias',
       'exibirPosts'
     ]),
+    format (date) {
+      return dayjs(date).format('DD/MM/YYYY')
+    },
     async exibicaoPost (id) {
       const dados = await this.exibirPosts(id)
       this.titulo = dados.name
@@ -281,6 +387,32 @@ export default {
         'utf8'
       )
       this.postExibindo = dados
+    },
+    aumentarTexto () {
+      const max = '125'
+      if (this.tamanhoFonte < max) {
+        this.tamanhoFonte += 2
+      }
+    },
+    diminuirTexto () {
+      const min = '5'
+      if (this.tamanhoFonte > min) {
+        this.tamanhoFonte -= 2
+      }
+    },
+    reset () {
+      this.editarPost = false
+      this.postExibindo = null
+      this.titulo = null
+      this.postDescricao = null
+      this.categoriaSelecionadaPost = null
+      this.departamentoSelecionadoPost = null
+      this.date = null
+      this.menu = false
+      this.conteudo = null
+      this.informacoesExtras = null
+      this.tamanhoFonte = 20
+      this.expand = false
     }
   }
 }
