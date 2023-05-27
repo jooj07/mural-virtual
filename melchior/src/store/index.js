@@ -17,7 +17,13 @@ const store = new Vuex.Store({
       snackbar: false,
       text: ''
     },
-    opcoes: null
+    opcoes: null,
+    filtrosBusca: {
+      categoriaSelecionada: [],
+      departamentoSelecionado: [],
+      tituloPesquisa: null
+    },
+    paginaPosts: 1
   },
   getters: {
   },
@@ -45,6 +51,12 @@ const store = new Vuex.Store({
     SET_OPCOES (state, payload) {
       window.console.log(payload)
       state.opcoes = payload
+    },
+    SET_FILTROS_BUSCA (state, payload) {
+      state.filtrosBusca = payload
+    },
+    SET_PAGINA_POSTS (state, payload) {
+      state.paginaPosts = payload
     }
   },
   actions: {

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div class="text-center" style="z-index: 2348920340234">
     <v-snackbar
       v-model="snackbar.snackbar"
       :color="snackbar.color"

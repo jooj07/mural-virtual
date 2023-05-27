@@ -102,6 +102,30 @@ export const postar = async ({ commit }, form) => {
   try {
     commit('SET_LOADING', true, { root: true })
     await instance.post('/api/posts/new', form)
+    return true
+  } catch (error) {
+    console.log(error)
+    if (error) {
+      console.error(error.data || error.message)
+      commit('SET_SNACKBAR', {
+        timeout: 3000,
+        color: 'error',
+        snackbar: true,
+        text: error.response.data || error.message
+      }, { root: true })
+      return null
+    } else {
+      console.error(error.message)
+    }
+  } finally {
+    commit('SET_LOADING', false, { root: true })
+  }
+}
+
+export const postEditar = async ({ commit }, form) => {
+  try {
+    commit('SET_LOADING', true, { root: true })
+    await instance.put('/api/posts/edit', form)
   } catch (error) {
     console.log(error)
     if (error && error && error.data) {

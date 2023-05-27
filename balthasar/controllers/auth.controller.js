@@ -89,6 +89,7 @@ const signIn = async (req, res) => {
       id: usuarioEncontrado.id,
       login: usuarioEncontrado.login,
       acessos: accessRoles,
+      nome: usuarioEncontrado.name,
       token,
       tokenEfemero
     })

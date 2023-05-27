@@ -9,6 +9,7 @@
       </v-btn>
       <div>
         <v-menu
+          v-if="!editarPost"
           :close-on-content-click="false"
           transition="slide-y-transition"
           bottom
@@ -28,50 +29,73 @@
               <v-icon>mdi-magnify-plus-outline</v-icon>
             </v-btn>
           </template>
-          <div
-            class="d-flex justify-space-between align-center text-center pt-4"
-          >
-            <v-btn
-              class="mx-2 elevation-0"
-              fab
-              dark
-              small
-              color="primary"
-              @click="aumentarTexto()"
+          <v-card>
+            <div
+              class="d-flex justify-space-between align-center text-center pt-4"
             >
-              <v-icon dark> mdi-magnify-plus-outline </v-icon>
-            </v-btn>
-            <v-btn
-              class="mx-2 elevation-0"
-              fab
-              dark
-              color="primary"
-              small
-              @click="diminuirTexto()"
-            >
-              <v-icon dark> mdi-magnify-minus-outline </v-icon>
-            </v-btn>
-          </div>
-          <v-list>
-            <v-list-item class="px-0">
-              <v-list-item-content>
-                <v-slider
-                  v-model="tamanhoFonte"
-                  dense
-                  hide-details
-                  vertical
-                  max="125"
-                  min="5"
-                  thumb-label
-                  ticks
-                ></v-slider>
-              </v-list-item-content>
-            </v-list-item>
-          </v-list>
+              <v-btn
+                class="mx-2 elevation-0"
+                fab
+                dark
+                small
+                color="primary"
+                @click="aumentarTexto()"
+              >
+                <v-icon dark> mdi-magnify-plus-outline </v-icon>
+              </v-btn>
+              <v-btn
+                class="mx-2 elevation-0"
+                fab
+                dark
+                color="primary"
+                small
+                @click="diminuirTexto()"
+              >
+                <v-icon dark> mdi-magnify-minus-outline </v-icon>
+              </v-btn>
+            </div>
+            <v-list>
+              <v-list-item class="px-0">
+                <v-list-item-content>
+                  <v-slider
+                    v-model="tamanhoFonte"
+                    dense
+                    hide-details
+                    vertical
+                    max="125"
+                    min="5"
+                    thumb-label
+                    ticks
+                  ></v-slider>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list>
+          </v-card>
         </v-menu>
+        <v-btn
+          v-if="!editarPost"
+          class="mx-2"
+          fab
+          dark
+          color="primary"
+          small
+          @click="editarPost = true"
+        >
+          <v-icon>mdi-pencil</v-icon>
+        </v-btn>
+        <v-btn
+          v-else
+          class="mx-2"
+          fab
+          dark
+          color="error"
+          @click="sairDaEdicao()"
+        >
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
       </div>
     </div>
-    <v-row v-if="!postExibindo">
+    <v-row v-if="!postExibindo && posts && posts.rows && posts.rows.length">
       <v-col
         cols="12"
         lg="4"
@@ -89,10 +113,31 @@
           @exibir="exibicaoPost($event)"
         />
       </v-col>
+      <v-col cols="12" v-if="posts && posts.rows && posts.rows.length">
+        <v-pagination
+          v-model="pagina"
+          :length="Math.ceil(posts['count'] / 10)"
+          :total-visible="5"
+          class="flex-grow-1"
+          circle
+          color="primary"
+          @input="listagemDePosts()"
+        ></v-pagination>
+      </v-col>
+    </v-row>
+    <v-row v-if="!postExibindo && posts && posts.rows && !posts.rows.length">
+      <v-col cols="12" class="d-flex flex-column justify-center align-center">
+        <v-icon :size="100" color="primary">
+          mdi-magnify-remove-outline
+        </v-icon>
+        <p class="text-h4 font-weight-black">
+          Ops, nada encontrado. Limpe os filtros para tentar novamente
+        </p>
+      </v-col>
     </v-row>
     <v-row v-if="postExibindo && editarPost">
       <validation-observer ref="formularioPost">
-        <v-form>
+        <v-form class="mt-4">
           <v-row>
             <v-col cols="12" class="my-1">
               <validation-provider
@@ -249,6 +294,12 @@
               <p>Informações extras</p>
               <editor v-model="informacoesExtras" />
             </v-col>
+            <v-col cols="12">
+              <v-btn color="primary" @click="salvarOuEditar()">Salvar</v-btn>
+              <v-btn color="acent" class="ml-3" @click="sairDaEdicao()"
+                >Cancelar</v-btn
+              >
+            </v-col>
           </v-row>
         </v-form>
       </validation-observer>
@@ -275,12 +326,20 @@
         class="d-flex flex-column align-center"
       >
         <v-chip-group>
-          <v-chip v-for="(tag, index) in postExibindo.sections" :key="index" color="primary">
+          <v-chip
+            v-for="(tag, index) in postExibindo.sections"
+            :key="index"
+            color="primary"
+          >
             {{ tag.name }}
           </v-chip>
         </v-chip-group>
         <v-chip-group>
-          <v-chip v-for="(tag, index) in postExibindo.categories" :key="index" color="secondary">
+          <v-chip
+            v-for="(tag, index) in postExibindo.categories"
+            :key="index"
+            color="secondary"
+          >
             {{ tag.name }}
           </v-chip>
         </v-chip-group>
@@ -320,7 +379,10 @@
               </v-chip>
             </v-expansion-panel-header>
             <v-expansion-panel-content>
-              <p v-html="informacoesExtras" :style="`font-size: ${tamanhoFonte}px`"></p>
+              <p
+                v-html="informacoesExtras"
+                :style="`font-size: ${tamanhoFonte}px`"
+              ></p>
             </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
@@ -331,7 +393,7 @@
 
 <script>
 import dayjs from '../plugins/dayJs'
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 import { Buffer } from 'buffer'
 import card_post from '../components/card_post.vue'
 export default {
@@ -343,18 +405,36 @@ export default {
     postDescricao: null,
     categoriaSelecionadaPost: null,
     departamentoSelecionadoPost: null,
+    pagina: 1,
+    paginaDepartamentos: 1,
     date: null,
     menu: false,
     conteudo: null,
     informacoesExtras: null,
     tamanhoFonte: 20,
+    id: null,
     expand: false
+
   }),
   components: {
     'card-post': card_post
   },
   computed: {
-    ...mapState('feed', ['posts'])
+    ...mapState('feed', ['posts']),
+    ...mapState('departamentos', [
+      'departamentosListadosFiltro',
+      'departamentosListados'
+    ]),
+    ...mapState('categorias', [
+      'categoriasListadasFiltro',
+      'categoriasListadas'
+    ]),
+    ...mapState(['paginaPosts', 'filtrosBusca'])
+  },
+  watch: {
+    paginaPosts (v) {
+      this.pagina = v
+    }
   },
   async created () {
     await this.obterFiltroDepartamentos()
@@ -366,27 +446,35 @@ export default {
       'listarPosts',
       'obterFiltroDepartamentos',
       'obterFiltroCategorias',
-      'exibirPosts'
+      'exibirPosts',
+      'postEditar'
     ]),
+    ...mapActions('departamentos', ['listarDepartamentos']),
+    ...mapActions('categorias', ['listarCategorias']),
+    ...mapMutations(['SET_FILTROS_BUSCA', 'SET_PAGINA_POSTS']),
+
     format (date) {
       return dayjs(date).format('DD/MM/YYYY')
     },
     async exibicaoPost (id) {
       const dados = await this.exibirPosts(id)
-      this.titulo = dados.name
-      this.postDescricao = dados.description
-      this.categoriaSelecionadaPost = dados.categories.map(
-        (item) => item.CategoryId
-      )
-      this.departamentoSelecionadoPost = dados.sections.map(
-        (item) => item.SectionId
-      )
-      this.date = dados.expiresAt
-      this.conteudo = Buffer.from(dados.content.data).toString('utf8')
-      this.informacoesExtras = Buffer.from(dados.moreInfo.data).toString(
-        'utf8'
-      )
-      this.postExibindo = dados
+      this.titulo = dados.name ? dados.name : null
+      this.postDescricao = dados.description ? dados.description : null
+      this.categoriaSelecionadaPost = dados.categories
+        ? dados.categories.map(
+          (item) => item.CategoryId
+        )
+        : []
+      this.departamentoSelecionadoPost = dados.sections
+        ? dados.sections.map(
+          (item) => item.SectionId
+        )
+        : []
+      this.date = dados.expiresAt ? dados.expiresAt : null
+      this.conteudo = dados.content ? Buffer.from(dados.content.data).toString('utf8') : ''
+      this.informacoesExtras = dados.moreInfo ? Buffer.from(dados.moreInfo.data).toString('utf8') : ''
+      this.id = dados.id ? dados.id : null
+      this.postExibindo = dados || null
     },
     aumentarTexto () {
       const max = '125'
@@ -413,6 +501,37 @@ export default {
       this.informacoesExtras = null
       this.tamanhoFonte = 20
       this.expand = false
+    },
+    sairDaEdicao () {
+      this.exibicaoPost(this.id)
+      this.editarPost = false
+    },
+    async salvarOuEditar () {
+      if (await this.$refs.formularioPost.validate()) {
+        const form = {
+          name: this.titulo || null,
+          description: this.postDescricao || null,
+          categories: this.categoriaSelecionadaPost || null,
+          sections: this.departamentoSelecionadoPost || null,
+          expiresAt: this.date || null,
+          content: this.conteudo || null,
+          moreInfo: this.informacoesExtras || null,
+          id: this.id || null,
+          userId: this.$store.state.loginCadastro.usuarioLogado.id || null
+        }
+        await this.postEditar(form)
+        this.sairDaEdicao()
+      }
+    },
+    async listagemDePosts () {
+      this.SET_PAGINA_POSTS(this.pagina)
+
+      await this.listarPosts({
+        offset: this.pagina * 10 - 10,
+        category: this.filtrosBusca.categoriaSelecionada,
+        section: this.filtrosBusca.departamentoSelecionado,
+        name: this.filtrosBusca.tituloPesquisa
+      })
     }
   }
 }

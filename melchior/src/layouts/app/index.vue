@@ -210,9 +210,9 @@
             </p>
           </v-list-item>
           <v-list-item v-show="fix">
-            <v-list-item-content>
+            <v-list-item-content v-if="usuarioLogado && usuarioLogado.nome">
               <v-list-item-title class="text-h6">
-                Suzana de Oliveira
+                {{ usuarioLogado.nome || null }}
               </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
@@ -335,7 +335,30 @@
                       </v-select>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      botão de limpar e de pesquisar aqui em breve
+                      <v-text-field
+                        v-model="tituloPesquisa"
+                        clearable
+                        outlined
+                        dense
+                        hide-details
+                        class="elevation-1"
+                        label="Título"
+                        @click:clear="tituloPesquisa = null, listagemDePosts()"
+                        @keydown.enter="listagemDePosts()"
+                      />
+                    </v-col>
+                    <v-col cols="12" class="my-1">
+                      <v-btn
+                        color="primary"
+                        text
+                        @click="listagemDePosts()"
+                        block
+                      >
+                        Pesquisar
+                      </v-btn>
+                      <v-btn color="error" text @click="limparFiltros()" block>
+                        Limpar Filtros
+                      </v-btn>
                     </v-col>
                   </v-row>
                 </v-card-text>
@@ -407,7 +430,7 @@
 </template>
 
 <script>
-import { mapActions, mapState } from 'vuex'
+import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   name: 'feed',
   data: () => ({
@@ -427,6 +450,7 @@ export default {
     departamentoSelecionado: [],
     pagina: 1,
     paginaDepartamentos: 1,
+    tituloPesquisa: null,
 
     // controle
     menu: false,
@@ -437,6 +461,11 @@ export default {
     expandido: false,
     value: true
   }),
+  watch: {
+    paginaPosts (v) {
+      this.pagina = v
+    }
+  },
   async created () {
     await this.listarCategorias()
     await this.listarDepartamentos()
@@ -450,7 +479,9 @@ export default {
       'departamentosListadosFiltro',
       'departamentosListados'
     ]),
+    ...mapState('loginCadastro', ['usuarioLogado']),
     ...mapState('feed', ['posts']),
+    ...mapState(['paginaPosts', 'filtrosBusca']),
     todos () {
       return (
         this.categoriaSelecionada.length ===
@@ -487,12 +518,27 @@ export default {
     ...mapActions('departamentos', ['listarDepartamentos']),
     ...mapActions('categorias', ['listarCategorias']),
     ...mapActions('feed', ['postar', 'listarPosts']),
-
+    ...mapMutations(['SET_FILTROS_BUSCA', 'SET_PAGINA_POSTS']),
     async categoriasRequisicao (pagina) {
       await this.listarCategorias({ offset: pagina * 10 - 10 })
     },
     async departamentosRequisicao (pagina) {
       await this.listarDepartamentos({ offset: pagina * 10 - 10 })
+    },
+    async listagemDePosts () {
+      this.SET_FILTROS_BUSCA({
+        categoriaSelecionada: this.categoriaSelecionada,
+        departamentoSelecionado: this.departamentoSelecionado,
+        tituloPesquisa: this.tituloPesquisa
+      })
+      this.SET_PAGINA_POSTS(this.pagina)
+
+      await this.listarPosts({
+        offset: this.pagina * 10 - 10,
+        category: this.categoriaSelecionada || null,
+        section: this.departamentoSelecionado || null,
+        name: this.tituloPesquisa || null
+      })
     },
     toggle () {
       this.$nextTick(() => {
@@ -504,9 +550,19 @@ export default {
       })
     },
     async atualizarTudo () {
+      this.categoriaSelecionada = []
+      this.departamentoSelecionado = []
+      this.tituloPesquisa = null
+      this.pagina = 1
+      this.SET_FILTROS_BUSCA({
+        categoriaSelecionada: this.categoriaSelecionada,
+        departamentoSelecionado: this.departamentoSelecionado,
+        tituloPesquisa: this.tituloPesquisa
+      })
+      this.SET_PAGINA_POSTS(this.pagina)
       await this.listarCategorias()
       await this.listarDepartamentos()
-      await this.listarPosts()
+      await this.listagemDePosts()
     },
     async realizarPostagem () {
       if (await this.$refs.formularioPost.validate()) {
@@ -523,9 +579,20 @@ export default {
           section: this.departamentoSelecionadoPost || null,
           userId: 1 // mudar
         }
-        await this.postar(body)
-        // window.console.log(body)
-        this.overlayEditor = false
+        const postagemFeita = await this.postar(body)
+        if (postagemFeita) {
+          this.atualizarTudo()
+          this.overlayEditor = false
+          this.categoriaSelecionadaPost = []
+          this.departamentoSelecionadoPost = []
+          this.titulo = null
+          this.postDescricao = null
+          this.conteudo = null
+          this.informacoesExtras = null
+          this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+            .toISOString()
+            .substr(0, 10)
+        }
       } else {
         setTimeout(() => {
           this.$refs.formularioPost.reset()
@@ -543,6 +610,19 @@ export default {
         .substr(0, 10)
       this.menu = false
       this.overlayEditor = false
+    },
+    limparFiltros () {
+      this.categoriaSelecionada = []
+      this.departamentoSelecionado = []
+      this.tituloPesquisa = null
+      this.pagina = 1
+      this.SET_FILTROS_BUSCA({
+        categoriaSelecionada: this.categoriaSelecionada,
+        departamentoSelecionado: this.departamentoSelecionado,
+        tituloPesquisa: this.tituloPesquisa
+      })
+      this.SET_PAGINA_POSTS(this.pagina)
+      this.atualizarTudo()
     }
   }
 }

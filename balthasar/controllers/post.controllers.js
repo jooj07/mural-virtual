@@ -60,9 +60,6 @@ const listPosts = async (req, res) => {
           } else {
             ids = ids.concat([0])
           }
-          console.log('------------catttt------')
-          console.log(array)
-          console.log('------------------')
         }
         if (sections && sections.length) {
           const sql = `SELECT "PostId" FROM "PostSections" where "SectionId" in (${sections.map(x => x.id)})`
@@ -73,9 +70,6 @@ const listPosts = async (req, res) => {
           } else {
             ids = ids.concat([0])
           }
-          console.log('------secccc------------')
-          console.log(array)
-          console.log('------------------')
         }
 
         let arraySemRepeticoes = []
@@ -98,7 +92,7 @@ const listPosts = async (req, res) => {
     }
     arecords = await Post.findAll({
       limit: 10,
-      offset: 0,
+      offset: req.query.offset || 0,
       where,
       include: [
         {
@@ -119,10 +113,6 @@ const listPosts = async (req, res) => {
         }
       ]
     })
-
-    console.log('------------------')
-    console.log(where)
-    console.log('------------------')
 
     const records = JSON.parse(JSON.stringify(arecords))
 
@@ -180,8 +170,8 @@ const alterPost = async (req, res) => {
     // TODO console.log(Object.keys(post.__proto__)) OBTER OS MÉTODOS DE RELACIONAMENO DAS INSTÂNCIAS
     // Check se trás o id do usuário
 
-    if (req.headers && !req.headers['x-user']) throw new Error('Você não está logado!')
-    const userRequest = req.headers['x-user']
+    if (!req.body.userId) throw new Error('Você não está logado!')
+    const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
     if (!userFound) genareteError('Você não está logado!', 401)
 
