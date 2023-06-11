@@ -143,3 +143,23 @@ export const postEditar = async ({ commit }, form) => {
     commit('SET_LOADING', false, { root: true })
   }
 }
+
+export const postExcluir = async ({ commit }, options) => {
+  try {
+    commit('SET_LOADING', true, { root: true })
+    await instance.delete('/api/posts/delete', { params: { userId: options.userId, id: options.id } })
+    return true
+  } catch (error) {
+    console.log(error)
+    console.error(error)
+    commit('SET_SNACKBAR', {
+      timeout: 3000,
+      color: 'error',
+      snackbar: true,
+      text: error.response.data || error
+    }, { root: true })
+    return false
+  } finally {
+    commit('SET_LOADING', false, { root: true })
+  }
+}

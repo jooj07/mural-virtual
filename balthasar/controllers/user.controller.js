@@ -1,3 +1,195 @@
+const database = require('../db')
+const Post = require('../models/post')
+const User = require('../models/user')
+const Role = require('../models/role')
+const CategoryModel = require('../models/category')
+const SectionModel = require('../models/section')
+const { QueryTypes } = require('sequelize')
+const db = database
+const Op = db.Sequelize.Op
+
+const {
+  genareteError,
+  returnError
+} = require('../utils/generateError')
+
+const listarUsuarios = async (req, res) => {
+  const post = await User.findByPk(1)
+  console.log(Object.keys(post.__proto__))
+  try {
+    const userRequest = req.query.userId
+    const userFound = await User.findByPk(Number(userRequest))
+    if (!userFound) genareteError('Você não está logado!', 401)
+    const userRoles = await userFound.getRole()
+    const isAdm = userRoles.find(element => {
+      if (element.name.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    })
+
+    if (isAdm) {
+      const where = {}
+      let arecords = null
+      if (!req.params.id) {
+        if (req.query.name) {
+          where.name = {
+            [Op.substring]: `${req.query.name}`
+          }
+        }
+        if (req.query.login) {
+          where.login = {
+            [Op.substring]: `${req.query.login}`
+          }
+        }
+        if (req.query.role) {
+          // let roles = null
+          // let ids = []
+        }
+      } else {
+        where.id = {
+          [Op.eq]: `${req.params.id}`
+        }
+      }
+      arecords = await User.findAll({
+        limit: 10,
+        offset: req.query.offset || 0,
+        attributes: [
+          'id',
+          'login',
+          'email',
+          'active',
+          'status',
+          'expires',
+          'name',
+          'phone',
+          'createdAt',
+          'updatedAt',
+          'deletedAt'],
+        where
+      })
+
+      const count = await User.count({
+        where
+      })
+
+      const records = JSON.parse(JSON.stringify(arecords))
+
+      const aupdatedRows = await Promise.all(records.map(async (iterator) => {
+        const roles = await db.query(`
+        SELECT r.id, r.name FROM "UserRoles" ur 
+        left join "Users" c
+        on ur."UserId" = c.id 
+        left join "Roles" r
+        on ur."RoleId" = r.id
+        and ur."deletedAt" is NULL
+        and r."deletedAt" is NULL
+        and c."deletedAt" is NULL; `, { type: QueryTypes.SELECT })
+        iterator.roles = roles
+        return iterator
+      }))
+
+      const updatedRows = JSON.parse(JSON.stringify(aupdatedRows))
+
+      return res.json({ count, rows: updatedRows })
+    } else {
+      genareteError('Você não tem permissão para acessar isso!', 401)
+    }
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const gerenciarUsuario = async (req, res) => {
+  try {
+    const userRequest = req.query.userId
+    const userFound = await User.findByPk(Number(userRequest))
+    if (!userFound) genareteError('Você não está logado!', 401)
+    const userRoles = await userFound.getRole()
+    const isAdm = userRoles.find(element => {
+      if (element.name.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    })
+    if (isAdm) {
+      const userFound = await User.findByPk(Number(req.query.id))
+      if (!userFound) genareteError('Usuário não encontrado!', 404)
+      if (req.query.desativar) {
+        await userFound.update({
+          active: false
+        })
+      }
+      if (req.query.ativar) {
+        await userFound.update({
+          active: true
+        })
+      }
+      if (req.query.setarExpire) {
+        await userFound.update({
+          expires: req.query.expires
+        })
+      }
+      if (req.query.removeRole) {
+        const role = await userFound.hasRole(req.query.addRole)
+        // const roleExiste = Role.findByPk(req.query.addRole)
+        if (role) {
+          genareteError('Usuário já possui este acesso!', 404)
+        } else {
+          await userFound.removeRole(req.query.removeRole)
+        }
+      }
+      if (req.query.addRole) {
+        await userFound.addRole(Number(req.query.addRole))
+        // const role = await userFound.getRole(req.query.addRole)
+        // const roleExiste = Role.findByPk(req.query.addRole)
+        // if (!roleExiste) {
+        //   genareteError('Acesso não encontrado!', 404)
+        // } else if (role) {
+        //   genareteError('Usuário já possui este acesso!', 404)
+        // } else {
+        // }
+      }
+      if (req.body) {
+        await userFound.update(req.body)
+      }
+    } else {
+      genareteError('Você não tem permissão para acessar isso!', 401)
+    }
+    return res.status(200).send('Usuário editado com sucesso!')
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const excluirUsuario = async (req, res) => {
+  try {
+    const userRequest = req.query.userId
+    const userFound = await User.findByPk(Number(userRequest))
+    if (!userFound) genareteError('Você não está logado!', 401)
+    const userRoles = await userFound.getRole()
+    const isAdm = userRoles.find(element => {
+      if (element.name.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    })
+    if (isAdm) {
+      const userFound = await User.findByPk(Number(req.query.id))
+      if (!userFound) genareteError('Usuário não encontrado!', 404)
+      await userFound.destroy()
+    } else {
+      genareteError('Você não tem permissão para acessar isso!', 401)
+    }
+    return res.status(200).send('Usuário excluído com sucesso!')
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
 const allAccess = async (req, res) => {
   res.status(200).send('Public Content.')
 }
@@ -18,5 +210,8 @@ module.exports = {
   allAccess,
   userBoard,
   adminBoard,
-  moderatorBoard
+  moderatorBoard,
+  listarUsuarios,
+  gerenciarUsuario,
+  excluirUsuario
 }

@@ -7,6 +7,7 @@ export const login = async ({ commit }, form) => {
     const dados = await instance.post('/api/auth/logar', form.form)
 
     commit('SET_USUARIO', dados.data)
+    router.push('/')
   } catch (error) {
     console.log(error)
     if (error && error.response && error.response.data) {
@@ -56,25 +57,25 @@ export const renovarToken = async ({ commit }) => {
     const dados = await instance.post('/api/auth/renova-token', {
       tokenRequisicao: RFSTKN
     })
-    if (dados && dados.response.status && (dados.response.status === 403 || dados.response.status === 401)) {
+    if (dados && dados.status && (dados.status === 403 || dados.status === 401)) {
       delete instance.defaults.headers.common['x-token']
       localStorage.removeItem('RFSTKN')
       router.push('/autenticacao')
     } else {
-      await commit('SET_USUARIO', dados.response.data)
+      await commit('SET_USUARIO', dados.data)
     }
   } catch (error) {
     console.log(error)
-    if (error && error.response && error.response.data) {
-      console.error(error.response.data || error.response.data.message)
+    if (error && error && error.data) {
+      console.error(error.data || error.data.message)
       commit('SET_SNACKBAR', {
         timeout: 3000,
         color: 'error',
         snackbar: true,
-        text: error.response.data || error.response.data.message
+        text: error.data || error.data.message
       }, { root: true })
     } else {
-      console.error(error.message)
+      console.error(error)
     }
   } finally {
     commit('SET_LOADING', false, { root: true })

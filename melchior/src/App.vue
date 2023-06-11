@@ -9,12 +9,19 @@
 </template>
 
 <script>
-// import app from './layouts/app'
-// export default {
-//   components: {
-//     app
-//   }
-// }
+import { mapActions } from 'vuex'
+export default {
+  name: 'App',
+  methods: {
+    ...mapActions('loginCadastro', ['renovarToken'])
+  },
+  async mounted () {
+    const RFSTKN = localStorage.getItem('RFSTKN') || null
+    if (RFSTKN) {
+      await this.renovarToken(RFSTKN)
+    }
+  }
+}
 </script>
 
 <style>

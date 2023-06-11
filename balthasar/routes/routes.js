@@ -2,6 +2,7 @@ const controllersAuth = require('../controllers/auth.controller')
 const controllersCategories = require('../controllers/category.controller')
 const controller = require('../controllers/user.controller')
 const controllersSections = require('../controllers/section.controller')
+const controllersUsuario = require('../controllers/user.controller')
 const controllersPosts = require('../controllers/post.controllers')
 const controllersCounters = require('../controllers/counters.controller')
 const validator = require('../middlewares/validator')
@@ -129,7 +130,7 @@ module.exports = function (app) {
       controllersPosts.newPost(req, res)
     })
 
-  app.delete('/api/posts/delete/:id',
+  app.delete('/api/posts/delete',
     // [authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.deletePost(req, res)
@@ -138,6 +139,21 @@ module.exports = function (app) {
   app.get('/api/totalizadores',
     (req, res, next) => {
       controllersCounters.count(req, res)
+    })
+  // -------------------------------------- rotas de usuários
+  app.get('/api/usuarios',
+    (req, res, next) => {
+      controllersUsuario.listarUsuarios(req, res)
+    })
+
+  app.put('/api/usuarios/gerenciar',
+    (req, res, next) => {
+      controllersUsuario.gerenciarUsuario(req, res)
+    })
+
+  app.delete('/api/usuarios/excluir',
+    (req, res, next) => {
+      controllersUsuario.excluirUsuario(req, res)
     })
 
   // --------------------------------------  rotas para teste, vai desaparecer depois q finalizar

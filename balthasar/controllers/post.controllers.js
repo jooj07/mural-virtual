@@ -213,9 +213,9 @@ const deletePost = async (req, res) => {
     if (!userFound) genareteError('Você não está logado!', 401)
 
     // Check se o post existe
-    if (!req.body.id) genareteError('Post não econtrado!', 500)
+    if (!req.query.id) genareteError('Post não econtrado!', 500)
 
-    const postFound = await Post.findByPk(Number(req.body.id))
+    const postFound = await Post.findByPk(Number(req.query.id))
     if (!postFound) genareteError('Post não econtrado!', 500)
 
     // Check se o post pertence ao usuário

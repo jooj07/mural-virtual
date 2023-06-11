@@ -11,6 +11,9 @@ export const instance = axios.create({
 })
 
 const RFSTKN = localStorage.getItem('RFSTKN') || null
+if (RFSTKN) {
+  instance.defaults.headers.common['x-token'] = `${RFSTKN}`
+}
 
 // Interceptador de resposta
 instance.interceptors.response.use(
@@ -25,29 +28,13 @@ instance.interceptors.response.use(
     return response
   },
   async (error) => {
-    const originalRequest = error.config
     // Se a resposta retornar um erro 403
-    if ((error.response.status === 403 || error.response.status === 401) && !originalRequest._retry && originalRequest.url !== '/api/auth/renova-token') {
-      originalRequest._retry = true
-
-      // Fazer uma nova chamada para obter um novo token de sessão usando o refresh token
-      try {
-        const res = await instance.post('/api/auth/renova-token', {
-          tokenRequisicao: RFSTKN
-        })
-
-        // Se o refresh token for válido, atualizar o token no armazenamento local e no cabeçalho da requisição
-        if (res.status === 200) {
-          instance.defaults.headers.common['x-token'] = `${res.data.token}`
-          store.commit('loginCadastro/SET_USUARIO', res.data)
-          return instance(originalRequest)
-        }
-      } catch (error) {
-        delete axios.defaults.headers.common['x-token']
-        localStorage.removeItem('RFSTKN')
-        localStorage.removeItem('usuarioLogado')
-        router.push('/autenticacao')
-      }
+    if ((error.response.status === 403 || error.response.status === 401)) {
+      delete axios.defaults.headers.common['x-token']
+      localStorage.removeItem('RFSTKN')
+      localStorage.removeItem('usuarioLogado')
+      router.push('/autenticacao')
+      window.alert('Sua sessão expirou, por favor, faça login novamente.')
     }
 
     return Promise.reject(error)

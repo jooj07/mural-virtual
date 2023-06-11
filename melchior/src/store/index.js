@@ -4,6 +4,7 @@ import categorias from './categorias'
 import departamentos from './departamentos'
 import loginCadastro from './login-cadastro'
 import feed from './feed'
+import usuarios from './usuarios'
 import { instance } from '@/plugins/axios'
 
 Vue.use(Vuex)
@@ -92,7 +93,8 @@ const store = new Vuex.Store({
     categorias,
     departamentos,
     loginCadastro,
-    feed
+    feed,
+    usuarios
   }
 })
 

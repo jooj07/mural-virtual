@@ -83,8 +83,16 @@
         >
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
+        <botao-aviso
+          v-if="editarPost"
+          corIcone="error"
+          titulo="Excluir post"
+          texto="Deseja realmente excluir este post?"
+          icone="mdi-delete"
+          @confirmar="exclusaoPost()"
+        />
         <v-btn
-          v-else
+          v-if="editarPost"
           class="mx-2"
           fab
           dark
@@ -414,7 +422,6 @@ export default {
     tamanhoFonte: 20,
     id: null,
     expand: false
-
   }),
   components: {
     'card-post': card_post
@@ -447,7 +454,8 @@ export default {
       'obterFiltroDepartamentos',
       'obterFiltroCategorias',
       'exibirPosts',
-      'postEditar'
+      'postEditar',
+      'postExcluir'
     ]),
     ...mapActions('departamentos', ['listarDepartamentos']),
     ...mapActions('categorias', ['listarCategorias']),
@@ -461,18 +469,18 @@ export default {
       this.titulo = dados.name ? dados.name : null
       this.postDescricao = dados.description ? dados.description : null
       this.categoriaSelecionadaPost = dados.categories
-        ? dados.categories.map(
-          (item) => item.CategoryId
-        )
+        ? dados.categories.map((item) => item.CategoryId)
         : []
       this.departamentoSelecionadoPost = dados.sections
-        ? dados.sections.map(
-          (item) => item.SectionId
-        )
+        ? dados.sections.map((item) => item.SectionId)
         : []
       this.date = dados.expiresAt ? dados.expiresAt : null
-      this.conteudo = dados.content ? Buffer.from(dados.content.data).toString('utf8') : ''
-      this.informacoesExtras = dados.moreInfo ? Buffer.from(dados.moreInfo.data).toString('utf8') : ''
+      this.conteudo = dados.content
+        ? Buffer.from(dados.content.data).toString('utf8')
+        : ''
+      this.informacoesExtras = dados.moreInfo
+        ? Buffer.from(dados.moreInfo.data).toString('utf8')
+        : ''
       this.id = dados.id ? dados.id : null
       this.postExibindo = dados || null
     },
@@ -532,6 +540,16 @@ export default {
         section: this.filtrosBusca.departamentoSelecionado,
         name: this.filtrosBusca.tituloPesquisa
       })
+    },
+    async exclusaoPost () {
+      const res = await this.postExcluir({
+        id: this.id || null,
+        userId: this.$store.state.loginCadastro.usuarioLogado.id || null
+      })
+      if (res) {
+        this.reset()
+        this.listagemDePosts()
+      }
     }
   }
 }

@@ -51,6 +51,7 @@ const routes = [
   {
     path: '/autenticacao',
     component: () => import(/* webpackChunkName: "autenticacao" */ '../layouts/autenticacao'),
+    meta: { rotaLogin: true },
     children: [
       {
         path: '',
@@ -74,6 +75,27 @@ const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  const usuarioLogado = localStorage.getItem('RFSTKN') || null
+  let usuarioLogadoVuex = localStorage.getItem('usuarioLogado') || null
+  usuarioLogadoVuex = usuarioLogadoVuex ? JSON.parse(usuarioLogadoVuex) : null
+  if (to.matched.some(record => record.meta.rotaLogin) && usuarioLogado) {
+    router.push({ path: '/' })
+  }
+  if (to.matched.some(record => record.meta.logado) && !usuarioLogado) {
+    router.push({ path: '/autenticacao' })
+  } else if (
+    to.matched.some(record => record.meta.adm) &&
+    usuarioLogadoVuex && usuarioLogadoVuex.acessos &&
+    usuarioLogado &&
+    !usuarioLogadoVuex.acessos.includes('administrador')
+  ) {
+    router.push({ path: '/403' })
+  } else {
+    next()
+  }
 })
 
 // router.beforeEach(async (to, from, next) => {
