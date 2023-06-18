@@ -11,21 +11,23 @@
     >
       <template slot="item.actions" slot-scope="{ item }">
         <v-btn
-        small
+          small
           class="mr-2"
           color="primary"
           icon
           @click="$emit('editar', item)"
-          >
-        <v-icon
-
         >
-          mdi-pencil
-        </v-icon>
+          <v-icon> mdi-pencil </v-icon>
         </v-btn>
-        <v-icon small color="error" @click="$emit('excluir', item)">
-          mdi-delete
-        </v-icon>
+        <v-btn
+          small
+          class="mr-2"
+          color="error"
+          icon
+          @click="$emit('excluir', item)"
+        >
+          <v-icon> mdi-delete </v-icon>
+        </v-btn>
       </template>
     </v-data-table>
     <div class="text-center pt-2">

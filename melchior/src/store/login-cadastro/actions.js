@@ -57,26 +57,22 @@ export const renovarToken = async ({ commit }) => {
     const dados = await instance.post('/api/auth/renova-token', {
       tokenRequisicao: RFSTKN
     })
-    if (dados && dados.status && (dados.status === 403 || dados.status === 401)) {
-      delete instance.defaults.headers.common['x-token']
-      localStorage.removeItem('RFSTKN')
-      router.push('/autenticacao')
-    } else {
+    if (dados && dados.data) {
       await commit('SET_USUARIO', dados.data)
     }
   } catch (error) {
-    console.log(error)
-    if (error && error && error.data) {
-      console.error(error.data || error.data.message)
-      commit('SET_SNACKBAR', {
-        timeout: 3000,
-        color: 'error',
-        snackbar: true,
-        text: error.data || error.data.message
-      }, { root: true })
-    } else {
-      console.error(error)
-    }
+    console.log('----->', error)
+
+    commit('SET_SNACKBAR', {
+      timeout: 3000,
+      color: 'error',
+      snackbar: true,
+      text: error.response.data || error
+    }, { root: true })
+    delete instance.defaults.headers.common['x-token']
+    localStorage.removeItem('RFSTKN')
+    router.push('/')
+    return false
   } finally {
     commit('SET_LOADING', false, { root: true })
   }

@@ -379,6 +379,18 @@
               </v-list-item-icon>
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
+            <v-list-item v-if="!usuarioLogado" link :to="'/autenticacao'" title="Área do Servidor">
+              <v-list-item-icon>
+                <v-icon color="secondary">mdi-account-arrow-right</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Área do Servidor</v-list-item-title>
+            </v-list-item>
+            <v-list-item v-if="usuarioLogado" link title="Sair" @click="sair()">
+              <v-list-item-icon>
+                <v-icon color="secondary">mdi-logout</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Sair</v-list-item-title>
+            </v-list-item>
           </v-list>
           <v-spacer />
           <v-list nav dense>
@@ -623,6 +635,12 @@ export default {
       })
       this.SET_PAGINA_POSTS(this.pagina)
       this.atualizarTudo()
+    },
+    sair () {
+      this.$store.commit('loginCadastro/SET_USUARIO', null)
+      localStorage.removeItem('usuarioLogado')
+      localStorage.removeItem('RFSTKN')
+      this.$router.push('/')
     }
   }
 }

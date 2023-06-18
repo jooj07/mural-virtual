@@ -8,6 +8,7 @@ import 'roboto-fontface/css/roboto/roboto-fontface.css'
 import '@mdi/font/css/materialdesignicons.css'
 import './plugins/veeValidade'
 import './plugins/cookie'
+import './plugins/dayJs'
 import { VueEditor } from 'vue2-editor'
 import { ValidationProvider, ValidationObserver } from 'vee-validate'
 
