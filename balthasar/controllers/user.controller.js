@@ -5,6 +5,7 @@ const Role = require('../models/role')
 const CategoryModel = require('../models/category')
 const SectionModel = require('../models/section')
 const { QueryTypes } = require('sequelize')
+const _ = require('lodash')
 const db = database
 const Op = db.Sequelize.Op
 
@@ -81,11 +82,12 @@ const listarUsuarios = async (req, res) => {
         SELECT r.id, r.name FROM "UserRoles" ur 
         left join "Users" c
         on ur."UserId" = c.id 
-        left join "Roles" r
+        inner join "Roles" r
         on ur."RoleId" = r.id
         and ur."deletedAt" is NULL
         and r."deletedAt" is NULL
-        and c."deletedAt" is NULL; `, { type: QueryTypes.SELECT })
+        and c."deletedAt" is null
+        where ur."UserId" = ${iterator.id}; `, { type: QueryTypes.SELECT })
         iterator.roles = roles
         return iterator
       }))
@@ -103,7 +105,7 @@ const listarUsuarios = async (req, res) => {
 
 const gerenciarUsuario = async (req, res) => {
   try {
-    const userRequest = req.query.userId
+    const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
     if (!userFound) genareteError('Você não está logado!', 401)
     const userRoles = await userFound.getRole()
@@ -115,7 +117,7 @@ const gerenciarUsuario = async (req, res) => {
       }
     })
     if (isAdm) {
-      const userFound = await User.findByPk(Number(req.query.id))
+      const userFound = await User.findByPk(Number(req.body.id))
       if (!userFound) genareteError('Usuário não encontrado!', 404)
       if (req.query.desativar) {
         await userFound.update({
@@ -143,16 +145,31 @@ const gerenciarUsuario = async (req, res) => {
       }
       if (req.query.addRole) {
         await userFound.addRole(Number(req.query.addRole))
-        // const role = await userFound.getRole(req.query.addRole)
-        // const roleExiste = Role.findByPk(req.query.addRole)
-        // if (!roleExiste) {
-        //   genareteError('Acesso não encontrado!', 404)
-        // } else if (role) {
-        //   genareteError('Usuário já possui este acesso!', 404)
-        // } else {
-        // }
       }
       if (req.body) {
+        console.log(Object.keys(userFound.__proto__))
+        const rolesToEdit = req.body.roles
+        const rolesUser = await userFound.getRole()
+        if (rolesUser && rolesUser.length && !_.isEqual(rolesToEdit, rolesUser.map(i => i.id))) {
+          if (rolesUser && rolesUser.length) {
+            for (const i of rolesUser) {
+              console.log(i.id)
+              await userFound.removeRole(i.id)
+            }
+          }
+          if (rolesToEdit && rolesToEdit.length) {
+            for (const i of rolesToEdit) {
+              await userFound.addRole(Number(i))
+            }
+          }
+        }
+        if (!rolesUser && rolesToEdit && rolesToEdit.length) {
+          if (rolesToEdit && rolesToEdit.length) {
+            for (const i of rolesToEdit) {
+              await userFound.addRole(Number(i))
+            }
+          }
+        }
         await userFound.update(req.body)
       }
     } else {
