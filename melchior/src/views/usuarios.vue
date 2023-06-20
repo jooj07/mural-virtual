@@ -147,8 +147,8 @@ export default {
   data: () => ({
     acessos: [
       { id: 1, name: 'Usuário' },
-      { id: 2, name: 'Administrador' },
-      { id: 3, name: 'Servidor' }
+      { id: 3, name: 'Administrador' },
+      { id: 2, name: 'Servidor' }
     ],
     pagina: 1,
     editando: null,

@@ -393,6 +393,23 @@
             </v-list-item>
           </v-list>
           <v-spacer />
+          <v-list v-if="$route.name === 'Categorias'" nav dense>
+            <v-list-item link @click="$store.commit('SET_CONTROLADOR','novaCategoria')" title="Nova Categoria">
+              <v-list-item-icon>
+                <v-icon color="secondary">mdi-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Nova Categoria</v-list-item-title>
+            </v-list-item>
+          </v-list>
+          <v-list v-if="$route.name === 'Departamentos'" nav dense>
+            <v-list-item link @click="$store.commit('SET_CONTROLADOR','novoDepartamento')" title="Novo Departamento">
+              <v-list-item-icon>
+                <v-icon color="secondary">mdi-plus</v-icon>
+              </v-list-item-icon>
+              <v-list-item-title>Novo Departamento</v-list-item-title>
+            </v-list-item>
+          </v-list>
+
           <v-list nav dense>
             <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>

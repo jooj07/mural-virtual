@@ -19,6 +19,7 @@ const store = new Vuex.Store({
       text: ''
     },
     opcoes: null,
+    controlador: '',
     filtrosBusca: {
       categoriaSelecionada: [],
       departamentoSelecionado: [],
@@ -31,6 +32,9 @@ const store = new Vuex.Store({
   mutations: {
     SET_LOADING (state, payload) {
       state.loading = payload
+    },
+    SET_CONTROLADOR (state, payload) {
+      state.controlador = payload
     },
     SET_SNACKBAR (state, payload) {
       if (!payload) {

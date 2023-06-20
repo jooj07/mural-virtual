@@ -7,7 +7,7 @@
           small
           style="cursor: pointer"
           class="px-1"
-          @click="$router.push({ path: '/dashboard' })"
+          @click="$router.push({ path: '/dashboard' }), $store.commit('SET_CONTROLADOR', '')"
           ><v-icon class="px-1">mdi-arrow-left</v-icon> Dashboard</v-btn
         >
         <span class="px-1">/</span>

@@ -19,19 +19,18 @@
         >
           <v-icon> mdi-pencil </v-icon>
         </v-btn>
-        <v-btn
-          small
-          class="mr-2"
-          color="error"
-          icon
-          @click="$emit('excluir', item)"
-        >
-          <v-icon> mdi-delete </v-icon>
-        </v-btn>
+        <botao-aviso
+          corIcone="error"
+          titulo="Excluir Usuário"
+          texto="Deseja realmente excluir este usuário?"
+          icone="mdi-delete"
+          @confirmar="$emit('excluir', item)"
+        />
       </template>
     </v-data-table>
     <div class="text-center pt-2">
       <v-pagination
+        v-if="data && data.rows && Number(data.rows) > 1"
         v-model="page"
         :length="Math.ceil(data['count'] / 10)"
         :total-visible="5"

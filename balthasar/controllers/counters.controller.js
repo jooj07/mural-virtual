@@ -30,7 +30,8 @@ const count = async (req, res) => {
     },
     {
       titulo: 'Posts Feitos',
-      link: '/dashboard/atividades',
+      link: '/dashboard',
+      // link: '/dashboard/atividades',
       contador: `${posts}`
     },
     {
