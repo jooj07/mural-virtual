@@ -13,7 +13,11 @@
       <v-col
         v-for="(valor, index) in departamentosListados['rows']"
         :key="index"
-        cols="4"
+        cols="12"
+          md="6"
+          sm="12"
+          lg="4"
+          xl="4"
       >
         <card-exibicao
           :id="valor.id"
@@ -41,6 +45,7 @@
       >
         <v-pagination
           v-if="
+            !controlador.includes('novoDepartamento') &&
             !editando &&
             departamentosListados &&
             departamentosListados.count &&

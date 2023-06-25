@@ -74,3 +74,27 @@ export const editarUsuario = async ({ commit }, body) => {
     commit('SET_LOADING', false, { root: true })
   }
 }
+export const excluirUsuario = async ({ commit }, parametros) => {
+  window.console.log(parametros)
+  try {
+    commit('SET_LOADING', true, { root: true })
+    await instance.delete('/api/usuarios/excluir', { params: { ...parametros } })
+    return true
+  } catch (error) {
+    console.log(error)
+    if (error && error.response && error.response.data) {
+      console.error(error.response.data || error.response.data.message)
+      commit('SET_SNACKBAR', {
+        timeout: 3000,
+        color: 'error',
+        snackbar: true,
+        text: error.response.data || error.response.data.message
+      }, { root: true })
+    } else {
+      console.error(error.message)
+    }
+    return null
+  } finally {
+    commit('SET_LOADING', false, { root: true })
+  }
+}

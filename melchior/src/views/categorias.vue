@@ -13,7 +13,11 @@
       <v-col
         v-for="(valor, index) in categoriasListadas['rows']"
         :key="index"
-        cols="4"
+        cols="12"
+          md="6"
+          sm="12"
+          lg="4"
+          xl="4"
       >
         <card-exibicao
           :id="valor.id"
@@ -36,6 +40,7 @@
     </v-row>
     <v-row
       v-if="
+      !controlador.includes('novaCategoria') &&
         !editando &&
         categoriasListadas &&
         categoriasListadas.count &&

@@ -69,6 +69,11 @@ const routes = [
     path: '/403',
     name: '403',
     component: () => import(/* webpackChunkName: "403" */ '../views/403')
+  },
+  {
+    path: '*',
+    name: '404',
+    component: () => import(/* webpackChunkName: "404" */ '../views/404')
   }
 ]
 const router = new VueRouter({

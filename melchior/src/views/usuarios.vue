@@ -10,7 +10,7 @@
           :colunas="colunasTabela"
           :pagina="pagina"
           @listar="(pagina = $event), listagemUsuarios()"
-          @excluir="&quot;&quot;;"
+          @excluir="usuarioExclusao($event)"
           @editar="copiarSemReferencia($event)"
         />
       </v-col>
@@ -178,7 +178,7 @@ export default {
     ...mapState('loginCadastro', ['usuarioLogado'])
   },
   methods: {
-    ...mapActions('usuarios', ['listarUsuarios', 'editarUsuario']),
+    ...mapActions('usuarios', ['listarUsuarios', 'editarUsuario', 'excluirUsuario']),
     async listagemUsuarios () {
       window.console.log(localStorage.getItem('usuarioLogado'))
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
@@ -235,6 +235,21 @@ export default {
           this.pagina = 1
           await this.listagemUsuarios()
         }
+      }
+    },
+    async usuarioExclusao (event) {
+      window.console.log(event)
+      const { id } = event || null
+      const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
+        ? JSON.parse(localStorage.getItem('usuarioLogado'))
+        : null
+      const requisicao = await this.excluirUsuario({
+        id: id,
+        userId: usuarioLocalstorage.id || null
+      })
+      if (requisicao) {
+        this.pagina = 1
+        await this.listagemUsuarios()
       }
     }
   }

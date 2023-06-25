@@ -343,7 +343,9 @@
                         hide-details
                         class="elevation-1"
                         label="Título"
-                        @click:clear="tituloPesquisa = null, listagemDePosts()"
+                        @click:clear="
+                          (tituloPesquisa = null), listagemDePosts()
+                        "
                         @keydown.enter="listagemDePosts()"
                       />
                     </v-col>
@@ -379,7 +381,12 @@
               </v-list-item-icon>
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
-            <v-list-item v-if="!usuarioLogado" link :to="'/autenticacao'" title="Área do Servidor">
+            <v-list-item
+              v-if="!usuarioLogado"
+              link
+              :to="'/autenticacao'"
+              title="Área do Servidor"
+            >
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-account-arrow-right</v-icon>
               </v-list-item-icon>
@@ -394,7 +401,11 @@
           </v-list>
           <v-spacer />
           <v-list v-if="$route.name === 'Categorias'" nav dense>
-            <v-list-item link @click="$store.commit('SET_CONTROLADOR','novaCategoria')" title="Nova Categoria">
+            <v-list-item
+              link
+              @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
+              title="Nova Categoria"
+            >
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-plus</v-icon>
               </v-list-item-icon>
@@ -402,7 +413,11 @@
             </v-list-item>
           </v-list>
           <v-list v-if="$route.name === 'Departamentos'" nav dense>
-            <v-list-item link @click="$store.commit('SET_CONTROLADOR','novoDepartamento')" title="Novo Departamento">
+            <v-list-item
+              link
+              @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
+              title="Novo Departamento"
+            >
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-plus</v-icon>
               </v-list-item-icon>
@@ -427,33 +442,172 @@
           </v-col>
         </v-row>
       </v-container>
-      <v-bottom-navigation
-        v-if="$vuetify.breakpoint.width < 700"
-        v-model="value"
-        height="60px"
-        class="pa-0"
-        dark
-        shift
-        grow
-        app
+      <v-speed-dial
+      v-if="$vuetify.breakpoint.width <= 700"
+        v-model="fab"
+        bottom
+        right
+        direction="top"
+        transition="slide-y-reverse-transition"
+        style="position: absolute; z-index: 1000; bottom: 20px; right: 20px"
       >
-        <v-btn style="height: 100%">
-          <span>Recents</span>
-          <v-icon>mdi-history</v-icon>
+        <template v-slot:activator>
+          <v-btn v-model="fab" :color="!fab ? 'primary' : 'error'" dark fab>
+            <v-icon v-if="fab"> mdi-close </v-icon>
+            <v-icon v-else> mdi-transition </v-icon>
+          </v-btn>
+        </template>
+
+        <v-btn
+          v-if="$route.name === 'Categorias'"
+          fab
+          color="primary"
+          @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
+        >
+          <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <v-btn style="height: 100%">
-          <span>Recents</span>
-          <v-icon>mdi-history</v-icon>
+        <v-btn
+          v-if="$route.name === 'Departamentos'"
+          fab
+          color="primary"
+          @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
+        >
+          <v-icon>mdi-plus</v-icon>
         </v-btn>
-        <v-btn style="height: 100%">
-          <span>Recents</span>
-          <v-icon>mdi-history</v-icon>
+
+        <v-btn
+          v-if="$route.name === 'Feed'"
+          fab
+          color="primary"
+          @click.prevent="overlayEditor = true"
+        >
+          <v-icon>mdi-pencil-plus</v-icon>
         </v-btn>
-        <v-btn style="height: 100%">
-          <span>Recents</span>
-          <v-icon>mdi-history</v-icon>
+        <v-btn :to="'/'" fab color="tertiary">
+          <v-icon>mdi-home</v-icon>
         </v-btn>
-      </v-bottom-navigation>
+        <v-btn fab color="primary" @click="atualizarTudo()">
+          <v-icon>mdi-refresh</v-icon>
+        </v-btn>
+        <v-btn fab color="tertiary" @click="snackbar = !snackbar">
+          <v-icon>mdi-filter-cog</v-icon>
+        </v-btn>
+        <v-btn
+          fab
+          color="primary"
+          @click="$vuetify.theme.dark = !$vuetify.theme.dark"
+        >
+          <v-icon>mdi-theme-light-dark</v-icon>
+        </v-btn>
+        <v-btn fab color="tertiary" :to="'/dashboard'">
+          <v-icon>mdi-cog</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="!usuarioLogado"
+          :to="'/autenticacao'"
+          fab
+          title="Área do Servidor"
+        >
+          <v-icon>mdi-account-arrow-right</v-icon>
+        </v-btn>
+        <v-btn
+          v-if="usuarioLogado"
+          fab
+          color="primary"
+          title="Sair"
+          @click="sair()"
+        >
+          <v-icon>mdi-logout</v-icon>
+        </v-btn>
+      </v-speed-dial>
+
+      <v-snackbar v-model="snackbar" :timeout="-1" light>
+        <v-form>
+          <v-row no-gutters style="z-index: 1000 !important">
+            <v-col cols="12" class="my-1">
+              <v-select
+                v-model="categoriaSelecionada"
+                :items="categoriasListadasFiltro"
+                outlined
+                multiple
+                dense
+                hide-details
+                class="elevation-1"
+                label="Categoria"
+                item-text="name"
+                item-value="id"
+              >
+                <template v-slot:append-item>
+                  <v-divider class="mb-2"></v-divider>
+                  <v-pagination
+                    v-model="pagina"
+                    :length="Math.ceil(categoriasListadas['count'] / 10)"
+                    :total-visible="5"
+                    class="flex-grow-1"
+                    circle
+                    color="primary"
+                    @input="categoriasRequisicao(pagina)"
+                  ></v-pagination>
+                </template>
+              </v-select>
+            </v-col>
+            <v-col cols="12" class="my-1">
+              <v-select
+                v-model="departamentoSelecionado"
+                :items="departamentosListadosFiltro"
+                outlined
+                multiple
+                dense
+                hide-details
+                class="elevation-1"
+                label="Departamento"
+                item-text="name"
+                item-value="id"
+              >
+                <template v-slot:prepend-item> </template>
+                <template v-slot:append-item>
+                  <v-divider class="mb-2"></v-divider>
+                  <v-pagination
+                    v-model="paginaDepartamentos"
+                    :length="Math.ceil(departamentosListados['count'] / 10)"
+                    :total-visible="5"
+                    class="flex-grow-1"
+                    circle
+                    color="primary"
+                    @input="departamentosRequisicao(paginaDepartamentos)"
+                  ></v-pagination>
+                </template>
+              </v-select>
+            </v-col>
+            <v-col cols="12" class="my-1">
+              <v-text-field
+                v-model="tituloPesquisa"
+                clearable
+                outlined
+                dense
+                hide-details
+                class="elevation-1"
+                label="Título"
+                @click:clear="(tituloPesquisa = null), listagemDePosts()"
+                @keydown.enter="listagemDePosts()"
+              />
+            </v-col>
+            <v-col cols="12" class="my-1">
+              <v-btn color="primary" text @click="listagemDePosts()" block>
+                Pesquisar
+              </v-btn>
+              <v-btn color="error" text @click="limparFiltros()" block>
+                Limpar Filtros
+              </v-btn>
+            </v-col>
+            <v-col>
+              <v-btn color="primary" block text @click="snackbar = false">
+                Close
+              </v-btn>
+            </v-col>
+          </v-row>
+        </v-form>
+      </v-snackbar>
     </v-main>
   </v-app>
 </template>
@@ -482,6 +636,8 @@ export default {
     tituloPesquisa: null,
 
     // controle
+    fab: false,
+    snackbar: false,
     menu: false,
     overlayEditor: false,
     drawer: true,
@@ -618,7 +774,9 @@ export default {
           this.postDescricao = null
           this.conteudo = null
           this.informacoesExtras = null
-          this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+          this.date = new Date(
+            Date.now() - new Date().getTimezoneOffset() * 60000
+          )
             .toISOString()
             .substr(0, 10)
         }

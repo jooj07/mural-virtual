@@ -51,6 +51,7 @@ module.exports = function (app) {
 
   app.post('/api/categorias/nova',
     [
+      authJwt.checkToken, authJwt.checkAdm,
       validator.validateCategory,
       validator.catchError
     ],
@@ -59,13 +60,13 @@ module.exports = function (app) {
     })
 
   app.put('/api/categorias/editar/:id',
-    // [authJwt.checkAdm],
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.editCategory(req, res)
     })
 
   app.delete('/api/categorias/deletar/:id',
-    // [authJwt.checkAdm],
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersCategories.deleteCategory(req, res)
     })
@@ -83,7 +84,7 @@ module.exports = function (app) {
 
   app.post('/api/departamentos/nova',
     [
-      // authJwt.checkAdm,
+      authJwt.checkToken, authJwt.checkAdm,
       validator.validateCategory,
       validator.catchError
     ],
@@ -92,13 +93,13 @@ module.exports = function (app) {
     })
 
   app.put('/api/departamentos/editar/:id',
-    // [authJwt.checkAdm],
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.editSections(req, res)
     })
 
   app.delete('/api/departamentos/deletar/:id',
-    // [authJwt.checkAdm],
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersSections.deleteSection(req, res)
     })
@@ -119,19 +120,19 @@ module.exports = function (app) {
     })
 
   app.put('/api/posts/edit',
-    // [authJwt.checkUserAndAdmin],
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersPosts.alterPost(req, res)
     })
 
   app.post('/api/posts/new',
-    // [authJwt.checkUserAndAdmin],
+    [authJwt.checkToken, authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.newPost(req, res)
     })
 
   app.delete('/api/posts/delete',
-    // [authJwt.checkUserAndAdmin],
+    [authJwt.checkToken, authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.deletePost(req, res)
     })
@@ -142,16 +143,19 @@ module.exports = function (app) {
     })
   // -------------------------------------- rotas de usuários
   app.get('/api/usuarios',
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersUsuario.listarUsuarios(req, res)
     })
 
   app.put('/api/usuarios/gerenciar',
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersUsuario.gerenciarUsuario(req, res)
     })
 
   app.delete('/api/usuarios/excluir',
+    [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {
       controllersUsuario.excluirUsuario(req, res)
     })
