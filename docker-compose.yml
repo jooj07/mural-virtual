@@ -17,6 +17,7 @@ services:
       context: ./melchior
     environment: 
       VUE_APP_API_URL: http://localhost:3001
+      VUE_APP_CHAVE_TRADUTORA: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwUXT9lAN8tLuTMhF1231
     command: [ "yarn", "serve", "--host", "0.0.0.0" ]
     ports:
       - "8082:8080"
@@ -35,6 +36,7 @@ services:
       DB_PORT: 5432
       DB_DIALECT: postgres
       CHAVE_SECRETA: 8833a7122e4e4cd6f006b62079f8e155a72279dd5547cfeedad56fae79be6dd1d9f0518a1f10e0f3c67fdd6b9a6241c9
+      CHAVE_TRADUTORA: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAwUXT9lAN8tLuTMhF1231
     command: [ "yarn", "dev" ]
     ports:
       - "3001:3000"

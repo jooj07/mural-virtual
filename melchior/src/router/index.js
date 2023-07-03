@@ -67,12 +67,12 @@ const routes = [
   },
   {
     path: '/403',
-    name: '403',
+    name: '403 - Sem permissão',
     component: () => import(/* webpackChunkName: "403" */ '../views/403')
   },
   {
     path: '*',
-    name: '404',
+    name: '404 - Página não encontrada',
     component: () => import(/* webpackChunkName: "404" */ '../views/404')
   }
 ]

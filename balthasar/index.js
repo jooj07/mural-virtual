@@ -15,6 +15,7 @@
   const UserRole = require('/workspaces/models/userRole.js')
   const UserSection = require('/workspaces/models/userSection.js')
   const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
+
   try {
     await database.sync({ alter: true })
 

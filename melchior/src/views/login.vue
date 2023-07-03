@@ -46,9 +46,14 @@
                 <v-btn color="primary" fab @click="logar">
                   <v-icon>mdi-check-bold</v-icon>
                 </v-btn>
+                <v-btn color="primary" class="ml-3" fab @click="$router.push({ path: '/' })"
+                  ><v-icon>mdi-home</v-icon>
+                </v-btn>
               </v-col>
             </v-row>
-            <a @click="$router.push({ path: '/autenticacao/cadastro'})">Não tem login? Cadastre-se aqui</a>
+            <a @click="$router.push({ path: '/autenticacao/cadastro' })"
+              >Não tem login? Cadastre-se aqui</a
+            >
           </v-form>
         </validation-observer>
       </v-col>
@@ -57,6 +62,7 @@
 </template>
 
 <script>
+import CryptoJS from 'crypto-js'
 import { mapActions } from 'vuex'
 export default {
   data: () => ({
@@ -70,15 +76,20 @@ export default {
     ...mapActions('loginCadastro', ['login']),
     async logar () {
       if (await this.$refs.form.validate()) {
+        const hashedPassword = CryptoJS.AES.encrypt(
+          this.senha,
+          process.env.VUE_APP_CHAVE_TRADUTORA
+        ).toString()
+
         await this.login({
           form: {
             login: this.matricula,
-            password: this.senha
+            password: hashedPassword
           },
           vm: this.$router
         })
       } else {
-        console.log('invalido')
+        console.log('inválido')
       }
     }
   }

@@ -3,6 +3,7 @@ const User = require('../models/user')
 const TokenEfemero = require('../models/tokenEfemero')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const CryptoJS = require('crypto-js')
 const {
   genareteError,
   returnError
@@ -36,6 +37,10 @@ const signUp = async (req, res) => {
       userObject.email = req.body.email
     }
 
+    const passphrase = process.env.CHAVE_TRADUTORA
+    const bytes = CryptoJS.AES.decrypt(req.body.password, passphrase)
+    req.body.password = bytes.toString(CryptoJS.enc.Utf8)
+
     userObject.login = req.body.login
     userObject.name = req.body.name
     userObject.password = bcrypt.hashSync(req.body.password, 8)
@@ -60,6 +65,10 @@ const signIn = async (req, res) => {
     if (!usuarioEncontrado) {
       genareteError('Usuário não encontrado!', 404)
     }
+
+    const passphrase = process.env.CHAVE_TRADUTORA
+    const bytes = CryptoJS.AES.decrypt(req.body.password, passphrase)
+    req.body.password = bytes.toString(CryptoJS.enc.Utf8)
 
     const checarSenha = bcrypt.compareSync(
       req.body.password,

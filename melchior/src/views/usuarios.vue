@@ -21,10 +21,34 @@
         >
           <v-card-title class="d-flex justify-space-between">
             <p>Edição de usuário</p>
-            <v-switch
-              v-model="editando.active"
-              label="Usuário ativo"
-            ></v-switch>
+
+            <v-menu offset-y :close-on-click="false">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
+                  <v-icon>mdi-dots-vertical</v-icon>
+                </v-btn>
+              </template>
+              <v-list dense>
+                <v-list-item @click="alteracaoSenha()">
+                  <v-list-item-icon>
+                    <v-icon>mdi-key</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title>Alterar Senha</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+                <v-list-item @click="editando.active = !editando.active">
+                  <v-list-item-icon>
+                    <v-icon v-if="editando.active">mdi-account-cancel</v-icon>
+                    <v-icon v-else> mdi-account</v-icon>
+                  </v-list-item-icon>
+                  <v-list-item-content>
+                    <v-list-item-title v-if="editando.active" >Desativar Usuário</v-list-item-title>
+                    <v-list-item-title v-else>Ativar Usuário</v-list-item-title>
+                  </v-list-item-content>
+                </v-list-item>
+              </v-list>
+            </v-menu>
           </v-card-title>
           <v-card-text>
             <v-form>
@@ -84,12 +108,19 @@
                     <v-col
                       cols="12"
                       md="6"
-                      class="d-flex align-center justify-start flex-column ma-0"
+                      :class="
+                        editardata
+                          ? 'd-flex align-center justify-start flex-column ma-0'
+                          : 'd-flex align-center justify-start flex-row ma-0'
+                      "
                     >
                       <p class="d-flex align-center justify-start ma-0">
-                        <span v-if="editando.expires && !editardata">{{
-                          editando.expires
-                        }}</span>
+                        <span
+                          v-if="editando.expires && !editardata"
+                          class="text-h6 font-weight-black"
+                          >Data de expiração:
+                          {{ formatarData(editando.expires) }}</span
+                        >
                         <span v-if="!editando.expires && !editardata"
                           >Sem data de expiração definida</span
                         >
@@ -178,7 +209,11 @@ export default {
     ...mapState('loginCadastro', ['usuarioLogado'])
   },
   methods: {
-    ...mapActions('usuarios', ['listarUsuarios', 'editarUsuario', 'excluirUsuario']),
+    ...mapActions('usuarios', [
+      'listarUsuarios',
+      'editarUsuario',
+      'excluirUsuario'
+    ]),
     async listagemUsuarios () {
       window.console.log(localStorage.getItem('usuarioLogado'))
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
@@ -251,6 +286,15 @@ export default {
         this.pagina = 1
         await this.listagemUsuarios()
       }
+    },
+    alteracaoSenha () {
+      this.$router.push({
+        name: 'AlterarSenha',
+        params: { id: this.editando.id }
+      })
+    },
+    formatarData (data) {
+      return this.$dayjs(data).format('DD/MM/YYYY')
     }
   }
 }

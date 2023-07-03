@@ -1,16 +1,18 @@
 <template>
   <v-app id="inspire">
+    <v-overlay :value="overlay" :color="$vuetify.theme.dark ? 'black' : '#fff'" opacity="1"></v-overlay>
     <v-main>
       <v-dialog v-model="overlayEditor" persistent max-width="800">
         <v-overlay :value="overlayEditor">
           <v-card
             :light="!$vuetify.theme.dark"
             max-width="800"
-            max-height="600"
+            max-height="800"
             style="overflow: auto"
           >
-            <v-card-title> Título do Modal </v-card-title>
-            <v-card-text>
+            <v-card-title> Nova postagem </v-card-title>
+            <v-divider></v-divider>
+            <v-card-text style="height: 600px !important; overflow: auto">
               <validation-observer ref="formularioPost">
                 <v-form>
                   <v-row>
@@ -183,11 +185,12 @@
                 </v-form>
               </validation-observer>
             </v-card-text>
+            <v-divider></v-divider>
             <v-card-actions>
               <v-btn color="primary" text @click="realizarPostagem()">
                 Salvar
               </v-btn>
-              <v-btn color="primary" text @click="cancelarPostagem()">
+              <v-btn color="error" text @click="cancelarPostagem()">
                 Fechar
               </v-btn>
             </v-card-actions>
@@ -388,7 +391,7 @@
               title="Área do Servidor"
             >
               <v-list-item-icon>
-                <v-icon color="secondary">mdi-account-arrow-right</v-icon>
+                <v-icon color="secondary">mdi-account-key</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Área do Servidor</v-list-item-title>
             </v-list-item>
@@ -442,83 +445,146 @@
           </v-col>
         </v-row>
       </v-container>
+
       <v-speed-dial
-      v-if="$vuetify.breakpoint.width <= 700"
+        v-if="$vuetify.breakpoint.width <= 700"
         v-model="fab"
         bottom
         right
         direction="top"
         transition="slide-y-reverse-transition"
-        style="position: absolute; z-index: 1000; bottom: 20px; right: 20px"
+        style="
+          position: absolute;
+          z-index: 1000;
+          bottom: 20px;
+          right: 20px;
+          z-index: 700000000;
+        "
       >
         <template v-slot:activator>
-          <v-btn v-model="fab" :color="!fab ? 'primary' : 'error'" dark fab>
+          <v-btn
+            v-model="fab"
+            :color="!fab ? 'primary' : 'error'"
+            dark
+            fab
+            @click="overlay = !overlay"
+          >
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon v-else> mdi-transition </v-icon>
           </v-btn>
         </template>
-
-        <v-btn
-          v-if="$route.name === 'Categorias'"
-          fab
-          color="primary"
-          @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
+        <div
+          class="d-flex flex-column justify-start align-end"
+          style="width: 100% !important"
         >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-        <v-btn
-          v-if="$route.name === 'Departamentos'"
-          fab
-          color="primary"
-          @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
-        >
-          <v-icon>mdi-plus</v-icon>
-        </v-btn>
-
-        <v-btn
-          v-if="$route.name === 'Feed'"
-          fab
-          color="primary"
-          @click.prevent="overlayEditor = true"
-        >
-          <v-icon>mdi-pencil-plus</v-icon>
-        </v-btn>
-        <v-btn :to="'/'" fab color="tertiary">
-          <v-icon>mdi-home</v-icon>
-        </v-btn>
-        <v-btn fab color="primary" @click="atualizarTudo()">
-          <v-icon>mdi-refresh</v-icon>
-        </v-btn>
-        <v-btn fab color="tertiary" @click="snackbar = !snackbar">
-          <v-icon>mdi-filter-cog</v-icon>
-        </v-btn>
-        <v-btn
-          fab
-          color="primary"
-          @click="$vuetify.theme.dark = !$vuetify.theme.dark"
-        >
-          <v-icon>mdi-theme-light-dark</v-icon>
-        </v-btn>
-        <v-btn fab color="tertiary" :to="'/dashboard'">
-          <v-icon>mdi-cog</v-icon>
-        </v-btn>
-        <v-btn
-          v-if="!usuarioLogado"
-          :to="'/autenticacao'"
-          fab
-          title="Área do Servidor"
-        >
-          <v-icon>mdi-account-arrow-right</v-icon>
-        </v-btn>
-        <v-btn
-          v-if="usuarioLogado"
-          fab
-          color="primary"
-          title="Sair"
-          @click="sair()"
-        >
-          <v-icon>mdi-logout</v-icon>
-        </v-btn>
+          <v-btn
+            v-if="$route.name === 'Categorias'"
+            block
+            x-large
+            color="tertiary"
+            class="rounded-pill"
+            @click="
+              $store.commit('SET_CONTROLADOR', 'novaCategoria'),
+                (overlay = false)
+            "
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="$route.name === 'Departamentos'"
+            block
+            large
+            color="tertiary"
+            class="rounded-pill"
+            @click="
+              $store.commit('SET_CONTROLADOR', 'novoDepartamento'),
+                (overlay = false)
+            "
+          >
+            <v-icon>mdi-plus</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="$route.name === 'Feed'"
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click.prevent="(overlayEditor = true), (overlay = false)"
+          >
+            Nova postagem <v-icon>mdi-pencil-plus</v-icon>
+          </v-btn>
+          <v-btn
+            :to="'/'"
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click="overlay = false"
+          >
+            Início <v-icon>mdi-home</v-icon>
+          </v-btn>
+          <v-btn
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click="atualizarTudo(), (overlay = false)"
+          >
+            Atualizar<v-icon>mdi-refresh</v-icon>
+          </v-btn>
+          <v-btn
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click="(snackbar = !snackbar), (overlay = false)"
+          >
+            Filtros <v-icon>mdi-filter-cog</v-icon>
+          </v-btn>
+          <v-btn
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click="
+              ($vuetify.theme.dark = !$vuetify.theme.dark), (overlay = false)
+            "
+          >
+            Alterar tema <v-icon>mdi-theme-light-dark</v-icon>
+          </v-btn>
+          <v-btn
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            :to="'/dashboard'"
+            @click="overlay = false"
+          >
+            Dashboard <v-icon>mdi-cog</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="!usuarioLogado"
+            :to="'/autenticacao'"
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            title="Área do Servidor"
+            @click="overlay = false"
+          >
+            Fazer login/Cadastre-se <v-icon>mdi-account-key</v-icon>
+          </v-btn>
+          <v-btn
+            v-if="usuarioLogado"
+            block
+            large
+            color="tertiary"
+            :class="classeBotoesSpdD"
+            @click="sair(), (overlay = false)"
+          >
+            Sair <v-icon>mdi-logout</v-icon>
+          </v-btn>
+        </div>
       </v-speed-dial>
 
       <v-snackbar v-model="snackbar" :timeout="-1" light>
@@ -636,6 +702,7 @@ export default {
     tituloPesquisa: null,
 
     // controle
+    overlay: false,
     fab: false,
     snackbar: false,
     menu: false,
@@ -644,11 +711,17 @@ export default {
     abaFiltros: false,
     fix: false,
     expandido: false,
-    value: true
+    value: true,
+
+    // etc
+    classeBotoesSpdD: 'rounded-pill elevation-0'
   }),
   watch: {
     paginaPosts (v) {
       this.pagina = v
+    },
+    fab (v) {
+      this.overlay = v
     }
   },
   async created () {
