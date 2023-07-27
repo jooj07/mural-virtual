@@ -1,20 +1,38 @@
 // index.js
 
 (async () => {
-  const Category = require('/workspaces/models/category.js')
-  const Post = require('/workspaces/models/post.js')
-  const PostCategory = require('/workspaces/models/postCategory.js')
-  const PostSection = require('/workspaces/models/postSection.js')
-  const Question = require('/workspaces/models/question.js')
-  const Role = require('/workspaces/models/role.js')
-  const Section = require('/workspaces/models/section.js')
-  const User = require('/workspaces/models/user.js')
-  const database = require('/workspaces/db.js')
-  const UserPost = require('/workspaces/models/userPost.js')
-  const UserQuestion = require('/workspaces/models/userQuestions.js')
-  const UserRole = require('/workspaces/models/userRole.js')
-  const UserSection = require('/workspaces/models/userSection.js')
-  const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
+  // docker
+
+  // const Category = require('/workspaces/models/category.js')
+  // const Post = require('/workspaces/models/post.js')
+  // const PostCategory = require('/workspaces/models/postCategory.js')
+  // const PostSection = require('/workspaces/models/postSection.js')
+  // const Question = require('/workspaces/models/question.js')
+  // const Role = require('/workspaces/models/role.js')
+  // const Section = require('/workspaces/models/section.js')
+  // const User = require('/workspaces/models/user.js')
+  // const database = require('/workspaces/db.js')
+  // const UserPost = require('/workspaces/models/userPost.js')
+  // const UserQuestion = require('/workspaces/models/userQuestions.js')
+  // const UserRole = require('/workspaces/models/userRole.js')
+  // const UserSection = require('/workspaces/models/userSection.js')
+  // const tokenEfemero = require('/workspaces/models/tokenEfemero.js')
+
+  // Local
+  const Category = require('./models/category.js')
+  const Post = require('./models/post.js')
+  const PostCategory = require('./models/postCategory.js')
+  const PostSection = require('./models/postSection.js')
+  const Question = require('./models/question.js')
+  const Role = require('./models/role.js')
+  const Section = require('./models/section.js')
+  const User = require('./models/user.js')
+  const database = require('./db.js')
+  const UserPost = require('./models/userPost.js')
+  const UserQuestion = require('./models/userQuestions.js')
+  const UserRole = require('./models/userRole.js')
+  const UserSection = require('./models/userSection.js')
+  const tokenEfemero = require('./models/tokenEfemero.js')
 
   try {
     await database.sync({ alter: true })

@@ -105,6 +105,7 @@ const listarUsuarios = async (req, res) => {
 
 const gerenciarUsuario = async (req, res) => {
   try {
+    console.log(req.body)
     const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
     if (!userFound) genareteError('Você não está logado!', 401)

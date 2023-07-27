@@ -8,6 +8,5 @@ export const SET_USUARIOS = async (state, payload) => {
       item.emailExibicao = item.email || 'Sem e-mail'
     })
   }
-  window.console.log(payload)
   state.usuarios = payload
 }

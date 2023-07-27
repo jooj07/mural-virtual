@@ -20,7 +20,8 @@
           class="elevation-0 rounded-lg"
         >
           <v-card-title class="d-flex justify-space-between">
-            <p>Edição de usuário</p>
+            <p v-if="alterandoSenha">Alterar Senha</p>
+            <p v-else>Edição de usuário</p>
 
             <v-menu offset-y :close-on-click="false">
               <template v-slot:activator="{ on, attrs }">
@@ -29,7 +30,7 @@
                 </v-btn>
               </template>
               <v-list dense>
-                <v-list-item @click="alteracaoSenha()">
+                <v-list-item @click="alterandoSenha =!alterandoSenha">
                   <v-list-item-icon>
                     <v-icon>mdi-key</v-icon>
                   </v-list-item-icon>
@@ -43,7 +44,9 @@
                     <v-icon v-else> mdi-account</v-icon>
                   </v-list-item-icon>
                   <v-list-item-content>
-                    <v-list-item-title v-if="editando.active" >Desativar Usuário</v-list-item-title>
+                    <v-list-item-title v-if="editando.active"
+                      >Desativar Usuário</v-list-item-title
+                    >
                     <v-list-item-title v-else>Ativar Usuário</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
@@ -51,7 +54,7 @@
             </v-menu>
           </v-card-title>
           <v-card-text>
-            <v-form>
+            <v-form v-if="!alterandoSenha">
               <validation-observer ref="formularioEdicaoUsuario">
                 <v-container>
                   <v-row>
@@ -145,8 +148,77 @@
                 </v-container>
               </validation-observer>
             </v-form>
+            <v-form v-else>
+              <validation-observer ref="formularioEdicaoSenha">
+                <v-container>
+                  <v-row>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Senha"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="alteracaoSenha"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          clearable
+                          label="Senha"
+                          class="my-2 rounded-lg"
+                          outlined
+                          :type="!exibirSenha ? 'password':'text'"
+                          :append-icon="!exibirSenha ? 'mdi-eye' : 'mdi-eye-off'"
+                          @click:append="exibirSenha = !exibirSenha"
+                          @keydown.enter='alterarSenhaUsuario()'
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Confirmação de Senha"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="alteracaoSenhaConfirmacao"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          clearable
+                          label="Confirmação de Senha"
+                          class="my-2 rounded-lg"
+                          outlined
+                          :type="!exibirSenha ? 'password':'text'"
+                          :append-icon="!exibirSenha ? 'mdi-eye' : 'mdi-eye-off'"
+                          @click:append="exibirSenha = !exibirSenha"
+                          @keydown.enter='alterarSenhaUsuario()'
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+
+                  </v-row>
+                </v-container>
+              </validation-observer>
+            </v-form>
           </v-card-text>
-          <v-card-actions>
+          <v-card-actions v-if="alterandoSenha">
+            <v-spacer />
+            <v-btn
+              color="error"
+              text
+              @click="
+                (alterandoSenha = false),
+                (alteracaoSenhaConfirmacao = null),
+                (alteracaoSenhaConfirmacao = null),
+                ($refs.formularioEdicaoSenha.reset())
+              "
+            >
+              Cancelar
+            </v-btn>
+            <v-btn color="primary" text @click="alterarSenhaUsuario()">
+              Salvar
+            </v-btn>
+          </v-card-actions>
+          <v-card-actions v-if="!alterandoSenha">
             <v-spacer />
             <v-btn
               color="error"
@@ -173,6 +245,7 @@
 
 <script>
 import { mapState, mapActions } from 'vuex'
+import CryptoJS from 'crypto-js'
 export default {
   name: 'Usuarios',
   data: () => ({
@@ -181,23 +254,38 @@ export default {
       { id: 3, name: 'Administrador' },
       { id: 2, name: 'Servidor' }
     ],
+    alteracaoSenha: null,
+    alteracaoSenhaConfirmacao: null,
+    exibirSenha: false,
+    alterandoSenha: false,
     pagina: 1,
     editando: null,
     editardata: false,
     dataNova: null,
     colunasTabela: [
-      { text: 'Opções', value: 'actions', sortable: false },
+      { text: 'Opções', value: 'actions', width: '150', sortable: false },
+      { text: 'Matrícula', width: '130', value: 'login', align: 'left' },
       {
-        text: 'Código',
-        align: 'start',
-        value: 'id'
+        text: 'Acessos',
+        width: '150',
+        value: 'rolesExibicao',
+        align: 'center'
       },
-      { text: 'Matrícula', value: 'login' },
-      { text: 'Nome', value: 'name' },
-      { text: 'E-mail', value: 'emailExibicao' },
-      { text: 'Acessos', value: 'rolesExibicao' },
-      { text: 'Expira em', value: 'expiresAtExibicao' },
-      { text: 'Data do Cadastro', value: 'createdAtExibicao' }
+      { text: 'Nome', width: '150', value: 'name', align: 'left' },
+      { text: 'E-mail', width: '170', value: 'emailExibicao', align: 'left' },
+      {
+        text: 'Expira em',
+        width: '150',
+        value: 'expiresAtExibicao',
+        align: 'center'
+      },
+      {
+        text: 'Data do Cadastro',
+        width: '150',
+        value: 'createdAtExibicao',
+        align: 'center'
+      },
+      {}
     ]
   }),
   async created () {
@@ -215,11 +303,9 @@ export default {
       'excluirUsuario'
     ]),
     async listagemUsuarios () {
-      window.console.log(localStorage.getItem('usuarioLogado'))
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
         ? JSON.parse(localStorage.getItem('usuarioLogado'))
         : null
-      window.console.log('usuarioLocalstorage', usuarioLocalstorage)
       if (usuarioLocalstorage) {
         await this.listarUsuarios({
           userId: usuarioLocalstorage.id || null,
@@ -232,16 +318,22 @@ export default {
       this.editando.createdAt = this.$dayjs(this.editando.createdAt).format(
         'YYYY-MM-DD'
       )
+      this.editando.expires = this.editando.expires
+        ? this.$dayjs(this.editando.expires).format('YYYY-MM-DD')
+        : null
       this.editando.roles = this.editando.roles.map((item) => item.id)
     },
     async salvarAlteracoes () {
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
         ? JSON.parse(localStorage.getItem('usuarioLogado'))
         : null
-      window.console.log(this.$store)
       const form = {}
       if (this.editardata) {
-        if (this.$dayjs(this.dataNova).isBefore(this.$dayjs())) {
+        if (
+          this.$dayjs(this.dataNova).isBefore(
+            this.$dayjs().format('YYYY-MM-DD')
+          )
+        ) {
           // TODO arrumar o dayjs
           this.$store.commit('SET_SNACKBAR', {
             timeout: 3000,
@@ -251,7 +343,9 @@ export default {
           })
           return
         } else {
-          form.expires = this.$dayjs(this.dataNova).format('YYYY-MM-DD')
+          form.expires = this.$dayjs(this.dataNova)
+            .add(1, 'day')
+            .format('YYYY-MM-DD')
         }
       }
       if (await this.$refs.formularioEdicaoUsuario.validate()) {
@@ -273,7 +367,6 @@ export default {
       }
     },
     async usuarioExclusao (event) {
-      window.console.log(event)
       const { id } = event || null
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
         ? JSON.parse(localStorage.getItem('usuarioLogado'))
@@ -287,11 +380,28 @@ export default {
         await this.listagemUsuarios()
       }
     },
-    alteracaoSenha () {
-      this.$router.push({
-        name: 'AlterarSenha',
-        params: { id: this.editando.id }
-      })
+    async alterarSenhaUsuario () {
+      window.console.log(this.$refs)
+      if (this.alteracaoSenha === this.alteracaoSenhaConfirmacao) {
+        if (await this.$refs.formularioEdicaoSenha.validate()) {
+          const hashedPassword = CryptoJS.AES.encrypt(
+            this.alteracaoSenha,
+            process.env.VUE_APP_CHAVE_TRADUTORA
+          ).toString()
+          window.console.log(hashedPassword)
+        } else {
+          setTimeout(() => {
+            this.$refs.formularioEdicaoSenha.reset()
+          }, 1500)
+        }
+      } else {
+        this.$store.commit('SET_SNACKBAR', {
+          timeout: 3000,
+          color: 'error',
+          snackbar: true,
+          text: 'As senhas não conferem'
+        })
+      }
     },
     formatarData (data) {
       return this.$dayjs(data).format('DD/MM/YYYY')

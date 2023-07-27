@@ -1,11 +1,9 @@
 import { instance } from '@/plugins/axios'
 
 export const listarUsuarios = async ({ commit }, parametros) => {
-  window.console.log(parametros)
   try {
     commit('SET_LOADING', true, { root: true })
     const dados = await instance.get('/api/usuarios', { params: parametros })
-    window.console.log(dados)
     if (dados && dados && dados.status && dados.status !== 404) {
       await commit('SET_USUARIOS', dados.data)
     }
@@ -30,7 +28,6 @@ export const exibirPosts = async ({ commit }, id) => {
   try {
     commit('SET_LOADING', true, { root: true })
     const dados = await instance.get('/api/posts/list/' + id)
-    window.console.log(dados)
     if (dados && dados && dados.status && dados.status !== 404) {
       return dados.data && dados.data.rows && dados.data.rows.length ? dados.data.rows[0] : null
     }
@@ -75,7 +72,6 @@ export const editarUsuario = async ({ commit }, body) => {
   }
 }
 export const excluirUsuario = async ({ commit }, parametros) => {
-  window.console.log(parametros)
   try {
     commit('SET_LOADING', true, { root: true })
     await instance.delete('/api/usuarios/excluir', { params: { ...parametros } })

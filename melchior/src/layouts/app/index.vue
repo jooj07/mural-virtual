@@ -370,6 +370,7 @@
               </v-card>
             </v-expand-transition>
             <v-list-item
+            v-if="usuarioAdmin"
               link
               @click="$vuetify.theme.dark = !$vuetify.theme.dark"
             >
@@ -378,7 +379,7 @@
               </v-list-item-icon>
               <v-list-item-title>Mudar tema</v-list-item-title>
             </v-list-item>
-            <v-list-item link :to="'/dashboard'">
+            <v-list-item v-if="usuarioAdmin" link :to="'/dashboard'">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-cog</v-icon>
               </v-list-item-icon>
@@ -393,7 +394,7 @@
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-account-key</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Área do Servidor</v-list-item-title>
+              <v-list-item-title>Acesso do Servidor</v-list-item-title>
             </v-list-item>
             <v-list-item v-if="usuarioLogado" link title="Sair" @click="sair()">
               <v-list-item-icon>
@@ -403,7 +404,7 @@
             </v-list-item>
           </v-list>
           <v-spacer />
-          <v-list v-if="$route.name === 'Categorias'" nav dense>
+          <v-list v-if="$route.name === 'Categorias'  && usuarioAdmin" nav dense>
             <v-list-item
               link
               @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
@@ -415,7 +416,7 @@
               <v-list-item-title>Nova Categoria</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-list v-if="$route.name === 'Departamentos'" nav dense>
+          <v-list v-if="$route.name === 'Departamentos' && usuarioAdmin" nav dense>
             <v-list-item
               link
               @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
@@ -428,7 +429,7 @@
             </v-list-item>
           </v-list>
 
-          <v-list nav dense>
+          <v-list v-if="usuarioEstaLogado" nav dense>
             <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-pencil-plus</v-icon>
@@ -478,7 +479,7 @@
           style="width: 100% !important"
         >
           <v-btn
-            v-if="$route.name === 'Categorias'"
+            v-if="$route.name === 'Categorias' && usuarioAdmin"
             block
             x-large
             color="tertiary"
@@ -491,7 +492,7 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
           <v-btn
-            v-if="$route.name === 'Departamentos'"
+            v-if="$route.name === 'Departamentos' && usuarioAdmin"
             block
             large
             color="tertiary"
@@ -504,7 +505,7 @@
             <v-icon>mdi-plus</v-icon>
           </v-btn>
           <v-btn
-            v-if="$route.name === 'Feed'"
+            v-if="$route.name === 'Feed' && usuarioEstaLogado"
             block
             large
             color="tertiary"
@@ -553,6 +554,7 @@
             Alterar tema <v-icon>mdi-theme-light-dark</v-icon>
           </v-btn>
           <v-btn
+          v-if="usuarioAdmin"
             block
             large
             color="tertiary"
@@ -751,6 +753,24 @@ export default {
         this.departamentoSelecionado.length ===
         this.departamentosListadosFiltro.length
       )
+    },
+    usuarioEstaLogado () {
+      window.console.log(this.usuarioLogado)
+      if (this.usuarioLogado) { return true } else { return false }
+    },
+    usuarioAdmin () {
+      if (this.usuarioLogado && this.usuarioLogado.acessos && this.usuarioLogado.acessos.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    },
+    usuarioServidor () {
+      if (this.usuarioLogado && this.usuarioLogado.acessos && this.usuarioLogado.acessos.includes('servidor')) {
+        return true
+      } else {
+        return false
+      }
     },
     alguns () {
       return this.categoriaSelecionada.length > 0 && !this.todos

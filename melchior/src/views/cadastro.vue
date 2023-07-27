@@ -99,7 +99,6 @@ export default {
   methods: {
     ...mapActions('loginCadastro', ['cadastrar']),
     async cadastro () {
-      window.console.log(process.env.VUE_APP_CHAVE_TRADUTORA)
       if (await this.$refs.form.validate()) {
         const hashedPassword = CryptoJS.AES.encrypt(
           this.senha,

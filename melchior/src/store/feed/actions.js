@@ -4,7 +4,6 @@ export const listarPosts = async ({ commit }, parametros) => {
   try {
     commit('SET_LOADING', true, { root: true })
     const dados = await instance.get('/api/posts/list', { params: parametros })
-    window.console.log(dados)
     if (dados && dados && dados.status && dados.status !== 404) {
       await commit('SET_POSTS', dados.data)
     }
@@ -29,7 +28,6 @@ export const exibirPosts = async ({ commit }, id) => {
   try {
     commit('SET_LOADING', true, { root: true })
     const dados = await instance.get('/api/posts/list/' + id)
-    window.console.log(dados)
     if (dados && dados && dados.status && dados.status !== 404) {
       return dados.data && dados.data.rows && dados.data.rows.length ? dados.data.rows[0] : null
     }

@@ -4,6 +4,7 @@ const TokenEfemero = require('../models/tokenEfemero')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 const CryptoJS = require('crypto-js')
+const dayjs = require('dayjs')
 const {
   genareteError,
   returnError
@@ -78,7 +79,13 @@ const signIn = async (req, res) => {
     if (!checarSenha) {
       genareteError('Senha incorreta', 401)
     }
-
+    if (usuarioEncontrado && usuarioEncontrado.expires) {
+      const dataAtual = dayjs()
+      const dataExpiracao = dayjs(usuarioEncontrado.expires)
+      if (dataAtual.isAfter(dataExpiracao)) {
+        genareteError('Usuário expirado!', 401)
+      }
+    }
     const token = jwt.sign({
       id: usuarioEncontrado.id
     }, config.chaveSecreta, {

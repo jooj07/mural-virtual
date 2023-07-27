@@ -10,7 +10,7 @@
       style="word-wrap: break-word"
       >{{ titulo }}</v-card-title
     >
-    <v-card-actions class="text-h5 font-weight-black" v-if="contador"
+    <v-card-actions class="text-h3 font-weight-black" v-if="contador"
       ><v-spacer />{{ contador }}</v-card-actions
     >
   </v-card>
