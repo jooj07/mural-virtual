@@ -5,6 +5,8 @@ const Role = require('../models/role')
 const CategoryModel = require('../models/category')
 const SectionModel = require('../models/section')
 const { QueryTypes } = require('sequelize')
+const CryptoJS = require('crypto-js')
+const bcrypt = require('bcryptjs')
 const _ = require('lodash')
 const db = database
 const Op = db.Sequelize.Op
@@ -208,6 +210,41 @@ const excluirUsuario = async (req, res) => {
   }
 }
 
+const alterarSenha = async (req, res) => {
+  try {
+    const userRequest = req.body.userId
+    const userFound = await User.findByPk(Number(userRequest))
+
+    if (!userFound) genareteError('Você não está logado!', 401)
+    const userRoles = await userFound.getRole()
+    const isAdm = userRoles.find(element => {
+      if (element.name.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    })
+    if (isAdm) {
+      const userFound = await User.findByPk(Number(req.body.id))
+      if (!userFound) genareteError('Usuário não encontrado!', 404)
+
+      const passphrase = process.env.CHAVE_TRADUTORA
+      const bytes = CryptoJS.AES.decrypt(req.body.password, passphrase)
+      req.body.password = bytes.toString(CryptoJS.enc.Utf8)
+      const senhaEncript = bcrypt.hashSync(req.body.password, 8)
+
+      await userFound.update({
+        password: senhaEncript
+      })
+    } else {
+      genareteError('Você não tem permissão para acessar isso!', 401)
+    }
+    return res.status(200).send('Senha alterada com sucesso!')
+  } catch (error) {
+    returnError(error, res)
+  }
+}
+
 const allAccess = async (req, res) => {
   res.status(200).send('Public Content.')
 }
@@ -231,5 +268,6 @@ module.exports = {
   moderatorBoard,
   listarUsuarios,
   gerenciarUsuario,
-  excluirUsuario
+  excluirUsuario,
+  alterarSenha
 }

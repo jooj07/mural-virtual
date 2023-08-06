@@ -17,6 +17,7 @@ const snackbar = () => import('./components/snackbar.vue')
 const cardExibicao = () => import('./components/card_exibicao.vue')
 const botaoAviso = () => import('./components/botao_aviso.vue')
 const tabela = () => import('./components/tabela.vue')
+const formulario = () => import('./components/formulario.vue')
 
 Vue.component('loading', loading)
 Vue.component('editor', VueEditor)
@@ -26,6 +27,7 @@ Vue.component('validation-observer', ValidationObserver)
 Vue.component('card-exibicao', cardExibicao)
 Vue.component('botao-aviso', botaoAviso)
 Vue.component('tabela', tabela)
+Vue.component('formulario', formulario)
 
 new Vue({
   router,

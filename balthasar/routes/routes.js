@@ -154,6 +154,12 @@ module.exports = function (app) {
       controllersUsuario.gerenciarUsuario(req, res)
     })
 
+  app.put('/api/usuarios/alterarSenha',
+    [authJwt.checkToken, authJwt.checkAdm],
+    (req, res, next) => {
+      controllersUsuario.alterarSenha(req, res)
+    })
+
   app.delete('/api/usuarios/excluir',
     [authJwt.checkToken, authJwt.checkAdm],
     (req, res, next) => {

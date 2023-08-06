@@ -115,7 +115,7 @@ const deleteCategory = async (req, res) => {
       genareteError('Categoria não encontrada para exclusão!', 404)
     }
 
-    await categoryFound.destroy()
+    await categoryFound.destroy(req.params.id)
 
     return res.status(200).send('Categoria excluída com sucesso')
   } catch (error) {

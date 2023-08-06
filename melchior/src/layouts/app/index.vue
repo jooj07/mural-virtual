@@ -175,11 +175,11 @@
                     </v-col>
                     <v-col cols="12">
                       <p>Conteúdo da postagem</p>
-                      <editor v-model="conteudo" />
+                      <editor v-model="conteudo" :editor-toolbar="customToolbar"/>
                     </v-col>
                     <v-col cols="12">
                       <p>Informações extras</p>
-                      <editor v-model="informacoesExtras" />
+                      <editor v-model="informacoesExtras" :editor-toolbar="customToolbar"/>
                     </v-col>
                   </v-row>
                 </v-form>
@@ -685,6 +685,21 @@ import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   name: 'feed',
   data: () => ({
+    customToolbar: [
+      ['bold', 'italic', 'underline', 'strike'], // Estilos de texto
+      ['blockquote', 'code-block'], // Blocos de texto
+      [{ header: 1 }, { header: 2 }], // Cabeçalhos
+      [{ list: 'ordered' }, { list: 'bullet' }], // Listas ordenadas e não ordenadas
+      [{ script: 'sub' }, { script: 'super' }], // Subscrito e sobrescrito
+      [{ indent: '-1' }, { indent: '+1' }], // Recuo
+      [{ direction: 'rtl' }], // Direção do texto
+      [{ size: ['small', false, 'large', 'huge'] }], // Tamanho da fonte
+      [{ header: [1, 2, 3, 4, 5, 6, false] }], // Tamanhos de cabeçalho personalizados
+      [{ color: [] }, { background: [] }], // Cores do texto e do fundo
+      [{ font: [] }], // Família de fontes
+      [{ align: [] }], // Alinhamento
+      ['clean'] // Limpar formatação
+    ],
     // post
     categoriaSelecionadaPost: [],
     departamentoSelecionadoPost: [],

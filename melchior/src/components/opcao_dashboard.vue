@@ -1,6 +1,6 @@
 <template>
   <v-card
-    :to="link"
+    :to="link === '/dashboard' ? '' : link"
     height="200px"
     class="d-flex flex-column justify-space-between rounded-xl elevation-1"
     outlined
@@ -11,7 +11,9 @@
       >{{ titulo }}</v-card-title
     >
     <v-card-actions class="text-h3 font-weight-black" v-if="contador"
-      ><v-spacer />{{ contador }}</v-card-actions
+      >
+      <v-icon v-if="link !== '/dashboard'" color="primary" size="40">mdi-arrow-top-right</v-icon>
+      <v-spacer />{{ contador }}</v-card-actions
     >
   </v-card>
 </template>

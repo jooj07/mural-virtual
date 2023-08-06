@@ -19,7 +19,7 @@ export default new Vuetify({
         warning: '#FFC107'
       },
       dark: {
-        primary: '#01610B',
+        primary: '#018f10',
         secondary: '#01780C',
         tertiary: '#36AD42',
         quaternary: '#fafafa',

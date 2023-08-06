@@ -15,228 +15,333 @@
         />
       </v-col>
       <v-col v-else>
-        <v-card
-          :outlined="$vuetify.breakpoint.mobile ? false : true"
-          class="elevation-0 rounded-lg"
-        >
-          <v-card-title class="d-flex justify-space-between">
-            <p v-if="alterandoSenha">Alterar Senha</p>
-            <p v-else>Edição de usuário</p>
+        <v-card flat>
+          <v-toolbar
+            v-if="$vuetify.breakpoint.width > 700"
+            color="primary"
+            dark
+            extended
+            flat
+          >
+          </v-toolbar>
 
-            <v-menu offset-y :close-on-click="false">
-              <template v-slot:activator="{ on, attrs }">
-                <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
-                  <v-icon>mdi-dots-vertical</v-icon>
-                </v-btn>
-              </template>
-              <v-list dense>
-                <v-list-item @click="alterandoSenha =!alterandoSenha">
-                  <v-list-item-icon>
-                    <v-icon>mdi-key</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title>Alterar Senha</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-                <v-list-item @click="editando.active = !editando.active">
-                  <v-list-item-icon>
-                    <v-icon v-if="editando.active">mdi-account-cancel</v-icon>
-                    <v-icon v-else> mdi-account</v-icon>
-                  </v-list-item-icon>
-                  <v-list-item-content>
-                    <v-list-item-title v-if="editando.active"
-                      >Desativar Usuário</v-list-item-title
-                    >
-                    <v-list-item-title v-else>Ativar Usuário</v-list-item-title>
-                  </v-list-item-content>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </v-card-title>
-          <v-card-text>
-            <v-form v-if="!alterandoSenha">
-              <validation-observer ref="formularioEdicaoUsuario">
-                <v-container>
-                  <v-row>
-                    <v-col cols="12" md="6">
-                      <validation-provider
-                        name="Nome"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="editando.name"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          label="Nome"
-                          outlined
-                        />
-                      </validation-provider>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <validation-provider
-                        name="Email"
-                        rules="email"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="editando.email"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          label="E-mail"
-                          type="email"
-                          outlined
-                        />
-                      </validation-provider>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <validation-provider
-                        name="Acessos"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-select
-                          v-model="editando.roles"
-                          :items="acessos"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          label="Acessos"
-                          item-value="id"
-                          item-text="name"
-                          multiple
-                          outlined
-                        />
-                      </validation-provider>
-                    </v-col>
-                    <v-col
-                      cols="12"
-                      md="6"
-                      :class="
-                        editardata
-                          ? 'd-flex align-center justify-start flex-column ma-0'
-                          : 'd-flex align-center justify-start flex-row ma-0'
-                      "
-                    >
-                      <p class="d-flex align-center justify-start ma-0">
-                        <span
-                          v-if="editando.expires && !editardata"
-                          class="text-h6 font-weight-black"
-                          >Data de expiração:
-                          {{ formatarData(editando.expires) }}</span
-                        >
-                        <span v-if="!editando.expires && !editardata"
-                          >Sem data de expiração definida</span
-                        >
-                      </p>
-                      <v-btn
-                        color="primary"
-                        icon
-                        @click="editardata = !editardata"
-                      >
-                        <v-icon v-if="!editardata">mdi-pencil</v-icon>
-                        <v-icon v-else>mdi-pencil-off</v-icon>
-                      </v-btn>
-                      <v-expand-transition>
-                        <v-date-picker
-                          v-if="editardata"
-                          v-model="dataNova"
-                          active-picker
-                        ></v-date-picker>
-                      </v-expand-transition>
-                    </v-col>
-                  </v-row>
-                </v-container>
-              </validation-observer>
-            </v-form>
-            <v-form v-else>
-              <validation-observer ref="formularioEdicaoSenha">
-                <v-container>
-                  <v-row>
-                    <v-col cols="12">
-                      <validation-provider
-                        name="Senha"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="alteracaoSenha"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          clearable
-                          label="Senha"
-                          class="my-2 rounded-lg"
-                          outlined
-                          :type="!exibirSenha ? 'password':'text'"
-                          :append-icon="!exibirSenha ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="exibirSenha = !exibirSenha"
-                          @keydown.enter='alterarSenhaUsuario()'
-                        ></v-text-field>
-                      </validation-provider>
-                    </v-col>
-                    <v-col cols="12">
-                      <validation-provider
-                        name="Confirmação de Senha"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="alteracaoSenhaConfirmacao"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          clearable
-                          label="Confirmação de Senha"
-                          class="my-2 rounded-lg"
-                          outlined
-                          :type="!exibirSenha ? 'password':'text'"
-                          :append-icon="!exibirSenha ? 'mdi-eye' : 'mdi-eye-off'"
-                          @click:append="exibirSenha = !exibirSenha"
-                          @keydown.enter='alterarSenhaUsuario()'
-                        ></v-text-field>
-                      </validation-provider>
-                    </v-col>
+          <v-card
+            class="mx-auto elevation-0 rounded-lg"
+            outlined
+            max-width="700"
+            style="margin-top: -64px"
+          >
+            <v-toolbar v-if="$vuetify.breakpoint.width > 700" flat>
+              <v-toolbar-title class="d-flex flex-column align-center">
+                <p v-if="alterandoSenha" class="text-h4 font-weight-black ma-0">
+                  Alterar Senha
+                </p>
+                <p v-else class="text-h4 font-weight-black ma-0">
+                  Edição de usuário
+                </p>
+              </v-toolbar-title>
+              <v-spacer></v-spacer>
 
-                  </v-row>
-                </v-container>
-              </validation-observer>
-            </v-form>
-          </v-card-text>
-          <v-card-actions v-if="alterandoSenha">
-            <v-spacer />
-            <v-btn
-              color="error"
-              text
-              @click="
-                (alterandoSenha = false),
-                (alteracaoSenhaConfirmacao = null),
-                (alteracaoSenhaConfirmacao = null),
-                ($refs.formularioEdicaoSenha.reset())
-              "
-            >
-              Cancelar
-            </v-btn>
-            <v-btn color="primary" text @click="alterarSenhaUsuario()">
-              Salvar
-            </v-btn>
-          </v-card-actions>
-          <v-card-actions v-if="!alterandoSenha">
-            <v-spacer />
-            <v-btn
-              color="error"
-              text
-              @click="
-                (editando = null),
-                  (editardata = false),
-                  (dataNova = null),
-                  (pagina = 1),
-                  listagemUsuarios()
-              "
-            >
-              Cancelar
-            </v-btn>
-            <v-btn color="primary" text @click="salvarAlteracoes">
-              Salvar
-            </v-btn>
-          </v-card-actions>
+              <v-menu offset-y :close-on-click="true">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list dense>
+                  <v-list-item @click="alterandoSenha = !alterandoSenha">
+                    <v-list-item-icon>
+                      <v-icon>mdi-key</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Alterar Senha</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="editando.active = !editando.active">
+                    <v-list-item-icon>
+                      <v-icon v-if="editando.active" color="error"
+                        >mdi-account-cancel</v-icon
+                      >
+                      <v-icon v-else color="primary"> mdi-account-check</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title v-if="editando.active"
+                        >Desativar Usuário</v-list-item-title
+                      >
+                      <v-list-item-title v-else
+                        >Ativar Usuário</v-list-item-title
+                      >
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-toolbar>
+            <v-divider></v-divider>
+            <v-card-title v-if="$vuetify.breakpoint.width < 700">
+              <p v-if="alterandoSenha" class="font-weight-black">
+                Alterar Senha
+              </p>
+              <p v-else class="font-weight-black">Edição de usuário</p>
+              <v-spacer></v-spacer>
+              <v-menu offset-y :close-on-click="true">
+                <template v-slot:activator="{ on, attrs }">
+                  <v-btn color="primary" dark icon v-bind="attrs" v-on="on">
+                    <v-icon>mdi-dots-vertical</v-icon>
+                  </v-btn>
+                </template>
+                <v-list dense>
+                  <v-list-item @click="alterandoSenha = !alterandoSenha">
+                    <v-list-item-icon>
+                      <v-icon>mdi-key</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title>Alterar Senha</v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-list-item @click="editando.active = !editando.active">
+                    <v-list-item-icon>
+                      <v-icon v-if="editando.active" color="error"
+                        >mdi-account-cancel</v-icon
+                      >
+                      <v-icon v-else color="primary"> mdi-account-check</v-icon>
+                    </v-list-item-icon>
+                    <v-list-item-content>
+                      <v-list-item-title v-if="editando.active"
+                        >Desativar Usuário</v-list-item-title
+                      >
+                      <v-list-item-title v-else
+                        >Ativar Usuário</v-list-item-title
+                      >
+                    </v-list-item-content>
+                  </v-list-item>
+                </v-list>
+              </v-menu>
+            </v-card-title>
+            <v-card-text>
+              <v-form v-if="!alterandoSenha">
+                <validation-observer ref="formularioEdicaoUsuario">
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12" md="12" sm="12" lg="12" xl="12">
+                        <v-text-field
+                          :value="editando.active ? 'Ativo' : 'Inativo'"
+                          hide-details
+                          disabled
+                          dense
+                          label="Estado do Cadastro"
+                          outlined
+                        />
+                      </v-col>
+                      <v-col cols="12" md="12" sm="12" lg="12" xl="12">
+                        <v-text-field
+                          v-model="editando.login"
+                          hide-details
+                          disabled
+                          dense
+                          label="Login"
+                          outlined
+                        />
+                      </v-col>
+                      <v-col cols="12" md="12" sm="12" lg="12" xl="12">
+                        <validation-provider
+                          name="Nome"
+                          rules="required"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editando.name"
+                            :hide-details="!(errors && errors.length)"
+                            :error-messages="errors"
+                            dense
+                            label="Nome"
+                            outlined
+                          />
+                        </validation-provider>
+                      </v-col>
+                      <v-col cols="12" md="12" sm="12" lg="12" xl="12">
+                        <validation-provider
+                          name="Email"
+                          rules="email"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="editando.email"
+                            :hide-details="!(errors && errors.length)"
+                            :error-messages="errors"
+                            :label="
+                              editando.email
+                                ? 'E-mail'
+                                : 'E-mail (Não definido)'
+                            "
+                            dense
+                            type="email"
+                            outlined
+                          />
+                        </validation-provider>
+                      </v-col>
+                      <v-col cols="12" md="12" sm="12" lg="12" xl="12">
+                        <validation-provider
+                          name="Acessos"
+                          rules="required"
+                          v-slot="{ errors }"
+                        >
+                          <v-select
+                            v-model="editando.roles"
+                            :items="acessos"
+                            :hide-details="!(errors && errors.length)"
+                            :error-messages="errors"
+                            dense
+                            label="Acessos"
+                            item-value="id"
+                            item-text="name"
+                            multiple
+                            outlined
+                          />
+                        </validation-provider>
+                      </v-col>
+                      <v-col
+                        cols="12"
+                        md="12"
+                        sm="12"
+                        lg="12"
+                        xl="12"
+                        :class="
+                          editardata
+                            ? 'd-flex align-center justify-start flex-column ma-0'
+                            : 'd-flex align-center justify-start flex-row ma-0'
+                        "
+                      >
+                        <p class="d-flex align-center justify-start ma-0">
+                          <span
+                            v-if="(editando.expires || dataNova) && !editardata"
+                            class="text-button"
+                            >Data de expiração:
+                            {{
+                              dataNova
+                                ? formatarData(dataNova)
+                                : formatarData(editando.expires)
+                            }}</span
+                          >
+                          <span
+                            v-if="!editando.expires && !editardata && !dataNova"
+                            class="text-button"
+                            >Sem data de expiração definida</span
+                          >
+                        </p>
+                        <v-btn
+                          color="primary"
+                          icon
+                          @click="editardata = !editardata"
+                        >
+                          <v-icon v-if="!editardata">mdi-pencil</v-icon>
+                          <v-icon v-else>mdi-pencil-off</v-icon>
+                        </v-btn>
+                        <v-expand-transition>
+                          <v-date-picker
+                            v-if="editardata"
+                            v-model="dataNova"
+                            active-picker
+                          ></v-date-picker>
+                        </v-expand-transition>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </validation-observer>
+              </v-form>
+              <v-form v-else>
+                <validation-observer ref="formularioEdicaoSenha">
+                  <v-container>
+                    <v-row>
+                      <v-col cols="12">
+                        <validation-provider
+                          name="Senha"
+                          rules="required"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="alteracaoSenha"
+                            :hide-details="!(errors && errors.length)"
+                            :error-messages="errors"
+                            clearable
+                            label="Senha"
+                            class="my-2 rounded-lg"
+                            outlined
+                            :type="!exibirSenha ? 'password' : 'text'"
+                            :append-icon="
+                              !exibirSenha ? 'mdi-eye' : 'mdi-eye-off'
+                            "
+                            @click:append="exibirSenha = !exibirSenha"
+                            @keydown.enter="alterarSenhaUsuario()"
+                          ></v-text-field>
+                        </validation-provider>
+                      </v-col>
+                      <v-col cols="12">
+                        <validation-provider
+                          name="Confirmação de Senha"
+                          rules="required"
+                          v-slot="{ errors }"
+                        >
+                          <v-text-field
+                            v-model="alteracaoSenhaConfirmacao"
+                            :hide-details="!(errors && errors.length)"
+                            :error-messages="errors"
+                            clearable
+                            label="Confirmação de Senha"
+                            class="my-2 rounded-lg"
+                            outlined
+                            :type="!exibirSenha ? 'password' : 'text'"
+                            :append-icon="
+                              !exibirSenha ? 'mdi-eye' : 'mdi-eye-off'
+                            "
+                            @click:append="exibirSenha = !exibirSenha"
+                            @keydown.enter="alterarSenhaUsuario()"
+                          ></v-text-field>
+                        </validation-provider>
+                      </v-col>
+                    </v-row>
+                  </v-container>
+                </validation-observer>
+              </v-form>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions v-if="alterandoSenha">
+              <v-spacer />
+              <v-btn
+                color="error"
+                text
+                @click="
+                  (alterandoSenha = false),
+                    (alteracaoSenhaConfirmacao = null),
+                    (alteracaoSenhaConfirmacao = null),
+                    $refs.formularioEdicaoSenha.reset()
+                "
+              >
+                Cancelar
+              </v-btn>
+              <v-btn color="primary" text @click="alterarSenhaUsuario()">
+                Salvar Alterações
+              </v-btn>
+            </v-card-actions>
+            <v-card-actions v-if="!alterandoSenha">
+              <v-spacer />
+              <v-btn
+                color="error"
+                text
+                @click="
+                  (editando = null),
+                    (editardata = false),
+                    (dataNova = null),
+                    (pagina = 1),
+                    listagemUsuarios()
+                "
+              >
+                Cancelar
+              </v-btn>
+              <v-btn color="primary" text @click="salvarAlteracoes">
+                Salvar Alterações
+              </v-btn>
+            </v-card-actions>
+          </v-card>
         </v-card>
       </v-col>
     </v-row>
@@ -300,7 +405,8 @@ export default {
     ...mapActions('usuarios', [
       'listarUsuarios',
       'editarUsuario',
-      'excluirUsuario'
+      'excluirUsuario',
+      'alterarSenha'
     ]),
     async listagemUsuarios () {
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
@@ -328,7 +434,7 @@ export default {
         ? JSON.parse(localStorage.getItem('usuarioLogado'))
         : null
       const form = {}
-      if (this.editardata) {
+      if (this.dataNova) {
         if (
           this.$dayjs(this.dataNova).isBefore(
             this.$dayjs().format('YYYY-MM-DD')
@@ -389,6 +495,17 @@ export default {
             process.env.VUE_APP_CHAVE_TRADUTORA
           ).toString()
           window.console.log(hashedPassword)
+          const resposta = await this.alterarSenha({
+            userId: this.$store.state.loginCadastro.usuarioLogado.id || null,
+            id: this.editando.id,
+            password: hashedPassword
+          })
+          if (resposta) {
+            this.alterandoSenha = false
+            this.alteracaoSenhaConfirmacao = null
+            this.alteracaoSenha = null
+            this.$refs.formularioEdicaoSenha.reset()
+          }
         } else {
           setTimeout(() => {
             this.$refs.formularioEdicaoSenha.reset()
