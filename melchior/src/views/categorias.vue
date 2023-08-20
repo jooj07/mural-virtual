@@ -27,6 +27,7 @@
         />
       </v-col>
     </v-row>
+
     <v-row
       v-if="
         !controlador.includes('novaCategoria') &&
@@ -38,6 +39,7 @@
     >
       nada encontrado
     </v-row>
+
     <v-row
       v-if="
         !controlador.includes('novaCategoria') &&
@@ -238,6 +240,7 @@ export default {
       'salvarCategoria',
       'deletarCategoria'
     ]),
+    ...mapActions(['obterOpcoes']),
     async categoriasRequisicao (pagina) {
       await this.listarCategorias({ offset: pagina * 10 - 10 })
     },
@@ -264,6 +267,7 @@ export default {
           if (resposta) {
             this.restaurarFormulario()
             await this.categoriasRequisicao(this.pagina)
+            await this.obterOpcoes()
           }
         }
       }
@@ -282,6 +286,7 @@ export default {
       if (resposta) {
         this.restaurarFormulario()
         await this.categoriasRequisicao(this.pagina)
+        await this.obterOpcoes()
       }
     }
   },

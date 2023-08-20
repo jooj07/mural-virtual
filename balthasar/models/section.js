@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize')
 const database = require('../db')
+// const { stubFalse } = require('lodash')
 
 const Section = database.define('Section', {
   id: {
@@ -9,7 +10,7 @@ const Section = database.define('Section', {
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: false,
     allowNull: false
   },
   description: {

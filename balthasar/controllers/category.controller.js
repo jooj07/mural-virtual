@@ -1,5 +1,7 @@
 const database = require('../db')
 const Category = require('../models/category')
+const postCategory = require('../models/postCategory')
+const { QueryTypes } = require('sequelize')
 const db = database
 const Op = db.Sequelize.Op
 
@@ -115,7 +117,21 @@ const deleteCategory = async (req, res) => {
       genareteError('Categoria não encontrada para exclusão!', 404)
     }
 
-    await categoryFound.destroy(req.params.id)
+    const existePostAtivo = await db.query(`
+    SELECT *
+    FROM "PostCategories" pc
+    LEFT JOIN "Posts" p ON pc."PostId" = p.id
+    LEFT JOIN "Categories" c ON pc."CategoryId" = c.id
+    WHERE p."deletedAt" IS NULL and p."expiresAt" > NOW()
+    AND c.id = ${req.params.id}; `, { type: QueryTypes.SELECT })
+
+    console.log(existePostAtivo)
+
+    if (existePostAtivo && existePostAtivo.length) {
+      genareteError('Existem posts ativos nesta categoria, exclua-os ou altere a data de expiração!', 404)
+    } else {
+      await categoryFound.destroy()
+    }
 
     return res.status(200).send('Categoria excluída com sucesso')
   } catch (error) {

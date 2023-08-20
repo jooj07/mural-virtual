@@ -2,6 +2,7 @@ const database = require('../db')
 const Section = require('../models/section')
 const db = database
 const Op = db.Sequelize.Op
+const { QueryTypes } = require('sequelize')
 
 const {
   genareteError,
@@ -112,9 +113,23 @@ const deleteSection = async (req, res) => {
       genareteError('Departamento não encontrado para exclusão!', 404)
     }
 
-    await SectionFound.destroy()
+    const existePostAtivo = await db.query(`
+    SELECT *
+    FROM "PostSections" ps 
+    LEFT JOIN "Posts" p ON ps."PostId" = p.id
+    LEFT JOIN "Sections" s ON ps."SectionId" = s.id
+    WHERE p."deletedAt" IS NULL and p."expiresAt" > NOW()
+    AND s.id = ${req.params.id}; `, { type: QueryTypes.SELECT })
 
-    return res.status(200).send('Departamento excluído com sucesso')
+    console.log(existePostAtivo)
+
+    if (existePostAtivo && existePostAtivo.length) {
+      genareteError('Existem posts ativos neste departamento, exclua-os ou altere a data de expiração!', 404)
+    } else {
+      await SectionFound.destroy()
+    }
+
+    return res.status(200).send('Departamento excluída com sucesso')
   } catch (error) {
     returnError(error, res)
   }

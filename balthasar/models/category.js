@@ -9,7 +9,7 @@ const Category = database.define('Category', {
   },
   name: {
     type: Sequelize.STRING,
-    unique: true,
+    unique: false,
     allowNull: false
   },
   description: {

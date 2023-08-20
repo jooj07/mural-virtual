@@ -14,10 +14,10 @@
         v-for="(valor, index) in departamentosListados['rows']"
         :key="index"
         cols="12"
-          md="6"
-          sm="12"
-          lg="4"
-          xl="4"
+        md="6"
+        sm="12"
+        lg="4"
+        xl="4"
       >
         <card-exibicao
           :id="valor.id"
@@ -27,6 +27,7 @@
         />
       </v-col>
     </v-row>
+
     <v-row
       v-if="
         !controlador.includes('novoDepartamento') &&
@@ -38,6 +39,7 @@
     >
       nada encontrado
     </v-row>
+
     <v-row cols="12">
       <v-col
         cols="12"
@@ -65,92 +67,151 @@
         ></v-pagination>
       </v-col>
     </v-row>
-    <v-row v-if="controlador.includes('novoDepartamento')">
-      <v-form>
-        <validation-observer ref="formulario">
-          <v-row>
-            <v-col cols="12">
-              <validation-provider
-                name="Nome"
-                rules="required|max:255"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="formulario.name"
-                  label="Nome"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                ></v-text-field>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12">
-              <validation-provider
-                name="Descrição"
-                rules="required|max:255"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="formulario.description"
-                  label="Descrição"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                ></v-text-field>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12">
-              <v-btn color="primary" @click="salvarOuEditar()">Salvar</v-btn>
-              <v-btn color="acent" class="ml-3" @click="restaurarFormulario()"
-                >Cancelar</v-btn
-              >
-            </v-col>
-          </v-row>
-        </validation-observer>
-      </v-form>
-    </v-row>
+
     <v-row
       v-if="editando && !controlador.includes('novoDepartamento')"
-      :style="`height: ${$vuetify.breakpoint.height - 210}px !important`"
+      class="d-flex flex-column justify-center"
     >
-      <v-form>
-        <validation-observer ref="formulario">
-          <v-row>
-            <v-col cols="12">
-              <validation-provider
-                name="Nome"
-                rules="required|max:255"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="departamentoExibindo.name"
-                  label="Nome"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                ></v-text-field>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12">
-              <validation-provider
-                name="Descrição"
-                rules="required|max:255"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="departamentoExibindo.description"
-                  label="Descrição"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                ></v-text-field>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12">
-              <v-btn color="primary" @click="salvarOuEditar()">Salvar</v-btn>
-              <v-btn color="acent" class="ml-3" @click="restaurarFormulario()"
+      <formulario
+        :titulo="'Edição de Departamento'"
+        @voltar="restaurarFormulario()"
+      >
+        <template v-slot:opcao>
+          <v-btn icon>
+            <botao-aviso
+              corIcone="error"
+              titulo="Excluir Departamento"
+              texto="Deseja realmente excluir este departamento?"
+              icone="mdi-delete"
+              @confirmar="deletarItem(departamentoExibindo.id)"
+            />
+          </v-btn>
+        </template>
+        <template v-slot:default>
+          <div>
+            <v-card-text>
+              <v-form>
+                <validation-observer ref="formulario">
+                  <v-row>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Nome"
+                        rules="required|max:255"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="departamentoExibindo.name"
+                          label="Nome"
+                          dense
+                          outlined
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Descrição"
+                        rules="required|max:255"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="departamentoExibindo.description"
+                          label="Descrição"
+                          dense
+                          outlined
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+                  </v-row>
+                </validation-observer>
+              </v-form>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="error"
+                text
+                class="ml-3"
+                @click="restaurarFormulario()"
                 >Cancelar</v-btn
               >
-            </v-col>
-          </v-row>
-        </validation-observer>
-      </v-form>
+              <v-btn color="primary" text @click="salvarOuEditar()"
+                >Salvar Alterações</v-btn
+              >
+            </v-card-actions>
+          </div>
+        </template>
+      </formulario>
+    </v-row>
+
+    <v-row
+      v-if="controlador.includes('novoDepartamento')"
+      class="d-flex flex-column justify-center"
+    >
+      <formulario :titulo="'Novo Departamento'" @voltar="restaurarFormulario()">
+        <template v-slot:default>
+          <div>
+            <v-card-text>
+              <v-form>
+                <validation-observer ref="formulario">
+                  <v-row>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Nome"
+                        rules="required|max:255"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="formulario.name"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          label="Nome"
+                          dense
+                          outlined
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+                    <v-col cols="12">
+                      <validation-provider
+                        name="Descrição"
+                        rules="required|max:255"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="formulario.description"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          label="Descrição"
+                          dense
+                          outlined
+                        ></v-text-field>
+                      </validation-provider>
+                    </v-col>
+                  </v-row>
+                </validation-observer>
+              </v-form>
+            </v-card-text>
+            <v-divider></v-divider>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="error"
+                text
+                class="ml-3"
+                @click="restaurarFormulario()"
+                >Cancelar</v-btn
+              >
+              <v-btn color="primary" text @click="salvarOuEditar()"
+                >Salvar</v-btn
+              >
+            </v-card-actions>
+          </div>
+        </template>
+      </formulario>
     </v-row>
   </v-container>
 </template>
@@ -174,8 +235,10 @@ export default {
       'listarDepartamentos',
       'exibirDepartamento',
       'editarDepartamento',
+      'deletarDepartamento',
       'salvarDepartamento'
     ]),
+    ...mapActions(['obterOpcoes']),
     async departamentosRequisicao (pagina) {
       await this.listarDepartamentos({ offset: pagina * 10 - 10 })
     },
@@ -204,6 +267,7 @@ export default {
           if (resposta) {
             this.restaurarFormulario()
             await this.departamentosRequisicao(this.pagina)
+            await this.obterOpcoes()
           }
         }
       }
@@ -216,6 +280,14 @@ export default {
         description: null
       }
       this.$store.commit('SET_CONTROLADOR', '')
+    },
+    async deletarItem (id) {
+      const resposta = await this.deletarDepartamento(id)
+      if (resposta) {
+        this.restaurarFormulario()
+        await this.departamentosRequisicao(this.pagina)
+        await this.obterOpcoes()
+      }
     }
   },
   async created () {
