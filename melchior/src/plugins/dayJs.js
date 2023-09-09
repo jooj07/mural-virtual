@@ -9,6 +9,7 @@ dayjs.extend(relativeTime)
 dayjs.extend(isSameOrBefore)
 dayjs.extend(isBetween)
 dayjs.extend(isSameOrAfter)
+dayjs.locale('pt-br')
 
 Object.defineProperty(Vue.prototype, '$dayjs', { value: dayjs })
 export default dayjs

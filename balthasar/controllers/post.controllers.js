@@ -3,6 +3,8 @@ const Post = require('../models/post')
 const User = require('../models/user')
 const CategoryModel = require('../models/category')
 const SectionModel = require('../models/section')
+const PostCategory = require('../models/postCategory')
+const PostSection = require('../models/postSection')
 const { QueryTypes } = require('sequelize')
 const db = database
 const Op = db.Sequelize.Op
@@ -169,7 +171,7 @@ const alterPost = async (req, res) => {
   try {
     // TODO console.log(Object.keys(post.__proto__)) OBTER OS MÉTODOS DE RELACIONAMENO DAS INSTÂNCIAS
     // Check se trás o id do usuário
-
+    console.log(req.body)
     if (!req.body.userId) throw new Error('Você não está logado!')
     const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
@@ -193,7 +195,44 @@ const alterPost = async (req, res) => {
     // Agora sim, vamos buscar o post e ver se pertence ao usuário requisitando
     const postUser = await postFound.hasUser(userFound.id)
     if (isAdm || postUser) {
-      postFound.update(req.body)
+      await postFound.update(req.body)
+      console.log('--------->', req.body.categories)
+      if (req.body && req.body.categories) {
+        const categoriasAssociadas = await PostCategory.findAll({
+          where: {
+            PostId: {
+              [Op.eq]: postFound.id
+            }
+          }
+        })
+        if (categoriasAssociadas && categoriasAssociadas.length) {
+          await PostCategory.destroy({ where: { PostId: postFound.id } })
+        }
+
+        for (const i of req.body.categories) {
+          const categoryFound = await CategoryModel.findByPk(Number(i))
+          if (!categoryFound) genareteError('Categoria não encontrada!', 500)
+          await postFound.addCategory(categoryFound.id)
+        }
+      }
+      if (req.body && req.body.sections) {
+        const deptsAssociadas = await PostSection.findAll({
+          where: {
+            PostId: {
+              [Op.eq]: postFound.id
+            }
+          }
+        })
+        if (deptsAssociadas && deptsAssociadas.length) {
+          await PostSection.destroy({ where: { PostId: postFound.id } })
+        }
+
+        for (const i of req.body.sections) {
+          const sectionFound = await SectionModel.findByPk(Number(i))
+          if (!sectionFound) genareteError('Departamento não encontrado!', 500)
+          await postFound.addSection(sectionFound.id)
+        }
+      }
     } else {
       genareteError('Você não tem permissão para editar isso!', 401)
     }

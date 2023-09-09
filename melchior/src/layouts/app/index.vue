@@ -202,6 +202,10 @@
         v-model="drawer"
         :mini-variant="!fix"
         app
+        :disable-resize-watcher="true"
+        :disable-route-watcher="true"
+        touchless
+        permanent
       >
         <v-list>
           <v-list-item v-show="fix">

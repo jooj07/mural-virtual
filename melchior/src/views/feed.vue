@@ -118,6 +118,8 @@
           :id="post.id"
           :titulo="post.name"
           :textoCurto="post.description"
+          :departamentos="post.sections"
+          :categorias="post.categories"
           @exibir="exibicaoPost($event)"
         />
       </v-col>
@@ -296,11 +298,14 @@
             </v-col>
             <v-col cols="12">
               <p>Conteúdo da postagem</p>
-              <editor v-model="conteudo" :editor-toolbar="customToolbar"/>
+              <editor v-model="conteudo" :editor-toolbar="customToolbar" />
             </v-col>
             <v-col cols="12">
               <p>Informações extras</p>
-              <editor v-model="informacoesExtras" :editor-toolbar="customToolbar"/>
+              <editor
+                v-model="informacoesExtras"
+                :editor-toolbar="customToolbar"
+              />
             </v-col>
             <v-col cols="12">
               <v-btn color="primary" @click="salvarOuEditar()">Salvar</v-btn>
@@ -312,90 +317,100 @@
         </v-form>
       </validation-observer>
     </v-row>
-    <v-row
-      v-if="postExibindo && !editarPost"
-      class="d-flex justify-center align-center text-center"
-    >
-      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0">
-        <h1 class="text-h1 font-weight-black">{{ titulo }}</h1>
-      </v-col>
-      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0 text-h5">
-        <h3>{{ postDescricao }}</h3>
-      </v-col>
-      <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-0">
-        <h5>{{ postExibindo.user[0].name }} - {{ format(date) }}</h5>
-      </v-col>
-      <v-col
-        cols="12"
-        md="12"
-        sm="12"
-        lg="12"
-        xl="12"
-        class="d-flex flex-column align-center"
+    <v-container fluid>
+      <v-row
+        v-if="postExibindo && !editarPost"
+        class="d-flex justify-center align-center"
       >
-        <v-chip-group>
-          <v-chip
-            v-for="(tag, index) in postExibindo.sections"
-            :key="index"
-            color="primary"
-          >
-            {{ tag.name }}
-          </v-chip>
-        </v-chip-group>
-        <v-chip-group>
-          <v-chip
-            v-for="(tag, index) in postExibindo.categories"
-            :key="index"
-            color="secondary"
-          >
-            {{ tag.name }}
-          </v-chip>
-        </v-chip-group>
-      </v-col>
-      <v-col
-        v-if="conteudo"
-        cols="12"
-        md="12"
-        sm="12"
-        lg="12"
-        xl="12"
-        style="border-bottom: 1px solid silver; border-top: 1px solid silver"
-      >
-        <p v-html="conteudo" :style="`font-size: ${tamanhoFonte}px`"></p>
-      </v-col>
-      <v-col
-        v-if="informacoesExtras"
-        cols="12"
-        md="12"
-        sm="12"
-        lg="12"
-        xl="12"
-        class="px-0"
-      >
-        <v-expansion-panels flat v-if="informacoesExtras">
-          <v-expansion-panel class="px-0">
-            <v-expansion-panel-header class="px-0">
-              <v-chip
-                large
-                class="ma-2"
-                color="transparent"
-                label
-                text-color="white"
-              >
-                <v-icon left color="primary"> mdi-label </v-icon>
-                <span class="primary--text">Mais informações</span>
-              </v-chip>
-            </v-expansion-panel-header>
-            <v-expansion-panel-content>
-              <p
-                v-html="informacoesExtras"
-                :style="`font-size: ${tamanhoFonte}px`"
-              ></p>
-            </v-expansion-panel-content>
-          </v-expansion-panel>
-        </v-expansion-panels>
-      </v-col>
-    </v-row>
+        <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="mt-3 py-2">
+          <h1 class="text-h3 font-weight-bold">{{ titulo }}</h1>
+        </v-col>
+        <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-2">
+          <h3 class="text-h5 font-weight-light">{{ postDescricao }}</h3>
+        </v-col>
+        <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-3">
+          <h5>Postado por: {{ postExibindo.user[0].name }}
+          <br/>
+          em: {{ format(date) }}</h5>
+        </v-col>
+        <v-col
+          cols="12"
+          md="12"
+          sm="12"
+          lg="12"
+          xl="12"
+          class="d-flex flex-column"
+        >
+          <span class="subheading">Departamento(s)</span>
+          <v-chip-group>
+            <v-chip
+              v-for="(tag, index) in postExibindo.sections"
+              :key="index"
+              :link="false"
+              color="primary"
+            >
+              {{ tag.name }}
+            </v-chip>
+          </v-chip-group>
+          <span class="subheading">Categoria(s)</span>
+          <v-chip-group>
+            <v-chip
+              v-for="(tag, index) in postExibindo.categories"
+              :key="index"
+              :link="false"
+              color="secondary"
+            >
+              {{ tag.name }}
+            </v-chip>
+          </v-chip-group>
+        </v-col>
+        <v-col
+          v-if="informacoesExtras"
+          cols="12"
+          md="12"
+          sm="12"
+          lg="12"
+          xl="12"
+          class="px-0 py-1"
+        >
+          <v-expansion-panels flat v-if="informacoesExtras">
+            <v-expansion-panel class="px-0">
+              <v-expansion-panel-header class="px-0">
+                <v-chip
+                  large
+                  class="ma-2"
+                  color="transparent"
+                  label
+                  text-color="white"
+                >
+                  <v-icon left color="primary"> mdi-label </v-icon>
+                  <span class="primary--text">Mais informações</span>
+                </v-chip>
+              </v-expansion-panel-header>
+              <v-expansion-panel-content>
+                <p
+                  v-html="informacoesExtras"
+
+                  :style="`font-size: ${tamanhoFonte}px`"
+                ></p>
+              </v-expansion-panel-content>
+            </v-expansion-panel>
+          </v-expansion-panels>
+        </v-col>
+
+        <v-col
+          v-if="conteudo"
+          cols="12"
+          md="12"
+          sm="12"
+          lg="12"
+          xl="12"
+          style="border-bottom: 1px solid silver; border-top: 1px solid silver"
+        >
+          <p v-html="conteudo" :style="`font-size: ${tamanhoFonte}px`"></p>
+        </v-col>
+      </v-row>
+    </v-container>
   </v-container>
 </template>
 
@@ -477,7 +492,7 @@ export default {
     ...mapMutations(['SET_FILTROS_BUSCA', 'SET_PAGINA_POSTS']),
 
     format (date) {
-      return dayjs(date).format('DD/MM/YYYY')
+      return dayjs(date).format('D [de] MMMM [de] YYYY, HH:mm:ss')
     },
     async exibicaoPost (id) {
       const dados = await this.exibirPosts(id)
