@@ -73,7 +73,7 @@
           </v-card>
         </v-menu>
         <v-btn
-          v-if="!editarPost"
+          v-if="!editarPost && usuarioAdministrador"
           class="mx-2"
           fab
           dark
@@ -274,7 +274,7 @@
                       v-model="date"
                       :hide-details="!(errors && errors.length)"
                       :error-messages="errors"
-                      label="Data de expiraçao deste post"
+                      label="Data de expiração deste post"
                       prepend-inner-icon="mdi-calendar"
                       class="elevation-1"
                       dense
@@ -329,9 +329,11 @@
           <h3 class="text-h5 font-weight-light">{{ postDescricao }}</h3>
         </v-col>
         <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-3">
-          <h5>Postado por: {{ postExibindo.user[0].name }}
-          <br/>
-          em: {{ format(date) }}</h5>
+          <h5>
+            Postado por: {{ postExibindo.user[0].name }}
+            <br />
+            em: {{ format(date) }}
+          </h5>
         </v-col>
         <v-col
           cols="12"
@@ -390,7 +392,6 @@
               <v-expansion-panel-content>
                 <p
                   v-html="informacoesExtras"
-
                   :style="`font-size: ${tamanhoFonte}px`"
                 ></p>
               </v-expansion-panel-content>
@@ -458,6 +459,7 @@ export default {
   },
   computed: {
     ...mapState('feed', ['posts']),
+    ...mapState('loginCadastro', ['usuarioLogado']),
     ...mapState('departamentos', [
       'departamentosListadosFiltro',
       'departamentosListados'
@@ -466,9 +468,27 @@ export default {
       'categoriasListadasFiltro',
       'categoriasListadas'
     ]),
-    ...mapState(['paginaPosts', 'filtrosBusca'])
+    ...mapState(['paginaPosts', 'filtrosBusca']),
+    usuarioAdministrador () {
+      let retorno = false
+      if (
+        this.usuarioLogado &&
+        this.usuarioLogado.acessos &&
+        this.usuarioLogado.acessos.length > 0
+      ) {
+        if (this.usuarioLogado.acessos.includes('administrador')) {
+          retorno = true
+        }
+      }
+      return retorno
+    }
   },
   watch: {
+    date (v) {
+      if (v) {
+        v = dayjs(v).format('DD/MM/YYYY')
+      }
+    },
     paginaPosts (v) {
       this.pagina = v
     }

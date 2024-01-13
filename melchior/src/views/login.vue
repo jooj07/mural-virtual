@@ -37,6 +37,7 @@
                     label="Senha"
                     class="my-2 rounded-lg"
                     outlined
+                    type="password"
                     @keydown.enter="logar"
                   ></v-text-field>
                 </validation-provider>
@@ -89,6 +90,9 @@ export default {
           vm: this.$router
         })
       } else {
+        setTimeout(() => {
+          this.$refs.form.reset()
+        }, 1500)
         console.log('inválido')
       }
     }

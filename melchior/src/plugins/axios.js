@@ -34,7 +34,15 @@ instance.interceptors.response.use(
       localStorage.removeItem('RFSTKN')
       localStorage.removeItem('usuarioLogado')
       router.push('/autenticacao')
-      window.alert('Sua sessão expirou, por favor, faça login novamente.')
+      if (error.response?.data) {
+        if (error.response.data.includes('Senha incorreta')) {
+          return Promise.reject(error)
+        }
+        if (error.response.data.includes('Usuário expirado!')) {
+          return Promise.reject(error)
+        }
+        window.alert('Sua sessão expirou, por favor, faça login novamente.')
+      }
     }
 
     return Promise.reject(error)

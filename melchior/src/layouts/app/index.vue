@@ -147,7 +147,7 @@
                               v-model="date"
                               :hide-details="!(errors && errors.length)"
                               :error-messages="errors"
-                              label="Data de expiraçao deste post"
+                              label="Data de expiração deste post"
                               prepend-inner-icon="mdi-calendar"
                               class="elevation-1"
                               dense
@@ -210,13 +210,13 @@
         <v-list>
           <v-list-item v-show="fix">
             <p
-              class="text-h4 mx-auto font-weight-black"
+              class="text-h4 mx-auto font-weight-black mt-2"
               style="word-wrap: break-word; width: 90%"
             >
               {{ $route.name }}
             </p>
           </v-list-item>
-          <v-list-item v-show="fix">
+          <v-list-item v-show="fix && usuarioLogado && usuarioLogado.nome">
             <v-list-item-content v-if="usuarioLogado && usuarioLogado.nome">
               <v-list-item-title class="text-h6">
                 {{ usuarioLogado.nome || null }}
@@ -234,9 +234,9 @@
           <v-list nav dense>
             <v-list-item v-show="!fix" link @click="fix = !fix">
               <v-list-item-icon>
-                <v-icon color="secondary">mdi-pin</v-icon>
+                <v-icon color="secondary">mdi-menu-close</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Fixar barra lateral</v-list-item-title>
+              <v-list-item-title>Exibir barra lateral</v-list-item-title>
             </v-list-item>
             <v-list-item
               v-show="fix"
@@ -244,9 +244,9 @@
               @click="(fix = !fix), (abaFiltros = false)"
             >
               <v-list-item-icon>
-                <v-icon color="secondary">mdi-pin-off</v-icon>
+                <v-icon color="secondary">mdi-menu-open</v-icon>
               </v-list-item-icon>
-              <v-list-item-title>Desafixar barra lateral</v-list-item-title>
+              <v-list-item-title>Esconder barra lateral</v-list-item-title>
             </v-list-item>
             <v-list-item
               v-show="$route.path.includes('/dashboard')"
@@ -265,6 +265,7 @@
               <v-list-item-title>Atualizar</v-list-item-title>
             </v-list-item>
             <v-list-item
+              v-if="$route.path == '/'"
               link
               @click="!fix ? (fix = !fix) : '', (abaFiltros = !abaFiltros)"
             >
@@ -433,7 +434,7 @@
             </v-list-item>
           </v-list>
 
-          <v-list v-if="usuarioEstaLogado" nav dense>
+          <v-list v-if="usuarioEstaLogado && (usuarioAdmin || usuarioServidor)" nav dense>
             <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-pencil-plus</v-icon>
@@ -538,6 +539,7 @@
             Atualizar<v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-btn
+          v-if="$route.path == '/'"
             block
             large
             color="tertiary"

@@ -2,18 +2,16 @@
   <v-app>
     <loading />
     <snackbar />
-    <v-transition-group name="fade-transition" appear>
-      <v-app-bar
-        v-if="$vuetify.breakpoint.width <= 700"
-        elevation="0"
-        class="text-h4 font-weight-bold"
-        app
-        hide-on-scroll
-      >
-        {{ $route.name }}
-      </v-app-bar>
-      <router-view />
-    </v-transition-group>
+    <v-app-bar
+      v-if="$vuetify.breakpoint.width <= 700"
+      elevation="0"
+      class="text-h4 font-weight-bold"
+      app
+      hide-on-scroll
+    >
+      {{ $route.name }}
+    </v-app-bar>
+    <router-view />
   </v-app>
 </template>
 
