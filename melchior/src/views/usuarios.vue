@@ -1,7 +1,7 @@
 <template>
   <v-container fluid>
     <v-row>
-      <v-col v-if="!editando" cols="12">
+      <v-col v-if="!editando" cols="12" class="text-h5 font-weight-black">
         {{ $route.name }}
       </v-col>
       <v-col v-if="!editando" cols="12">
@@ -369,26 +369,26 @@ export default {
     dataNova: null,
     colunasTabela: [
       { text: 'Opções', value: 'actions', width: '150', sortable: false },
-      { text: 'Matrícula', width: '130', value: 'login', align: 'left' },
+      { text: 'Matrícula', width: '130', value: 'login', align: 'start' },
+      { text: 'Nome', width: 'auto', value: 'name', align: 'start' },
       {
         text: 'Acessos',
         width: '150',
         value: 'rolesExibicao',
-        align: 'center'
+        align: 'start'
       },
-      { text: 'Nome', width: '150', value: 'name', align: 'left' },
-      { text: 'E-mail', width: '170', value: 'emailExibicao', align: 'left' },
+      { text: 'E-mail', width: '170', value: 'emailExibicao', align: 'start' },
       {
         text: 'Expira em',
-        width: '150',
+        width: 'auto',
         value: 'expiresAtExibicao',
-        align: 'center'
+        align: 'start'
       },
       {
         text: 'Data do Cadastro',
         width: '150',
         value: 'createdAtExibicao',
-        align: 'center'
+        align: 'start'
       },
       {}
     ]

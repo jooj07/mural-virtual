@@ -1,21 +1,25 @@
 <template>
-  <v-card
-    :to="link === '/dashboard' ? '' : link"
-    height="200px"
-    class="d-flex flex-column justify-space-between rounded-xl elevation-1"
-    outlined
+  <v-alert
+    border="left"
+    colored-border
+    elevation="3"
+    class="rounded-lg"
+    color="primary"
+    @click="levarParaPagina(link)"
+    :style="link !== '/dashboard' ? 'cursor:pointer' : ''"
   >
     <v-card-title
       class="text-h5 font-weight-black"
       style="word-wrap: break-word"
       >{{ titulo }}</v-card-title
     >
-    <v-card-actions class="text-h3 font-weight-black" v-if="contador"
+    <v-card-actions class="text-h3 font-weight-black primary--text" v-if="contador">
+      <v-icon v-if="link !== '/dashboard'" color="primary" size="40"
+        >mdi-arrow-top-right</v-icon
       >
-      <v-icon v-if="link !== '/dashboard'" color="primary" size="40">mdi-arrow-top-right</v-icon>
       <v-spacer />{{ contador }}</v-card-actions
     >
-  </v-card>
+  </v-alert>
 </template>
 
 <script>
@@ -32,6 +36,14 @@ export default {
     contador: {
       type: String,
       required: false
+    }
+  },
+  methods: {
+    levarParaPagina (path) {
+      window.console.log(path)
+      if (path && path !== '/dashboard') {
+        this.$router.push({ path })
+      }
     }
   }
 }

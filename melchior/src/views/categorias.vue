@@ -18,6 +18,7 @@
         sm="12"
         lg="4"
         xl="4"
+        style="height: 200px !important"
       >
         <card-exibicao
           :id="valor.id"
@@ -117,14 +118,14 @@
                         rules="required|max:255"
                         v-slot="{ errors }"
                       >
-                        <v-text-field
+                        <v-textarea
                           v-model="categoriaExibindo.description"
                           label="Descrição"
                           dense
                           outlined
                           :hide-details="!(errors && errors.length)"
                           :error-messages="errors"
-                        ></v-text-field>
+                        ></v-textarea>
                       </validation-provider>
                     </v-col>
                   </v-row>
