@@ -20,6 +20,9 @@ const listPosts = async (req, res) => {
     // TODO Pesquisa por departamento
     // TODO Pesquisa por categoria
     const where = {}
+    where.expiresAt = {
+      [Op.gte]: new Date()
+    }
     let arecords = null
     if (!req.params.id) {
       if (req.query.name) {
@@ -120,14 +123,14 @@ const listPosts = async (req, res) => {
 
     const aupdatedRows = await Promise.all(records.map(async (iterator) => {
       const categories = await db.query(`
-      SELECT * FROM "PostCategories" pc 
+      SELECT *, name AS "text" FROM "PostCategories" pc 
       left join "Categories" c
       on pc."CategoryId" = c.id 
       where pc."PostId" = ${iterator.id}
       and pc."deletedAt" is NULL
       and c."deletedAt" is NULL `, { type: QueryTypes.SELECT })
       const sections = await db.query(`
-      SELECT * FROM "PostSections" ps
+      SELECT *, name AS "text" FROM "PostSections" ps
       left join "Sections" s
       on ps."SectionId" = s.id
       where ps."PostId" = ${iterator.id}

@@ -375,7 +375,6 @@
               </v-card>
             </v-expand-transition>
             <v-list-item
-            v-if="usuarioAdmin"
               link
               @click="$vuetify.theme.dark = !$vuetify.theme.dark"
             >
@@ -446,7 +445,7 @@
       </v-navigation-drawer>
       <v-container class="py-8 px-6" fluid>
         <v-row>
-          <v-col cols="12">
+          <v-col cols="12" class="pa-0">
             <router-view />
           </v-col>
         </v-row>
@@ -473,7 +472,7 @@
             :color="!fab ? 'primary' : 'error'"
             dark
             fab
-            @click="overlay = !overlay"
+            @click="overlay = !overlay, snackbar = false"
           >
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon v-else> mdi-transition </v-icon>

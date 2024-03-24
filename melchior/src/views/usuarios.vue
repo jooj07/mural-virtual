@@ -234,8 +234,32 @@
                           @click="editardata = !editardata"
                         >
                           <v-icon v-if="!editardata">mdi-pencil</v-icon>
+
                           <v-icon v-else>mdi-pencil-off</v-icon>
                         </v-btn>
+
+                        <v-tooltip
+                          v-if="(editando.expires || dataNova) && !editardata"
+                          bottom
+                        >
+                          <template v-slot:activator="{ on, attrs }">
+                            <v-btn
+                              color="primary"
+                              icon
+                              @click="removerExpiracao()"
+                            >
+                              <v-icon
+                                color="primary"
+                                dark
+                                v-bind="attrs"
+                                v-on="on"
+                              >
+                                mdi-calendar-remove
+                              </v-icon>
+                            </v-btn>
+                          </template>
+                          <span>Remover Data de Expiração</span>
+                        </v-tooltip>
                         <v-expand-transition>
                           <v-date-picker
                             v-if="editardata"
@@ -394,7 +418,7 @@ export default {
     ]
   }),
   async created () {
-    this.dataNova = this.$dayjs().format('YYYY-MM-DD')
+    // this.dataNova = this.$dayjs().format('YYYY-MM-DD')
     await this.listagemUsuarios()
   },
   computed: {
@@ -406,7 +430,8 @@ export default {
       'listarUsuarios',
       'editarUsuario',
       'excluirUsuario',
-      'alterarSenha'
+      'alterarSenha',
+      'removerDataExpiracao'
     ]),
     async listagemUsuarios () {
       const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
@@ -469,6 +494,33 @@ export default {
           this.dataNova = null
           this.pagina = 1
           await this.listagemUsuarios()
+        }
+      }
+    },
+    async removerExpiracao () {
+      const usuarioLocalstorage = localStorage.getItem('usuarioLogado')
+        ? JSON.parse(localStorage.getItem('usuarioLogado'))
+        : null
+      const form = {}
+
+      form.id = this.editando.id
+      form.userId = usuarioLocalstorage.id
+
+      const requisicao = await this.removerDataExpiracao(form)
+      if (requisicao) {
+        this.editardata = false
+        this.dataNova = null
+        this.pagina = 1
+        await this.listagemUsuarios()
+        if (this.usuarios.rows && this.usuarios.rows.length > 0) {
+          const achadoPosEdicao = this.usuarios.rows.find(
+            (item) => item.id === this.editando.id
+          )
+          if (achadoPosEdicao && typeof achadoPosEdicao !== 'undefined') {
+            this.copiarSemReferencia(achadoPosEdicao)
+          } else {
+            this.editando = null
+          }
         }
       }
     },

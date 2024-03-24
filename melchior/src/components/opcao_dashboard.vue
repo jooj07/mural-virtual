@@ -1,10 +1,7 @@
 <template>
   <v-alert
-    border="left"
-    colored-border
     elevation="3"
     class="rounded-lg"
-    color="primary"
     @click="levarParaPagina(link)"
     :style="link !== '/dashboard' ? 'cursor:pointer' : ''"
   >

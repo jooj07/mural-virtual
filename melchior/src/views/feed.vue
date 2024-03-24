@@ -103,15 +103,22 @@
         </v-btn>
       </div>
     </div>
-    <v-row v-if="!postExibindo && posts && posts.rows && posts.rows.length">
+
+    <v-row
+      v-if="!postExibindo && posts && posts.rows && posts.rows.length"
+      :style="`height: ${$vuetify.breakpoint.mdAndDown ?$vuetify.breakpoint.height-100 : $vuetify.breakpoint.height-50}px`"
+      class="d-flex flex-row align-content-space-between"
+    >
       <v-col
         cols="12"
         lg="4"
         xl="4"
         xs="12"
         md="6"
+        class=""
         v-for="post in posts['rows']"
         :key="post.id"
+
       >
         <card-post
           :autor="post.user[0].name"
@@ -135,7 +142,7 @@
         ></v-pagination>
       </v-col>
     </v-row>
-    <v-row v-if="!postExibindo && posts && posts.rows && !posts.rows.length">
+    <v-row v-if="!postExibindo && posts && posts.rows && !posts.rows.length" :style="`height: ${$vuetify.breakpoint.height - 130}px`">
       <v-col cols="12" class="d-flex flex-column justify-center align-center">
         <v-icon :size="100" color="primary">
           mdi-magnify-remove-outline
@@ -145,6 +152,7 @@
         </p>
       </v-col>
     </v-row>
+
     <v-row v-if="postExibindo && editarPost">
       <validation-observer ref="formularioPost">
         <v-form class="mt-4">
@@ -317,9 +325,10 @@
         </v-form>
       </validation-observer>
     </v-row>
-    <v-container fluid>
+
+    <v-container v-if="postExibindo && !editarPost" fluid>
       <v-row
-        v-if="postExibindo && !editarPost"
+
         class="d-flex justify-center align-center"
       >
         <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="mt-3 py-2">
@@ -343,7 +352,7 @@
           xl="12"
           class="d-flex flex-column"
         >
-          <span class="subheading">Departamento(s)</span>
+          <span class="subheading font-weight-bold">Categoria(s)</span>
           <v-chip-group>
             <v-chip
               v-for="(tag, index) in postExibindo.sections"
@@ -354,7 +363,7 @@
               {{ tag.name }}
             </v-chip>
           </v-chip-group>
-          <span class="subheading">Categoria(s)</span>
+          <span class="subheading font-weight-bold">Categoria(s)</span>
           <v-chip-group>
             <v-chip
               v-for="(tag, index) in postExibindo.categories"
@@ -386,7 +395,7 @@
                   text-color="white"
                 >
                   <v-icon left color="primary"> mdi-label </v-icon>
-                  <span class="primary--text">Mais informações</span>
+                  <span class="primary--text">Outras informações</span>
                 </v-chip>
               </v-expansion-panel-header>
               <v-expansion-panel-content>

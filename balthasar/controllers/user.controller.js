@@ -150,9 +150,13 @@ const gerenciarUsuario = async (req, res) => {
         await userFound.addRole(Number(req.query.addRole))
       }
       if (req.body) {
+        console.log('caiu aq')
+        console.log(req.body)
         console.log(Object.keys(userFound.__proto__))
         const rolesToEdit = req.body.roles
         const rolesUser = await userFound.getRole()
+        console.log('rolesuser')
+        console.log(rolesUser)
         if (rolesUser && rolesUser.length && !_.isEqual(rolesToEdit, rolesUser.map(i => i.id))) {
           if (rolesUser && rolesUser.length) {
             for (const i of rolesUser) {
@@ -166,7 +170,7 @@ const gerenciarUsuario = async (req, res) => {
             }
           }
         }
-        if (!rolesUser && rolesToEdit && rolesToEdit.length) {
+        if ((!rolesUser || !rolesUser.length) && rolesToEdit && rolesToEdit.length) {
           if (rolesToEdit && rolesToEdit.length) {
             for (const i of rolesToEdit) {
               await userFound.addRole(Number(i))
@@ -180,6 +184,36 @@ const gerenciarUsuario = async (req, res) => {
     }
     return res.status(200).send('Usuário editado com sucesso!')
   } catch (error) {
+    returnError(error, res)
+  }
+}
+
+const usuarioRemoverDataExpiracao = async (req, res) => {
+  try {
+    const userRequest = req.body.userId
+    const userFound = await User.findByPk(Number(userRequest))
+    if (!userFound) genareteError('Você não está logado!', 401)
+    const userRoles = await userFound.getRole()
+    const isAdm = userRoles.find(element => {
+      if (element.name.includes('administrador')) {
+        return true
+      } else {
+        return false
+      }
+    })
+    if (isAdm) {
+      const userFound = await User.findByPk(Number(req.body.id))
+      if (!userFound) genareteError('Usuário não encontrado!', 404)
+      await userFound.update({
+        expires: null
+      })
+    } else {
+      genareteError('Você não tem permissão para acessar isso!', 401)
+    }
+    return res.status(200).send('Usuário excluído com sucesso!')
+  } catch (error) {
+    console.log('----------------------------')
+    console.log(error)
     returnError(error, res)
   }
 }
@@ -269,5 +303,6 @@ module.exports = {
   listarUsuarios,
   gerenciarUsuario,
   excluirUsuario,
-  alterarSenha
+  alterarSenha,
+  usuarioRemoverDataExpiracao
 }
