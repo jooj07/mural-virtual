@@ -103,36 +103,4 @@ router.beforeEach((to, from, next) => {
   }
 })
 
-// router.beforeEach(async (to, from, next) => {
-//   const usuarioLogado = JSON.parse(localStorage.getItem('usuarioLogado')) || null
-//   const acessos = []
-
-//   if (usuarioLogado && usuarioLogado.length > 0 && usuarioLogado.acessos && usuarioLogado.acessos.length > 0) {
-//     usuarioLogado.acessos.forEach(acesso => {
-//       acessos.push(acesso)
-//     })
-//   }
-
-//   window.console.log('acessos', acessos)
-
-//   if (to.matched.some(record => record.meta.logado) && !usuarioLogado) {
-//     next(false)
-//     router.push({ path: '/' })
-//     return
-//   }
-
-//   if (to.matched.some(record => record.meta.adm) && (!usuarioLogado || !acessos.includes('administrador'))) {
-//     next({ path: '/' })
-//     return
-//   }
-
-//   if (to.matched.some(record => record.meta.servidor) && !acessos.includes('servidor')) {
-//     // Se não estamos no modo de servidor, navegar para a página de login
-//     next({ path: '/' })
-//     return
-//   }
-
-//   next()
-// })
-
 export default router

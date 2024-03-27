@@ -1,6 +1,10 @@
 <template>
   <v-app id="inspire">
-    <v-overlay :value="overlay" :color="$vuetify.theme.dark ? 'black' : '#fff'" opacity="1"></v-overlay>
+    <v-overlay
+      :value="overlay"
+      :color="$vuetify.theme.dark ? 'black' : '#fff'"
+      opacity="1"
+    ></v-overlay>
     <v-main>
       <v-dialog v-model="overlayEditor" persistent max-width="800">
         <v-overlay :value="overlayEditor">
@@ -56,6 +60,7 @@
                       <validation-provider
                         name="Categoria"
                         rules="required"
+                        vid="categoria"
                         v-slot="{ errors }"
                       >
                         <v-select
@@ -76,7 +81,9 @@
                             <v-pagination
                               v-model="pagina"
                               :length="
-                                Math.ceil(categoriasListadas['count'] / 10)
+                                categoriasListadas
+                                  ? Math.ceil(categoriasListadas['count'] / 10)
+                                  : 0
                               "
                               :total-visible="5"
                               class="flex-grow-1"
@@ -113,7 +120,11 @@
                             <v-pagination
                               v-model="paginaDepartamentos"
                               :length="
-                                Math.ceil(departamentosListados['count'] / 10)
+                                departamentosListados
+                                  ? Math.ceil(
+                                      departamentosListados['count'] / 10
+                                    )
+                                  : 0
                               "
                               :total-visible="5"
                               class="flex-grow-1"
@@ -144,7 +155,7 @@
                             v-slot="{ errors }"
                           >
                             <v-text-field
-                              v-model="date"
+                              v-model="dateFormatada"
                               :hide-details="!(errors && errors.length)"
                               :error-messages="errors"
                               label="Data de expiração deste post"
@@ -175,11 +186,17 @@
                     </v-col>
                     <v-col cols="12">
                       <p>Conteúdo da postagem</p>
-                      <editor v-model="conteudo" :editor-toolbar="customToolbar"/>
+                      <editor
+                        v-model="conteudo"
+                        :editor-toolbar="customToolbar"
+                      />
                     </v-col>
                     <v-col cols="12">
                       <p>Informações extras</p>
-                      <editor v-model="informacoesExtras" :editor-toolbar="customToolbar"/>
+                      <editor
+                        v-model="informacoesExtras"
+                        :editor-toolbar="customToolbar"
+                      />
                     </v-col>
                   </v-row>
                 </v-form>
@@ -299,7 +316,9 @@
                           <v-pagination
                             v-model="pagina"
                             :length="
-                              Math.ceil(categoriasListadas['count'] / 10)
+                              categoriasListadas
+                                ? Math.ceil(categoriasListadas['count'] / 10)
+                                : 0
                             "
                             :total-visible="5"
                             class="flex-grow-1"
@@ -329,7 +348,9 @@
                           <v-pagination
                             v-model="paginaDepartamentos"
                             :length="
-                              Math.ceil(departamentosListados['count'] / 10)
+                              departamentosListados
+                                ? Math.ceil(departamentosListados['count'] / 10)
+                                : 0
                             "
                             :total-visible="5"
                             class="flex-grow-1"
@@ -408,7 +429,7 @@
             </v-list-item>
           </v-list>
           <v-spacer />
-          <v-list v-if="$route.name === 'Categorias'  && usuarioAdmin" nav dense>
+          <v-list v-if="$route.name === 'Categorias' && usuarioAdmin" nav dense>
             <v-list-item
               link
               @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
@@ -420,7 +441,11 @@
               <v-list-item-title>Nova Categoria</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-list v-if="$route.name === 'Departamentos' && usuarioAdmin" nav dense>
+          <v-list
+            v-if="$route.name === 'Departamentos' && usuarioAdmin"
+            nav
+            dense
+          >
             <v-list-item
               link
               @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
@@ -433,7 +458,11 @@
             </v-list-item>
           </v-list>
 
-          <v-list v-if="usuarioEstaLogado && (usuarioAdmin || usuarioServidor)" nav dense>
+          <v-list
+            v-if="usuarioEstaLogado && (usuarioAdmin || usuarioServidor)"
+            nav
+            dense
+          >
             <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-pencil-plus</v-icon>
@@ -472,7 +501,7 @@
             :color="!fab ? 'primary' : 'error'"
             dark
             fab
-            @click="overlay = !overlay, snackbar = false"
+            @click="(overlay = !overlay), (snackbar = false)"
           >
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon v-else> mdi-transition </v-icon>
@@ -538,7 +567,7 @@
             Atualizar<v-icon>mdi-refresh</v-icon>
           </v-btn>
           <v-btn
-          v-if="$route.path == '/'"
+            v-if="$route.path == '/'"
             block
             large
             color="tertiary"
@@ -559,7 +588,7 @@
             Alterar tema <v-icon>mdi-theme-light-dark</v-icon>
           </v-btn>
           <v-btn
-          v-if="usuarioAdmin"
+            v-if="usuarioAdmin"
             block
             large
             color="tertiary"
@@ -614,7 +643,11 @@
                   <v-divider class="mb-2"></v-divider>
                   <v-pagination
                     v-model="pagina"
-                    :length="Math.ceil(categoriasListadas['count'] / 10)"
+                    :length="
+                      categoriasListadas
+                        ? Math.ceil(categoriasListadas['count'] / 10)
+                        : 0
+                    "
                     :total-visible="5"
                     class="flex-grow-1"
                     circle
@@ -642,7 +675,11 @@
                   <v-divider class="mb-2"></v-divider>
                   <v-pagination
                     v-model="paginaDepartamentos"
-                    :length="Math.ceil(departamentosListados['count'] / 10)"
+                    :length="
+                      departamentosListados
+                        ? Math.ceil(departamentosListados['count'] / 10)
+                        : 0
+                    "
                     :total-visible="5"
                     class="flex-grow-1"
                     circle
@@ -686,6 +723,8 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
+// import dayjs from 'dayjs'
 import { mapActions, mapMutations, mapState } from 'vuex'
 export default {
   name: 'feed',
@@ -715,6 +754,7 @@ export default {
     date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .substr(0, 10),
+    dateFormatada: null,
 
     // filtro
     categoriaSelecionada: [],
@@ -744,6 +784,11 @@ export default {
     },
     fab (v) {
       this.overlay = v
+    },
+    date (v) {
+      if (v) {
+        this.dateFormatada = dayjs(v).format('DD/MM/YYYY')
+      }
     }
   },
   async created () {
@@ -775,18 +820,29 @@ export default {
       )
     },
     usuarioEstaLogado () {
-      window.console.log(this.usuarioLogado)
-      if (this.usuarioLogado) { return true } else { return false }
+      if (this.usuarioLogado) {
+        return true
+      } else {
+        return false
+      }
     },
     usuarioAdmin () {
-      if (this.usuarioLogado && this.usuarioLogado.acessos && this.usuarioLogado.acessos.includes('administrador')) {
+      if (
+        this.usuarioLogado &&
+        this.usuarioLogado.acessos &&
+        this.usuarioLogado.acessos.includes('administrador')
+      ) {
         return true
       } else {
         return false
       }
     },
     usuarioServidor () {
-      if (this.usuarioLogado && this.usuarioLogado.acessos && this.usuarioLogado.acessos.includes('servidor')) {
+      if (
+        this.usuarioLogado &&
+        this.usuarioLogado.acessos &&
+        this.usuarioLogado.acessos.includes('servidor')
+      ) {
         return true
       } else {
         return false
@@ -863,6 +919,31 @@ export default {
       await this.listagemDePosts()
     },
     async realizarPostagem () {
+      if (
+        this.categoriaSelecionadaPost &&
+        this.categoriaSelecionadaPost.length > 3
+      ) {
+        this.$store.commit('SET_SNACKBAR', {
+          timeout: 3000,
+          color: 'error',
+          snackbar: true,
+          text: 'Selecione no máximo 3 categorias para a postagem'
+        })
+        return
+      }
+      if (
+        this.departamentoSelecionadoPost &&
+        this.departamentoSelecionadoPost.length > 3
+      ) {
+        this.$store.commit('SET_SNACKBAR', {
+          timeout: 3000,
+          color: 'error',
+          snackbar: true,
+          text: 'Selecione no máximo 3 departamentos para a postagem'
+        })
+        return
+      }
+
       if (await this.$refs.formularioPost.validate()) {
         const body = {
           name: this.titulo || null,

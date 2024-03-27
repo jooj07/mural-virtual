@@ -133,7 +133,7 @@
       <v-col cols="12" v-if="posts && posts.rows && posts.rows.length">
         <v-pagination
           v-model="pagina"
-          :length="Math.ceil(posts['count'] / 10)"
+          :length="posts ? Math.ceil(posts['count'] / 10) : 0"
           :total-visible="5"
           class="flex-grow-1"
           circle
@@ -216,7 +216,7 @@
                     <v-divider class="mb-2"></v-divider>
                     <v-pagination
                       v-model="pagina"
-                      :length="Math.ceil(categoriasListadas['count'] / 10)"
+                      :length="categoriasListadas ? Math.ceil(categoriasListadas['count'] / 10) : 0"
                       :total-visible="5"
                       class="flex-grow-1"
                       circle
@@ -251,7 +251,7 @@
                     <v-divider class="mb-2"></v-divider>
                     <v-pagination
                       v-model="paginaDepartamentos"
-                      :length="Math.ceil(departamentosListados['count'] / 10)"
+                      :length="departamentosListados ? Math.ceil(departamentosListados['count'] / 10) : 0"
                       :total-visible="5"
                       class="flex-grow-1"
                       circle
@@ -575,6 +575,13 @@ export default {
     },
     async salvarOuEditar () {
       if (await this.$refs.formularioPost.validate()) {
+        // if(this.categoriaSelecionadaPost && this.categoriaSelecionadaPost.length > 3) {
+        //   this.$store.commit('SET_SNACKBAR', {
+        //     cor: 'error',
+        //     mensagem: 'Selecione no máximo 3 categorias'
+        //   })
+        //   return
+        // }
         const form = {
           name: this.titulo || null,
           description: this.postDescricao || null,

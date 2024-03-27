@@ -32,7 +32,7 @@
       <v-pagination
         v-if="data && data.rows && Number(data.rows) > 1"
         v-model="page"
-        :length="Math.ceil(data['count'] / 10)"
+        :length="data ? Math.ceil(data['count'] / 10): 0"
         :total-visible="5"
         class="flex-grow-1"
         circle

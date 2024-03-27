@@ -1,10 +1,10 @@
-// const database = require('../db')
+const database = require('../db')
 const Section = require('../models/section')
 const Post = require('../models/post')
 const User = require('../models/user')
 const Category = require('../models/category')
-// const db = database
-// const Op = db.Sequelize.Op
+const db = database
+const Op = db.Sequelize.Op
 
 const {
   // genareteError,
@@ -16,6 +16,13 @@ const count = async (req, res) => {
     const categorias = await Category.count()
     const sections = await Section.count()
     const posts = await Post.count()
+    const postsAtivos = await Post.count({
+      where: {
+        expiresAt: {
+          [Op.gte]: new Date()
+        }
+      }
+    })
     const users = await User.count()
 
     const obj = [{
@@ -29,15 +36,21 @@ const count = async (req, res) => {
       contador: `${sections}`
     },
     {
+      titulo: 'Usuários Cadastrados',
+      link: '/dashboard/usuarios',
+      contador: `${users}`
+    },
+    {
       titulo: 'Posts Feitos',
       link: '/dashboard',
       // link: '/dashboard/atividades',
       contador: `${posts}`
     },
     {
-      titulo: 'Usuários Cadastrados',
-      link: '/dashboard/usuarios',
-      contador: `${users}`
+      titulo: 'Posts Ativos',
+      link: '/dashboard',
+      // link: '/dashboard/atividades',
+      contador: `${postsAtivos}`
     }
     ]
 

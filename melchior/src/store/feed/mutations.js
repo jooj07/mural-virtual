@@ -1,5 +1,4 @@
 export const SET_POSTS = async (state, payload) => {
-  window.console.log('SET_POSTS', payload)
   state.posts = payload
 }
 

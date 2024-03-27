@@ -1,9 +1,5 @@
 const database = require('../db')
-const Post = require('../models/post')
 const User = require('../models/user')
-const Role = require('../models/role')
-const CategoryModel = require('../models/category')
-const SectionModel = require('../models/section')
 const { QueryTypes } = require('sequelize')
 const CryptoJS = require('crypto-js')
 const bcrypt = require('bcryptjs')
@@ -17,8 +13,8 @@ const {
 } = require('../utils/generateError')
 
 const listarUsuarios = async (req, res) => {
-  const post = await User.findByPk(1)
-  console.log(Object.keys(post.__proto__))
+  // const post = await User.findByPk(1)
+  // console.log(Object.keys(post.__proto__))
   try {
     const userRequest = req.query.userId
     const userFound = await User.findByPk(Number(userRequest))
@@ -107,7 +103,6 @@ const listarUsuarios = async (req, res) => {
 
 const gerenciarUsuario = async (req, res) => {
   try {
-    console.log(req.body)
     const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
     if (!userFound) genareteError('Você não está logado!', 401)
@@ -150,17 +145,12 @@ const gerenciarUsuario = async (req, res) => {
         await userFound.addRole(Number(req.query.addRole))
       }
       if (req.body) {
-        console.log('caiu aq')
-        console.log(req.body)
-        console.log(Object.keys(userFound.__proto__))
         const rolesToEdit = req.body.roles
         const rolesUser = await userFound.getRole()
-        console.log('rolesuser')
-        console.log(rolesUser)
+
         if (rolesUser && rolesUser.length && !_.isEqual(rolesToEdit, rolesUser.map(i => i.id))) {
           if (rolesUser && rolesUser.length) {
             for (const i of rolesUser) {
-              console.log(i.id)
               await userFound.removeRole(i.id)
             }
           }
@@ -212,8 +202,6 @@ const usuarioRemoverDataExpiracao = async (req, res) => {
     }
     return res.status(200).send('Usuário excluído com sucesso!')
   } catch (error) {
-    console.log('----------------------------')
-    console.log(error)
     returnError(error, res)
   }
 }

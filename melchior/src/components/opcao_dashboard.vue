@@ -37,7 +37,6 @@ export default {
   },
   methods: {
     levarParaPagina (path) {
-      window.console.log(path)
       if (path && path !== '/dashboard') {
         this.$router.push({ path })
       }

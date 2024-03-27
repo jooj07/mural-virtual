@@ -54,11 +54,11 @@
             Number(departamentosListados.count) > 1
           "
           v-model="pagina"
-          :length="Math.ceil(departamentosListados['count'] / 10)"
+          :length="departamentosListados ? Math.ceil(departamentosListados['count'] / 10) : 0"
           :total-visible="
-            Math.ceil(departamentosListados['count'] / 10) > 10
+            departamentosListados && Math.ceil(departamentosListados['count'] / 10) > 10
               ? 10
-              : Math.ceil(departamentosListados['count'] / 10)
+              : departamentosListados ? Math.ceil(departamentosListados['count'] / 10) : 0
           "
           class="flex-grow-1"
           circle

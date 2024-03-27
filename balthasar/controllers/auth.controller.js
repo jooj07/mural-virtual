@@ -67,6 +67,8 @@ const signIn = async (req, res) => {
       genareteError('Usuário não encontrado!', 404)
     }
 
+    if (usuarioEncontrado.active === false) genareteError('Usuário inativo, favor verificar com o administrador do sistema!', 404)
+
     const passphrase = process.env.CHAVE_TRADUTORA
     const bytes = CryptoJS.AES.decrypt(req.body.password, passphrase)
     req.body.password = bytes.toString(CryptoJS.enc.Utf8)

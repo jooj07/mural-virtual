@@ -174,7 +174,7 @@ const alterPost = async (req, res) => {
   try {
     // TODO console.log(Object.keys(post.__proto__)) OBTER OS MÉTODOS DE RELACIONAMENO DAS INSTÂNCIAS
     // Check se trás o id do usuário
-    console.log(req.body)
+
     if (!req.body.userId) throw new Error('Você não está logado!')
     const userRequest = req.body.userId
     const userFound = await User.findByPk(Number(userRequest))
@@ -199,7 +199,6 @@ const alterPost = async (req, res) => {
     const postUser = await postFound.hasUser(userFound.id)
     if (isAdm || postUser) {
       await postFound.update(req.body)
-      console.log('--------->', req.body.categories)
       if (req.body && req.body.categories) {
         const categoriasAssociadas = await PostCategory.findAll({
           where: {

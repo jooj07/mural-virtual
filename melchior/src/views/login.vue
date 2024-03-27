@@ -93,7 +93,6 @@ export default {
         setTimeout(() => {
           this.$refs.form.reset()
         }, 1500)
-        console.log('inválido')
       }
     }
   }

@@ -57,11 +57,11 @@
       >
         <v-pagination
           v-model="pagina"
-          :length="Math.ceil(categoriasListadas['count'] / 10)"
+          :length="categoriasListadas ? Math.ceil(categoriasListadas['count'] / 10) : 0 "
           :total-visible="
-            Math.ceil(categoriasListadas['count'] / 10) > 10
+            categoriasListadas && Math.ceil(categoriasListadas['count'] / 10) > 10
               ? 10
-              : Math.ceil(categoriasListadas['count'] / 10)
+              : categoriasListadas ? Math.ceil(categoriasListadas['count'] / 10) : 0
           "
           class="flex-grow-1"
           circle

@@ -121,8 +121,6 @@ const deleteSection = async (req, res) => {
     WHERE p."deletedAt" IS NULL and p."expiresAt" > NOW()
     AND s.id = ${req.params.id}; `, { type: QueryTypes.SELECT })
 
-    console.log(existePostAtivo)
-
     if (existePostAtivo && existePostAtivo.length) {
       genareteError('Existem posts ativos neste departamento, exclua-os ou altere a data de expiração!', 404)
     } else {

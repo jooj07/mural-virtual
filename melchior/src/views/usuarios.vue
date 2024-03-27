@@ -539,14 +539,12 @@ export default {
       }
     },
     async alterarSenhaUsuario () {
-      window.console.log(this.$refs)
       if (this.alteracaoSenha === this.alteracaoSenhaConfirmacao) {
         if (await this.$refs.formularioEdicaoSenha.validate()) {
           const hashedPassword = CryptoJS.AES.encrypt(
             this.alteracaoSenha,
             process.env.VUE_APP_CHAVE_TRADUTORA
           ).toString()
-          window.console.log(hashedPassword)
           const resposta = await this.alterarSenha({
             userId: this.$store.state.loginCadastro.usuarioLogado.id || null,
             id: this.editando.id,

@@ -1,6 +1,5 @@
 const database = require('../db')
 const Category = require('../models/category')
-const postCategory = require('../models/postCategory')
 const { QueryTypes } = require('sequelize')
 const db = database
 const Op = db.Sequelize.Op
