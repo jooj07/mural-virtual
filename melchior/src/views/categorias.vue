@@ -173,6 +173,7 @@
                           :hide-details="!(errors && errors.length)"
                           :error-messages="errors"
                           label="Nome"
+                          class="negrito"
                           dense
                           outlined
                         ></v-text-field>
@@ -189,6 +190,7 @@
                           :hide-details="!(errors && errors.length)"
                           :error-messages="errors"
                           label="Descrição"
+                          class="negrito"
                           dense
                           outlined
                         ></v-text-field>

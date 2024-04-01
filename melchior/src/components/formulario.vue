@@ -4,15 +4,13 @@
 
     <v-card class="mx-auto" max-width="700" style="margin-top: -64px">
       <v-toolbar flat class="d-flex flex-column justify-space-between">
-          <v-btn
-          @click="$emit('voltar')"
-          icon
-          color="primary"
-          >
-            <v-icon>mdi-arrow-left</v-icon>
-          </v-btn>
-        <v-toolbar-title >
-          <span class="text-h4 font-weight-black ma-0">{{titulo}}</span>
+        <v-btn @click="$emit('voltar')" icon color="primary">
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+        <v-toolbar-title>
+          <p class="text-h4 font-weight-black ma-0 pa-0">{{ titulo }}</p>
+          <p v-if="$vuetify.breakpoint.width <= 700" class="text-caption font-weight-black ma-0 pa-0"> Campos obrigatórios estão em negrito</p>
+          <p v-else class="text-caption ma-0 pa-0"> Campos obrigatórios estão em negrito</p>
         </v-toolbar-title>
         <v-spacer></v-spacer>
 

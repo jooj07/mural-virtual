@@ -195,6 +195,9 @@
                             item-value="id"
                             item-text="name"
                             multiple
+                            clearable
+                            chips
+                            small-chips
                             outlined
                           />
                         </validation-provider>

@@ -4,7 +4,7 @@
       v-if="postExibindo"
       class="d-flex justify-space-between align-center text-center"
     >
-      <v-btn class="mx-2" fab dark color="primary" @click="reset()">
+      <v-btn large class="mx-2" icon dark color="primary" @click="reset()">
         <v-icon dark> mdi-arrow-left </v-icon>
       </v-btn>
       <div>
@@ -73,7 +73,12 @@
           </v-card>
         </v-menu>
         <v-btn
-          v-if="!editarPost && usuarioAdministrador"
+          v-if="
+            !editarPost &&
+            !usuarioAdministrador &&
+            postExibindo &&
+            postExibindo.user[0].id === usuarioLogado.id
+          "
           class="mx-2"
           fab
           dark
@@ -83,15 +88,63 @@
         >
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
+
+        <v-btn
+          v-if="
+            !editarPost &&
+            usuarioAdministrador &&
+            postExibindo &&
+            postExibindo.user[0].id === usuarioLogado.id
+          "
+          class="mx-2"
+          fab
+          dark
+          color="primary"
+          small
+          @click="editarPost = true"
+        >
+          <v-icon>mdi-pencil-outline</v-icon>
+        </v-btn>
+
+        <v-tooltip bottom color="error">
+          <template v-slot:activator="{ on, attrs }">
+            <v-btn
+              v-if="
+                !editarPost &&
+                usuarioAdministrador &&
+                postExibindo &&
+                postExibindo.user[0].id !== usuarioLogado.id
+              "
+              class="mx-2"
+              fab
+              dark
+              outlined
+              color="error"
+              small
+              v-bind="attrs"
+              v-on="on"
+              @click="editarPost = true"
+            >
+              <v-icon>mdi-pencil-outline</v-icon>
+            </v-btn>
+          </template>
+          <span class="text-subtitle"
+            >TENHA CUIDADO AO EDITAR POSTS DE OUTROS USUÁRIOS! <br />
+            POR SEGURANÇA
+            <strong>VOCÊ SERÁ MARCADO COMO AUTOR DESSA POSTAGEM</strong> APÓS
+            SALVAR AS MODIFICAÇÕES</span
+          >
+        </v-tooltip>
         <botao-aviso
           v-if="editarPost"
           corIcone="error"
+          large
           titulo="Excluir post"
           texto="Deseja realmente excluir este post?"
           icone="mdi-delete"
           @confirmar="exclusaoPost()"
         />
-        <v-btn
+        <!-- <v-btn
           v-if="editarPost"
           class="mx-2"
           fab
@@ -100,13 +153,17 @@
           @click="sairDaEdicao()"
         >
           <v-icon>mdi-close</v-icon>
-        </v-btn>
+        </v-btn> -->
       </div>
     </div>
 
     <v-row
       v-if="!postExibindo && posts && posts.rows && posts.rows.length"
-      :style="`height: ${$vuetify.breakpoint.mdAndDown ?$vuetify.breakpoint.height-100 : $vuetify.breakpoint.height-50}px`"
+      :style="`height: ${
+        $vuetify.breakpoint.mdAndDown
+          ? $vuetify.breakpoint.height - 100
+          : $vuetify.breakpoint.height - 50
+      }px`"
       class="d-flex flex-row align-content-space-between"
     >
       <v-col
@@ -118,7 +175,6 @@
         class=""
         v-for="post in posts['rows']"
         :key="post.id"
-
       >
         <card-post
           :autor="post.user[0].name"
@@ -142,7 +198,10 @@
         ></v-pagination>
       </v-col>
     </v-row>
-    <v-row v-if="!postExibindo && posts && posts.rows && !posts.rows.length" :style="`height: ${$vuetify.breakpoint.height - 130}px`">
+    <v-row
+      v-if="!postExibindo && posts && posts.rows && !posts.rows.length"
+      :style="`height: ${$vuetify.breakpoint.height - 130}px`"
+    >
       <v-col cols="12" class="d-flex flex-column justify-center align-center">
         <v-icon :size="100" color="primary">
           mdi-magnify-remove-outline
@@ -153,184 +212,232 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="postExibindo && editarPost">
-      <validation-observer ref="formularioPost">
-        <v-form class="mt-4">
-          <v-row>
-            <v-col cols="12" class="my-1">
-              <validation-provider
-                name="Título"
-                rules="required"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="titulo"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                  outlined
-                  multiple
-                  dense
-                  class="elevation-1"
-                  label="Título"
-                />
-              </validation-provider>
-            </v-col>
-            <v-col cols="12" class="my-1">
-              <validation-provider
-                name="Descição"
-                rules="required"
-                v-slot="{ errors }"
-              >
-                <v-text-field
-                  v-model="postDescricao"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                  outlined
-                  multiple
-                  dense
-                  class="elevation-1"
-                  label="Descrição"
-                />
-              </validation-provider>
-            </v-col>
-            <v-col cols="12" class="my-1">
-              <validation-provider
-                name="Categoria"
-                rules="required"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  v-model="categoriaSelecionadaPost"
-                  :items="categoriasListadasFiltro"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                  outlined
-                  multiple
-                  dense
-                  class="elevation-1"
-                  label="Categoria"
-                  item-text="name"
-                  item-value="id"
-                >
-                  <template v-slot:append-item>
-                    <v-divider class="mb-2"></v-divider>
-                    <v-pagination
-                      v-model="pagina"
-                      :length="categoriasListadas ? Math.ceil(categoriasListadas['count'] / 10) : 0"
-                      :total-visible="5"
-                      class="flex-grow-1"
-                      circle
-                      color="primary"
-                      @input="categoriasRequisicao(pagina)"
-                    ></v-pagination>
-                  </template>
-                </v-select>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12" class="my-1">
-              <validation-provider
-                name="Departamento"
-                rules="required"
-                v-slot="{ errors }"
-              >
-                <v-select
-                  v-model="departamentoSelecionadoPost"
-                  :items="departamentosListadosFiltro"
-                  :hide-details="!(errors && errors.length)"
-                  :error-messages="errors"
-                  outlined
-                  multiple
-                  dense
-                  class="elevation-1"
-                  label="Departamento"
-                  item-text="name"
-                  item-value="id"
-                >
-                  <template v-slot:prepend-item> </template>
-                  <template v-slot:append-item>
-                    <v-divider class="mb-2"></v-divider>
-                    <v-pagination
-                      v-model="paginaDepartamentos"
-                      :length="departamentosListados ? Math.ceil(departamentosListados['count'] / 10) : 0"
-                      :total-visible="5"
-                      class="flex-grow-1"
-                      circle
-                      color="primary"
-                      @input="departamentosRequisicao(paginaDepartamentos)"
-                    ></v-pagination>
-                  </template>
-                </v-select>
-              </validation-provider>
-            </v-col>
-            <v-col cols="12">
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                :return-value.sync="date"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
+    <v-row v-if="postExibindo && editarPost" class="mt-4">
+      <v-card v-if="postExibindo && editarPost" class="elevation-0">
+        <v-card-title
+          v-if="postExibindo && editarPost"
+          :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''"
+        >
+          <span
+            :class="
+              $vuetify.breakpoint.width <= 700
+                ? 'font-weight-black'
+                : 'text-h4 font-weight-black'
+            "
+            >Editar postagem</span
+          >
+        </v-card-title>
+        <v-card-subtitle
+          :class="
+            $vuetify.breakpoint.width <= 700 ? 'text-caption pa-1 ma-1' : 'pt-1'
+          "
+          >Campos obrigatórios estão em negrito</v-card-subtitle
+        >
+
+        <v-card-text
+          v-if="postExibindo && editarPost"
+          class="mt-3 mx-0 px-0 mb-0 my-0"
+        >
+          <validation-observer ref="formularioPost">
+            <v-form>
+              <v-row>
+                <v-col cols="12" class="my-1">
                   <validation-provider
-                    name="Data de expiração"
+                    name="Título"
                     rules="required"
                     v-slot="{ errors }"
                   >
                     <v-text-field
-                      v-model="date"
+                      v-model="titulo"
                       :hide-details="!(errors && errors.length)"
                       :error-messages="errors"
-                      label="Data de expiração deste post"
-                      prepend-inner-icon="mdi-calendar"
-                      class="elevation-1"
-                      dense
                       outlined
-                      readonly
-                      v-bind="attrs"
-                      v-on="on"
-                    ></v-text-field>
+                      multiple
+                      dense
+                      class="elevation-1 negrito"
+                      label="Título"
+                    />
                   </validation-provider>
-                </template>
-                <v-date-picker v-model="date" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="menu = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(date)">
-                    OK
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col cols="12">
-              <p>Conteúdo da postagem</p>
-              <editor v-model="conteudo" :editor-toolbar="customToolbar" />
-            </v-col>
-            <v-col cols="12">
-              <p>Informações extras</p>
-              <editor
-                v-model="informacoesExtras"
-                :editor-toolbar="customToolbar"
-              />
-            </v-col>
-            <v-col cols="12">
-              <v-btn color="primary" @click="salvarOuEditar()">Salvar</v-btn>
-              <v-btn color="acent" class="ml-3" @click="sairDaEdicao()"
-                >Cancelar</v-btn
-              >
-            </v-col>
-          </v-row>
-        </v-form>
-      </validation-observer>
+                </v-col>
+                <v-col cols="12" class="my-1">
+                  <validation-provider
+                    name="Descição"
+                    rules="required"
+                    v-slot="{ errors }"
+                  >
+                    <v-text-field
+                      v-model="postDescricao"
+                      :hide-details="!(errors && errors.length)"
+                      :error-messages="errors"
+                      outlined
+                      multiple
+                      dense
+                      class="elevation-1 negrito"
+                      label="Descrição"
+                    />
+                  </validation-provider>
+                </v-col>
+                <v-col cols="12" class="my-1">
+                  <validation-provider
+                    name="Categoria"
+                    rules="required"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      v-model="categoriaSelecionadaPost"
+                      :items="categoriasListadasFiltro"
+                      :hide-details="!(errors && errors.length)"
+                      :error-messages="errors"
+                      outlined
+                      clearable
+                      chips
+                      small-chips
+                      multiple
+                      dense
+                      class="elevation-1 negrito"
+                      label="Categoria"
+                      item-text="name"
+                      item-value="id"
+                    >
+                      <template v-slot:append-item>
+                        <v-divider class="mb-2"></v-divider>
+                        <v-pagination
+                          v-model="pagina"
+                          :length="
+                            categoriasListadas
+                              ? Math.ceil(categoriasListadas['count'] / 10)
+                              : 0
+                          "
+                          :total-visible="5"
+                          class="flex-grow-1"
+                          circle
+                          color="primary"
+                          @input="categoriasRequisicao(pagina)"
+                        ></v-pagination>
+                      </template>
+                    </v-select>
+                  </validation-provider>
+                </v-col>
+                <v-col cols="12" class="my-1">
+                  <validation-provider
+                    name="Departamento"
+                    rules="required"
+                    v-slot="{ errors }"
+                  >
+                    <v-select
+                      v-model="departamentoSelecionadoPost"
+                      :items="departamentosListadosFiltro"
+                      :hide-details="!(errors && errors.length)"
+                      :error-messages="errors"
+                      outlined
+                      multiple
+                      clearable
+                      chips
+                      small-chips
+                      dense
+                      class="elevation-1 negrito"
+                      label="Departamento"
+                      item-text="name"
+                      item-value="id"
+                    >
+                      <template v-slot:prepend-item> </template>
+                      <template v-slot:append-item>
+                        <v-divider class="mb-2"></v-divider>
+                        <v-pagination
+                          v-model="paginaDepartamentos"
+                          :length="
+                            departamentosListados
+                              ? Math.ceil(departamentosListados['count'] / 10)
+                              : 0
+                          "
+                          :total-visible="5"
+                          class="flex-grow-1"
+                          circle
+                          color="primary"
+                          @input="departamentosRequisicao(paginaDepartamentos)"
+                        ></v-pagination>
+                      </template>
+                    </v-select>
+                  </validation-provider>
+                </v-col>
+                <v-col cols="12">
+                  <v-menu
+                    ref="menu"
+                    v-model="menu"
+                    :close-on-content-click="false"
+                    :return-value.sync="date"
+                    transition="scale-transition"
+                    offset-y
+                    min-width="auto"
+                  >
+                    <template v-slot:activator="{ on, attrs }">
+                      <validation-provider
+                        name="Data de expiração"
+                        rules="required"
+                        v-slot="{ errors }"
+                      >
+                        <v-text-field
+                          v-model="dateFormatada"
+                          :hide-details="!(errors && errors.length)"
+                          :error-messages="errors"
+                          label="Data de expiração deste post"
+                          prepend-inner-icon="mdi-calendar"
+                          class="elevation-1 negrito"
+                          dense
+                          outlined
+                          readonly
+                          v-bind="attrs"
+                          v-on="on"
+                        ></v-text-field>
+                      </validation-provider>
+                    </template>
+                    <v-date-picker v-model="date" no-title scrollable>
+                      <v-spacer></v-spacer>
+                      <v-btn text color="error" @click="menu = false">
+                        Cancelar Edição
+                      </v-btn>
+                      <v-btn
+                        text
+                        color="primary"
+                        @click="$refs.menu.save(date)"
+                      >
+                        OK
+                      </v-btn>
+                    </v-date-picker>
+                  </v-menu>
+                </v-col>
+                <v-col cols="12">
+                  <p class="font-weight-black">Conteúdo da postagem</p>
+                  <editor v-model="conteudo" :editor-toolbar="customToolbar" />
+                </v-col>
+                <v-col cols="12">
+                  <p>Informações extras</p>
+                  <editor
+                    v-model="informacoesExtras"
+                    :editor-toolbar="customToolbar"
+                  />
+                </v-col>
+                <v-col cols="12">
+                  <v-btn color="primary" outlined @click="salvarOuEditar()"
+                    >Salvar</v-btn
+                  >
+                  <v-btn
+                    color="error"
+                    outlined
+                    class="ml-3"
+                    @click="sairDaEdicao()"
+                    >Cancelar Edição</v-btn
+                  >
+                </v-col>
+              </v-row>
+            </v-form>
+          </validation-observer>
+        </v-card-text>
+      </v-card>
     </v-row>
 
     <v-container v-if="postExibindo && !editarPost" fluid>
-      <v-row
-
-        class="d-flex justify-center align-center"
-      >
+      <v-row class="d-flex justify-center align-center">
         <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="mt-3 py-2">
           <h1 class="text-h3 font-weight-bold">{{ titulo }}</h1>
         </v-col>
@@ -341,7 +448,9 @@
           <h5>
             Postado por: {{ postExibindo.user[0].name }}
             <br />
-            em: {{ format(date) }}
+            <span v-if="postExibindo && postExibindo.createdAt"
+              >Data da postagem: {{ format(postExibindo.createdAt) }}</span
+            >
           </h5>
         </v-col>
         <v-col
@@ -433,7 +542,7 @@ export default {
   name: 'Home',
   data: () => ({
     customToolbar: [
-      ['bold', 'italic', 'underline', 'strike'], // Estilos de texto
+      ['bold', 'italic', 'underline', 'strike', 'link'], // Estilos de texto
       ['blockquote', 'code-block'], // Blocos de texto
       [{ header: 1 }, { header: 2 }], // Cabeçalhos
       [{ list: 'ordered' }, { list: 'bullet' }], // Listas ordenadas e não ordenadas
@@ -461,7 +570,8 @@ export default {
     informacoesExtras: null,
     tamanhoFonte: 20,
     id: null,
-    expand: false
+    expand: false,
+    dateFormatada: null
   }),
   components: {
     'card-post': card_post
@@ -495,7 +605,7 @@ export default {
   watch: {
     date (v) {
       if (v) {
-        v = dayjs(v).format('DD/MM/YYYY')
+        this.dateFormatada = dayjs(v).format('DD/MM/YYYY')
       }
     },
     paginaPosts (v) {
@@ -521,9 +631,12 @@ export default {
     ...mapMutations(['SET_FILTROS_BUSCA', 'SET_PAGINA_POSTS']),
 
     format (date) {
-      return dayjs(date).format('D [de] MMMM [de] YYYY, HH:mm:ss')
+      return dayjs(date).format('D [de] MMMM [de] YYYY, HH:mm')
     },
     async exibicaoPost (id) {
+      this.editarPost = false
+      this.postExibindo = null
+
       const dados = await this.exibirPosts(id)
       this.titulo = dados.name ? dados.name : null
       this.postDescricao = dados.description ? dados.description : null
@@ -571,17 +684,54 @@ export default {
     },
     sairDaEdicao () {
       this.exibicaoPost(this.id)
-      this.editarPost = false
     },
     async salvarOuEditar () {
       if (await this.$refs.formularioPost.validate()) {
-        // if(this.categoriaSelecionadaPost && this.categoriaSelecionadaPost.length > 3) {
-        //   this.$store.commit('SET_SNACKBAR', {
-        //     cor: 'error',
-        //     mensagem: 'Selecione no máximo 3 categorias'
-        //   })
-        //   return
-        // }
+        if (
+          this.categoriaSelecionadaPost &&
+          this.categoriaSelecionadaPost.length > 3
+        ) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Selecione no máximo 3 categorias para a postagem'
+          })
+          return
+        }
+        if (
+          this.departamentoSelecionadoPost &&
+          this.departamentoSelecionadoPost.length > 3
+        ) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Selecione no máximo 3 departamentos para a postagem'
+          })
+          return
+        }
+
+        if (this.$dayjs(this.date).isSameOrBefore(this.$dayjs())) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Data de expiração não pode ser anterior a data atual'
+          })
+          return
+        }
+
+        if (!this.conteudo || (this.conteudo && !this.conteudo.length)) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Conteúdo da postagem não pode ser vazio'
+          })
+          return
+        }
+
         const form = {
           name: this.titulo || null,
           description: this.postDescricao || null,
@@ -595,6 +745,10 @@ export default {
         }
         await this.postEditar(form)
         this.sairDaEdicao()
+      } else {
+        setTimeout(() => {
+          this.$refs.formularioPost.reset()
+        }, 1500)
       }
     },
     async listagemDePosts () {
@@ -602,9 +756,17 @@ export default {
 
       await this.listarPosts({
         offset: this.pagina * 10 - 10,
-        category: this.filtrosBusca.categoriaSelecionada,
-        section: this.filtrosBusca.departamentoSelecionado,
-        name: this.filtrosBusca.tituloPesquisa
+        category:
+          this.filtrosBusca.categoriaSelecionada &&
+          this.filtrosBusca.categoriaSelecionada.length > 0
+            ? this.filtrosBusca.categoriaSelecionada
+            : null,
+        section:
+          this.filtrosBusca.departamentoSelecionado &&
+          this.filtrosBusca.departamentoSelecionado.length > 0
+            ? this.filtrosBusca.departamentoSelecionado
+            : null,
+        name: this.filtrosBusca.tituloPesquisa || null
       })
     },
     async exclusaoPost () {

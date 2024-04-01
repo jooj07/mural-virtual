@@ -10,11 +10,30 @@
         <v-overlay :value="overlayEditor">
           <v-card
             :light="!$vuetify.theme.dark"
-            max-width="800"
-            max-height="800"
+            max-width="100%"
+            :height="$vuetify.breakpoint.width <= 700 ? '600' : 'auto'"
+            class="ma-4"
             style="overflow: auto"
           >
-            <v-card-title> Nova postagem </v-card-title>
+            <v-card-title :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''">
+              <span
+              :class="$vuetify.breakpoint.width <= 700 ? 'font-weight-black' : 'text-h4 font-weight-black'"
+              >Nova postagem</span>
+              <v-spacer></v-spacer>
+              <v-btn
+                color="error"
+                icon
+                small
+                dense
+                @click="cancelarPostagem()"
+              >
+                <v-icon>mdi-close</v-icon>
+              </v-btn>
+            </v-card-title>
+            <v-card-subtitle
+            :class="$vuetify.breakpoint.width <= 700 ? 'text-caption pa-1 ma-1' : 'pt-1'"
+              >Campos obrigatórios estão em negrito</v-card-subtitle
+            >
             <v-divider></v-divider>
             <v-card-text style="height: 600px !important; overflow: auto">
               <validation-observer ref="formularioPost">
@@ -33,7 +52,7 @@
                           outlined
                           multiple
                           dense
-                          class="elevation-1"
+                          class="elevation-1 negrito"
                           label="Título"
                         />
                       </validation-provider>
@@ -51,7 +70,7 @@
                           outlined
                           multiple
                           dense
-                          class="elevation-1"
+                          class="elevation-1 negrito"
                           label="Descrição"
                         />
                       </validation-provider>
@@ -68,10 +87,13 @@
                           :items="categoriasListadasFiltro"
                           :hide-details="!(errors && errors.length)"
                           :error-messages="errors"
+                          clearable
                           outlined
+                          chips
+                          small-chips
                           multiple
                           dense
-                          class="elevation-1"
+                          class="elevation-1 negrito"
                           label="Categoria"
                           item-text="name"
                           item-value="id"
@@ -108,8 +130,11 @@
                           :error-messages="errors"
                           outlined
                           multiple
+                          clearable
+                          chips
+                          small-chips
                           dense
-                          class="elevation-1"
+                          class="elevation-1 negrito"
                           label="Departamento"
                           item-text="name"
                           item-value="id"
@@ -160,7 +185,7 @@
                               :error-messages="errors"
                               label="Data de expiração deste post"
                               prepend-inner-icon="mdi-calendar"
-                              class="elevation-1"
+                              class="elevation-1 negrito"
                               dense
                               outlined
                               readonly
@@ -185,7 +210,7 @@
                       </v-menu>
                     </v-col>
                     <v-col cols="12">
-                      <p>Conteúdo da postagem</p>
+                      <p class="font-weight-black">Conteúdo da postagem</p>
                       <editor
                         v-model="conteudo"
                         :editor-toolbar="customToolbar"
@@ -204,10 +229,22 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn color="primary" text @click="realizarPostagem()">
+              <v-btn
+                color="primary"
+                outlined
+                small
+                dense
+                @click="realizarPostagem()"
+              >
                 Salvar
               </v-btn>
-              <v-btn color="error" text @click="cancelarPostagem()">
+              <v-btn
+                color="error"
+                outlined
+                small
+                dense
+                @click="cancelarPostagem()"
+              >
                 Fechar
               </v-btn>
             </v-card-actions>
@@ -304,6 +341,9 @@
                         :items="categoriasListadasFiltro"
                         outlined
                         multiple
+                        clearable
+                        chips
+                        small-chips
                         dense
                         hide-details
                         class="elevation-1"
@@ -335,6 +375,9 @@
                         :items="departamentosListadosFiltro"
                         outlined
                         multiple
+                        clearable
+                        chips
+                        small-chips
                         dense
                         hide-details
                         class="elevation-1"
@@ -434,9 +477,10 @@
               link
               @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
               title="Nova Categoria"
+              class="pl-0"
             >
               <v-list-item-icon>
-                <v-icon color="secondary">mdi-plus</v-icon>
+                <v-icon  color="secondary" x-large>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Nova Categoria</v-list-item-title>
             </v-list-item>
@@ -450,9 +494,10 @@
               link
               @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
               title="Novo Departamento"
+              class="pl-0"
             >
               <v-list-item-icon>
-                <v-icon color="secondary">mdi-plus</v-icon>
+                <v-icon color="secondary" x-large>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Novo Departamento</v-list-item-title>
             </v-list-item>
@@ -497,6 +542,7 @@
       >
         <template v-slot:activator>
           <v-btn
+            v-if="!overlayEditor"
             v-model="fab"
             :color="!fab ? 'primary' : 'error'"
             dark
@@ -632,6 +678,9 @@
                 :items="categoriasListadasFiltro"
                 outlined
                 multiple
+                clearable
+                chips
+                small-chips
                 dense
                 hide-details
                 class="elevation-1"
@@ -663,6 +712,9 @@
                 :items="departamentosListadosFiltro"
                 outlined
                 multiple
+                clearable
+                chips
+                small-chips
                 dense
                 hide-details
                 class="elevation-1"
@@ -730,7 +782,7 @@ export default {
   name: 'feed',
   data: () => ({
     customToolbar: [
-      ['bold', 'italic', 'underline', 'strike'], // Estilos de texto
+      ['bold', 'italic', 'underline', 'strike', 'link'], // Estilos de texto
       ['blockquote', 'code-block'], // Blocos de texto
       [{ header: 1 }, { header: 2 }], // Cabeçalhos
       [{ list: 'ordered' }, { list: 'bullet' }], // Listas ordenadas e não ordenadas
@@ -742,6 +794,7 @@ export default {
       [{ color: [] }, { background: [] }], // Cores do texto e do fundo
       [{ font: [] }], // Família de fontes
       [{ align: [] }], // Alinhamento
+
       ['clean'] // Limpar formatação
     ],
     // post
@@ -881,9 +934,9 @@ export default {
     },
     async listagemDePosts () {
       this.SET_FILTROS_BUSCA({
-        categoriaSelecionada: this.categoriaSelecionada,
-        departamentoSelecionado: this.departamentoSelecionado,
-        tituloPesquisa: this.tituloPesquisa
+        categoriaSelecionada: this.categoriaSelecionada || null,
+        departamentoSelecionado: this.departamentoSelecionado || null,
+        tituloPesquisa: this.tituloPesquisa || null
       })
       this.SET_PAGINA_POSTS(this.pagina)
 
@@ -919,32 +972,52 @@ export default {
       await this.listagemDePosts()
     },
     async realizarPostagem () {
-      if (
-        this.categoriaSelecionadaPost &&
-        this.categoriaSelecionadaPost.length > 3
-      ) {
-        this.$store.commit('SET_SNACKBAR', {
-          timeout: 3000,
-          color: 'error',
-          snackbar: true,
-          text: 'Selecione no máximo 3 categorias para a postagem'
-        })
-        return
-      }
-      if (
-        this.departamentoSelecionadoPost &&
-        this.departamentoSelecionadoPost.length > 3
-      ) {
-        this.$store.commit('SET_SNACKBAR', {
-          timeout: 3000,
-          color: 'error',
-          snackbar: true,
-          text: 'Selecione no máximo 3 departamentos para a postagem'
-        })
-        return
-      }
-
       if (await this.$refs.formularioPost.validate()) {
+        if (
+          this.categoriaSelecionadaPost &&
+          this.categoriaSelecionadaPost.length > 3
+        ) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Selecione no máximo 3 categorias para a postagem'
+          })
+          return
+        }
+        if (
+          this.departamentoSelecionadoPost &&
+          this.departamentoSelecionadoPost.length > 3
+        ) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Selecione no máximo 3 departamentos para a postagem'
+          })
+          return
+        }
+
+        if (this.$dayjs(this.date).isSameOrBefore(this.$dayjs())) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Data de expiração não pode ser anterior a data atual'
+          })
+          return
+        }
+
+        if (!this.conteudo || (this.conteudo && !this.conteudo.length)) {
+          this.$store.commit('SET_SNACKBAR', {
+            timeout: 3000,
+            color: 'error',
+            snackbar: true,
+            text: 'Conteúdo da postagem não pode ser vazio'
+          })
+          return
+        }
+
         const body = {
           name: this.titulo || null,
           description: this.postDescricao || null,
@@ -956,7 +1029,7 @@ export default {
           status: 1, // mudar
           category: this.categoriaSelecionadaPost || null,
           section: this.departamentoSelecionadoPost || null,
-          userId: 1 // mudar
+          userId: this.usuarioLogado.id || null
         }
         const postagemFeita = await this.postar(body)
         if (postagemFeita) {
@@ -985,6 +1058,7 @@ export default {
       this.departamentoSelecionadoPost = []
       this.overlayEditor = false
       this.conteudo = null
+      this.titulo = null
       this.informacoesExtras = null
       this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
         .toISOString()
@@ -1014,3 +1088,9 @@ export default {
   }
 }
 </script>
+
+<style scoped lang="scss">
+::v-deep .negrito {
+  font-weight: 900 !important;
+}
+</style>

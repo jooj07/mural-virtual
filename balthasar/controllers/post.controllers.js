@@ -27,7 +27,7 @@ const listPosts = async (req, res) => {
     if (!req.params.id) {
       if (req.query.name) {
         where.name = {
-          [Op.substring]: `${req.query.name}`
+          [Op.iLike]: `%${req.query.name}%`
         }
       }
       if (req.query.category || req.query.section) {
@@ -98,6 +98,7 @@ const listPosts = async (req, res) => {
     arecords = await Post.findAll({
       limit: 10,
       offset: req.query.offset || 0,
+      order: [['priority', 'ASC'], ['createdAt', 'DESC']],
       where,
       include: [
         {
@@ -198,7 +199,9 @@ const alterPost = async (req, res) => {
     // Agora sim, vamos buscar o post e ver se pertence ao usuário requisitando
     const postUser = await postFound.hasUser(userFound.id)
     if (isAdm || postUser) {
-      await postFound.update(req.body)
+      // await postFound.setUser(userFound.id)
+      // await postFound.update(req.body)
+      // await postFound.removeUser()
       if (req.body && req.body.categories) {
         const categoriasAssociadas = await PostCategory.findAll({
           where: {

@@ -120,7 +120,7 @@ module.exports = function (app) {
     })
 
   app.put('/api/posts/edit',
-    [authJwt.checkToken, authJwt.checkAdm],
+    [authJwt.checkToken, authJwt.checkUserAndAdmin],
     (req, res, next) => {
       controllersPosts.alterPost(req, res)
     })
