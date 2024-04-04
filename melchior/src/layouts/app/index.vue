@@ -9,33 +9,39 @@
       <v-dialog v-model="overlayEditor" persistent max-width="800">
         <v-overlay :value="overlayEditor">
           <v-card
-            :light="!$vuetify.theme.dark"
+           :light="!$vuetify.theme.dark"
             max-width="100%"
-            :height="$vuetify.breakpoint.width <= 700 ? '600' : 'auto'"
+            :max-height="$vuetify.breakpoint.width <= 700 ? '667' : $vuetify.breakpoint.height - 50"
             class="ma-4"
             style="overflow: auto"
           >
-            <v-card-title :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''">
+            <v-card-title
+              :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''"
+            >
               <span
-              :class="$vuetify.breakpoint.width <= 700 ? 'font-weight-black' : 'text-h4 font-weight-black'"
-              >Nova postagem</span>
-              <v-spacer></v-spacer>
-              <v-btn
-                color="error"
-                icon
-                small
-                dense
-                @click="cancelarPostagem()"
+                :class="
+                  $vuetify.breakpoint.width <= 700
+                    ? 'font-weight-black'
+                    : 'text-h4 font-weight-black'
+                "
+                >Nova postagem</span
               >
+              <v-spacer></v-spacer>
+              <v-btn color="error" icon small dense @click="cancelarPostagem()">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-card-title>
             <v-card-subtitle
-            :class="$vuetify.breakpoint.width <= 700 ? 'text-caption pa-1 ma-1' : 'pt-1'"
+              :class="
+                $vuetify.breakpoint.width <= 700
+                  ? 'text-caption pa-1 ma-1'
+                  : 'pt-1'
+              "
               >Campos obrigatórios estão em negrito</v-card-subtitle
             >
             <v-divider></v-divider>
-            <v-card-text style="height: 600px !important; overflow: auto">
+            <v-card-text class="mt-3"
+            :style="`height: ${$vuetify.breakpoint.width <= 700 ? '500px' : $vuetify.breakpoint.height - 400}; overflow: auto`">
               <validation-observer ref="formularioPost">
                 <v-form>
                   <v-row>
@@ -480,7 +486,7 @@
               class="pl-0"
             >
               <v-list-item-icon>
-                <v-icon  color="secondary" x-large>mdi-plus</v-icon>
+                <v-icon color="secondary" x-large>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Nova Categoria</v-list-item-title>
             </v-list-item>
@@ -534,7 +540,6 @@
         transition="slide-y-reverse-transition"
         style="
           position: absolute;
-          z-index: 1000;
           bottom: 20px;
           right: 20px;
           z-index: 700000000;

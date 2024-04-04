@@ -5,7 +5,7 @@
       class="d-flex justify-space-between align-center text-center"
     >
       <v-btn large class="mx-2" icon dark color="primary" @click="reset()">
-        <v-icon dark> mdi-arrow-left </v-icon>
+        <v-icon v-if="!editarPost" dark> mdi-arrow-left </v-icon>
       </v-btn>
       <div>
         <v-menu
@@ -88,7 +88,6 @@
         >
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-
         <v-btn
           v-if="
             !editarPost &&
@@ -105,7 +104,6 @@
         >
           <v-icon>mdi-pencil-outline</v-icon>
         </v-btn>
-
         <v-tooltip bottom color="error">
           <template v-slot:activator="{ on, attrs }">
             <v-btn
@@ -135,25 +133,6 @@
             SALVAR AS MODIFICAÇÕES</span
           >
         </v-tooltip>
-        <botao-aviso
-          v-if="editarPost"
-          corIcone="error"
-          large
-          titulo="Excluir post"
-          texto="Deseja realmente excluir este post?"
-          icone="mdi-delete"
-          @confirmar="exclusaoPost()"
-        />
-        <!-- <v-btn
-          v-if="editarPost"
-          class="mx-2"
-          fab
-          dark
-          color="error"
-          @click="sairDaEdicao()"
-        >
-          <v-icon>mdi-close</v-icon>
-        </v-btn> -->
       </div>
     </div>
 
@@ -163,7 +142,7 @@
         $vuetify.breakpoint.mdAndDown
           ? $vuetify.breakpoint.height - 100
           : $vuetify.breakpoint.height - 50
-      }px`"
+      }px; overflow: auto`"
       class="d-flex flex-row align-content-space-between"
     >
       <v-col
@@ -212,10 +191,15 @@
       </v-col>
     </v-row>
 
-    <v-row v-if="postExibindo && editarPost" class="mt-4">
-      <v-card v-if="postExibindo && editarPost" class="elevation-0">
+    <v-overlay z-index="10" :value="editarPost">
+      <v-card
+        :light="!$vuetify.theme.dark"
+        max-width="100%"
+        max-height="auto"
+        class="ma-4"
+        style="overflow: auto"
+      >
         <v-card-title
-          v-if="postExibindo && editarPost"
           :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''"
         >
           <span
@@ -226,6 +210,16 @@
             "
             >Editar postagem</span
           >
+          <v-spacer></v-spacer>
+          <botao-aviso
+          v-if="editarPost"
+          corIcone="error"
+          large
+          titulo="Excluir post"
+          texto="Deseja realmente excluir este post?"
+          icone="mdi-delete"
+          @confirmar="exclusaoPost()"
+        />
         </v-card-title>
         <v-card-subtitle
           :class="
@@ -233,10 +227,11 @@
           "
           >Campos obrigatórios estão em negrito</v-card-subtitle
         >
+        <v-divider></v-divider>
 
         <v-card-text
-          v-if="postExibindo && editarPost"
-          class="mt-3 mx-0 px-0 mb-0 my-0"
+          class="mt-3 "
+          style="height: 500px; overflow: auto"
         >
           <validation-observer ref="formularioPost">
             <v-form>
@@ -417,24 +412,22 @@
                     :editor-toolbar="customToolbar"
                   />
                 </v-col>
-                <v-col cols="12">
-                  <v-btn color="primary" outlined @click="salvarOuEditar()"
-                    >Salvar</v-btn
-                  >
-                  <v-btn
-                    color="error"
-                    outlined
-                    class="ml-3"
-                    @click="sairDaEdicao()"
-                    >Cancelar Edição</v-btn
-                  >
-                </v-col>
               </v-row>
             </v-form>
           </validation-observer>
         </v-card-text>
+
+        <v-divider></v-divider>
+        <v-card-actions>
+          <v-btn color="primary" outlined @click="salvarOuEditar()"
+            >Salvar</v-btn
+          >
+          <v-btn color="error" outlined class="ml-3" @click="sairDaEdicao()"
+            >Cancelar Edição</v-btn
+          >
+        </v-card-actions>
       </v-card>
-    </v-row>
+    </v-overlay>
 
     <v-container v-if="postExibindo && !editarPost" fluid>
       <v-row class="d-flex justify-center align-center">

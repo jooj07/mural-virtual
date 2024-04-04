@@ -328,7 +328,10 @@ const newPost = async (req, res) => {
     //  Autor
     const isThereAnyPost = await Post.findOne({
       where: {
-        name
+        name,
+        deletedAt: {
+          [Op.is]: null
+        }
       }
     })
     if (isThereAnyPost) genareteError('Já existe um post com este título!', 500)
