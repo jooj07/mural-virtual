@@ -36,9 +36,12 @@
                 <p v-if="alterandoSenha" class="text-h4 font-weight-black ma-0">
                   Alterar Senha
                 </p>
-                <p v-else class="text-h4 font-weight-black ma-0">
+                <p v-else class="text-h4 font-weight-black ma-0 pa-0">
                   Edição de usuário
                 </p>
+                <p v-if="$vuetify.breakpoint.width <= 700" class="text-caption font-weight-black ma-0 pa-0"> Campos obrigatórios estão em negrito</p>
+                <p v-else class="text-caption ma-0 pa-0"> Campos obrigatórios estão em negrito</p>
+
               </v-toolbar-title>
               <v-spacer></v-spacer>
 
@@ -154,6 +157,7 @@
                             :error-messages="errors"
                             dense
                             label="Nome"
+                            class="negrito"
                             outlined
                           />
                         </validation-provider>
@@ -192,6 +196,7 @@
                             :error-messages="errors"
                             dense
                             label="Acessos"
+                            class="negrito"
                             item-value="id"
                             item-text="name"
                             multiple

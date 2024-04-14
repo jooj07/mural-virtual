@@ -77,6 +77,10 @@
             !editarPost &&
             !usuarioAdministrador &&
             postExibindo &&
+            usuarioLogado &&
+            usuarioLogado.id &&
+            postExibindo.user &&
+            postExibindo.user[0] &&
             postExibindo.user[0].id === usuarioLogado.id
           "
           class="mx-2"
@@ -92,7 +96,11 @@
           v-if="
             !editarPost &&
             usuarioAdministrador &&
+            usuarioLogado &&
+            usuarioLogado.id &&
             postExibindo &&
+            postExibindo.user &&
+            postExibindo.user[0] &&
             postExibindo.user[0].id === usuarioLogado.id
           "
           class="mx-2"
@@ -110,7 +118,11 @@
               v-if="
                 !editarPost &&
                 usuarioAdministrador &&
+                usuarioLogado &&
+                usuarioLogado.id &&
                 postExibindo &&
+                postExibindo.user &&
+                postExibindo.user[0] &&
                 postExibindo.user[0].id !== usuarioLogado.id
               "
               class="mx-2"
@@ -212,14 +224,14 @@
           >
           <v-spacer></v-spacer>
           <botao-aviso
-          v-if="editarPost"
-          corIcone="error"
-          large
-          titulo="Excluir post"
-          texto="Deseja realmente excluir este post?"
-          icone="mdi-delete"
-          @confirmar="exclusaoPost()"
-        />
+            v-if="editarPost"
+            corIcone="error"
+            large
+            titulo="Excluir post"
+            texto="Deseja realmente excluir este post?"
+            icone="mdi-delete"
+            @confirmar="exclusaoPost()"
+          />
         </v-card-title>
         <v-card-subtitle
           :class="
@@ -229,10 +241,7 @@
         >
         <v-divider></v-divider>
 
-        <v-card-text
-          class="mt-3 "
-          style="height: 500px; overflow: auto"
-        >
+        <v-card-text class="mt-3" style="height: 500px; overflow: auto">
           <validation-observer ref="formularioPost">
             <v-form>
               <v-row>
@@ -439,7 +448,12 @@
         </v-col>
         <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="py-3">
           <h5>
-            Postado por: {{ postExibindo.user[0].name }}
+            Postado por:
+            {{
+              postExibindo && postExibindo.user && postExibindo.user[0]
+                ? postExibindo.user[0].name
+                : ""
+            }}
             <br />
             <span v-if="postExibindo && postExibindo.createdAt"
               >Data da postagem: {{ format(postExibindo.createdAt) }}</span
@@ -627,27 +641,41 @@ export default {
       return dayjs(date).format('D [de] MMMM [de] YYYY, HH:mm')
     },
     async exibicaoPost (id) {
-      this.editarPost = false
-      this.postExibindo = null
+      try {
+        const dados = await this.exibirPosts(id)
+        if (dados) {
+          window.console.log('exibir', dados)
+          window.console.log('exibir', dados.id)
+          window.console.log('dados.expiresAt', dados.expiresAt)
+          this.id = dados && dados.id ? dados.id : null
+          this.titulo = dados.name ? dados.name : null
+          this.postDescricao = dados.description ? dados.description : null
+          this.categoriaSelecionadaPost = dados.categories
+            ? dados.categories.map((item) => item.CategoryId)
+            : []
+          this.departamentoSelecionadoPost = dados.sections
+            ? dados.sections.map((item) => item.SectionId)
+            : []
+          this.date = dados.expiresAt ? dados.expiresAt : null
+          this.conteudo = dados.content
+            ? Buffer.from(dados.content.data).toString('utf8')
+            : ''
+          this.informacoesExtras = dados.moreInfo
+            ? Buffer.from(dados.moreInfo.data).toString('utf8')
+            : ''
 
-      const dados = await this.exibirPosts(id)
-      this.titulo = dados.name ? dados.name : null
-      this.postDescricao = dados.description ? dados.description : null
-      this.categoriaSelecionadaPost = dados.categories
-        ? dados.categories.map((item) => item.CategoryId)
-        : []
-      this.departamentoSelecionadoPost = dados.sections
-        ? dados.sections.map((item) => item.SectionId)
-        : []
-      this.date = dados.expiresAt ? dados.expiresAt : null
-      this.conteudo = dados.content
-        ? Buffer.from(dados.content.data).toString('utf8')
-        : ''
-      this.informacoesExtras = dados.moreInfo
-        ? Buffer.from(dados.moreInfo.data).toString('utf8')
-        : ''
-      this.id = dados.id ? dados.id : null
-      this.postExibindo = dados || null
+          setTimeout(() => {
+            this.postExibindo = dados || null
+          }, 120)
+          window.console.log('postexibicinod', this.postExibindo)
+          // this.editarPost = false
+          // this.postExibindo = null
+        }
+      } catch (error) {
+        window.console.error('erro', error)
+        this.editarPost = false
+        this.postExibindo = null
+      }
     },
     aumentarTexto () {
       const max = '125'

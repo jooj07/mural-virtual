@@ -14,6 +14,7 @@
         v-for="(valor, index) in categoriasListadas['rows']"
         :key="index"
         cols="12"
+        class="my-3"
         md="6"
         sm="12"
         lg="4"
@@ -105,6 +106,7 @@
                         <v-text-field
                           v-model="categoriaExibindo.name"
                           label="Nome"
+                          class="negrito"
                           dense
                           outlined
                           :hide-details="!(errors && errors.length)"
@@ -121,6 +123,7 @@
                         <v-textarea
                           v-model="categoriaExibindo.description"
                           label="Descrição"
+                          class="negrito"
                           dense
                           outlined
                           :hide-details="!(errors && errors.length)"

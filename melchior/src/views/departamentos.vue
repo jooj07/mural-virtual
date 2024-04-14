@@ -13,6 +13,7 @@
       <v-col
         v-for="(valor, index) in departamentosListados['rows']"
         :key="index"
+        class="my-2"
         cols="12"
         md="6"
         sm="12"
@@ -102,6 +103,7 @@
                         <v-text-field
                           v-model="departamentoExibindo.name"
                           label="Nome"
+                          class="negrito"
                           dense
                           outlined
                           :hide-details="!(errors && errors.length)"
@@ -118,6 +120,7 @@
                         <v-text-field
                           v-model="departamentoExibindo.description"
                           label="Descrição"
+                          class="negrito"
                           dense
                           outlined
                           :hide-details="!(errors && errors.length)"
