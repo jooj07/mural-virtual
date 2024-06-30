@@ -7,7 +7,7 @@
         <v-btn @click="$emit('voltar')" icon color="primary">
           <v-icon>mdi-arrow-left</v-icon>
         </v-btn>
-        <v-toolbar-title>
+        <v-toolbar-title class="pl-0">
           <p :class="$vuetify.breakpoint.width > 700 ? 'text-h4 font-weight-black ma-0 pa-0' : 'text-body font-weight-black ma-0 pa-0'">{{ titulo }}</p>
           <p v-if="$vuetify.breakpoint.width <= 700" class="text-caption font-weight-black ma-0 pa-0"> Campos obrigatórios estão em negrito</p>
           <p v-else class="text-caption ma-0 pa-0"> Campos obrigatórios estão em negrito</p>

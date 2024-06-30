@@ -705,6 +705,7 @@ export default {
     },
     sairDaEdicao () {
       this.exibicaoPost(this.id)
+      this.editarPost = false
     },
     async salvarOuEditar () {
       if (await this.$refs.formularioPost.validate()) {
