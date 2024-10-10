@@ -199,8 +199,8 @@ const alterPost = async (req, res) => {
     // Agora sim, vamos buscar o post e ver se pertence ao usuário requisitando
     const postUser = await postFound.hasUser(userFound.id)
     if (isAdm || postUser) {
-      // await postFound.setUser(userFound.id)
-      // await postFound.update(req.body)
+      await postFound.setUser(userFound.id)
+      await postFound.update(req.body)
       // await postFound.removeUser()
       if (req.body && req.body.categories) {
         const categoriasAssociadas = await PostCategory.findAll({

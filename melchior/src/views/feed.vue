@@ -112,11 +112,11 @@
         >
           <v-icon>mdi-pencil-outline</v-icon>
         </v-btn>
-        <v-tooltip bottom color="error">
+        <v-tooltip bottom color="orange">
           <template v-slot:activator="{ on, attrs }">
+            <!--tava nesse v-if abaixo, removido dia 10/10/24 !editarPost && -->
             <v-btn
               v-if="
-                !editarPost &&
                 usuarioAdministrador &&
                 usuarioLogado &&
                 usuarioLogado.id &&
@@ -128,17 +128,16 @@
               class="mx-2"
               fab
               dark
-              outlined
-              color="error"
+              color="orange"
               small
               v-bind="attrs"
               v-on="on"
               @click="editarPost = true"
             >
-              <v-icon>mdi-pencil-outline</v-icon>
+              <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
-          <span class="text-subtitle"
+          <span class="text-body-1"
             >TENHA CUIDADO AO EDITAR POSTS DE OUTROS USUÁRIOS! <br />
             POR SEGURANÇA
             <strong>VOCÊ SERÁ MARCADO COMO AUTOR DESSA POSTAGEM</strong> APÓS
@@ -397,7 +396,7 @@
                     </template>
                     <v-date-picker v-model="date" no-title scrollable>
                       <v-spacer></v-spacer>
-                      <v-btn text color="error" @click="menu = false">
+                      <v-btn text color="error" @click="sairDaEdicao()">
                         Cancelar Edição
                       </v-btn>
                       <v-btn
@@ -644,9 +643,6 @@ export default {
       try {
         const dados = await this.exibirPosts(id)
         if (dados) {
-          window.console.log('exibir', dados)
-          window.console.log('exibir', dados.id)
-          window.console.log('dados.expiresAt', dados.expiresAt)
           this.id = dados && dados.id ? dados.id : null
           this.titulo = dados.name ? dados.name : null
           this.postDescricao = dados.description ? dados.description : null
@@ -667,12 +663,11 @@ export default {
           setTimeout(() => {
             this.postExibindo = dados || null
           }, 120)
-          window.console.log('postexibicinod', this.postExibindo)
           // this.editarPost = false
           // this.postExibindo = null
         }
       } catch (error) {
-        window.console.error('erro', error)
+        window.console.error('erro--->', error)
         this.editarPost = false
         this.postExibindo = null
       }
