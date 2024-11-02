@@ -1,197 +1,98 @@
-<template >
+<template>
   <v-container>
-    <div
-      v-if="postExibindo"
-      class="d-flex justify-space-between align-center text-center"
-    >
+    <div v-if="postExibindo" class="d-flex justify-space-between align-center text-center">
       <v-btn large class="mx-2" icon dark color="primary" @click="reset()">
         <v-icon v-if="!editarPost" dark> mdi-arrow-left </v-icon>
       </v-btn>
       <div>
-        <v-menu
-          v-if="!editarPost"
-          :close-on-content-click="false"
-          transition="slide-y-transition"
-          bottom
-          offset-y
-          nudge-bottom="6"
-        >
+        <v-menu v-if="!editarPost" :close-on-content-click="false" transition="slide-y-transition" bottom offset-y
+          nudge-bottom="6">
           <template v-slot:activator="{ on, attrs }">
-            <v-btn
-              class="mx-2"
-              fab
-              dark
-              color="primary"
-              small
-              v-bind="attrs"
-              v-on="on"
-            >
+            <v-btn class="mx-2" fab dark color="primary" small v-bind="attrs" v-on="on">
               <v-icon>mdi-magnify-plus-outline</v-icon>
             </v-btn>
           </template>
           <v-card>
-            <div
-              class="d-flex justify-space-between align-center text-center pt-4"
-            >
-              <v-btn
-                class="mx-2 elevation-0"
-                fab
-                dark
-                small
-                color="primary"
-                @click="aumentarTexto()"
-              >
+            <div class="d-flex justify-space-between align-center text-center pt-4">
+              <v-btn class="mx-2 elevation-0" fab dark small color="primary" @click="aumentarTexto()">
                 <v-icon dark> mdi-magnify-plus-outline </v-icon>
               </v-btn>
-              <v-btn
-                class="mx-2 elevation-0"
-                fab
-                dark
-                color="primary"
-                small
-                @click="diminuirTexto()"
-              >
+              <v-btn class="mx-2 elevation-0" fab dark color="primary" small @click="diminuirTexto()">
                 <v-icon dark> mdi-magnify-minus-outline </v-icon>
               </v-btn>
             </div>
             <v-list>
               <v-list-item class="px-0">
                 <v-list-item-content>
-                  <v-slider
-                    v-model="tamanhoFonte"
-                    dense
-                    hide-details
-                    vertical
-                    max="125"
-                    min="5"
-                    thumb-label
-                    ticks
-                  ></v-slider>
+                  <v-slider v-model="tamanhoFonte" dense hide-details vertical max="125" min="5" thumb-label
+                    ticks></v-slider>
                 </v-list-item-content>
               </v-list-item>
             </v-list>
           </v-card>
         </v-menu>
-        <v-btn
-          v-if="
-            !editarPost &&
-            !usuarioAdministrador &&
-            postExibindo &&
-            usuarioLogado &&
-            usuarioLogado.id &&
-            postExibindo.user &&
-            postExibindo.user[0] &&
-            postExibindo.user[0].id === usuarioLogado.id
-          "
-          class="mx-2"
-          fab
-          dark
-          color="primary"
-          small
-          @click="editarPost = true"
-        >
+        <v-btn v-if="
+          !editarPost &&
+          !usuarioAdministrador &&
+          postExibindo &&
+          usuarioLogado &&
+          usuarioLogado.id &&
+          postExibindo.user &&
+          postExibindo.user[0] &&
+          postExibindo.user[0].id === usuarioLogado.id
+        " class="mx-2" fab dark color="primary" small @click="editarPost = true">
           <v-icon>mdi-pencil</v-icon>
         </v-btn>
-        <v-btn
-          v-if="
-            !editarPost &&
-            usuarioAdministrador &&
-            usuarioLogado &&
-            usuarioLogado.id &&
-            postExibindo &&
-            postExibindo.user &&
-            postExibindo.user[0] &&
-            postExibindo.user[0].id === usuarioLogado.id
-          "
-          class="mx-2"
-          fab
-          dark
-          color="primary"
-          small
-          @click="editarPost = true"
-        >
+        <v-btn v-if="
+          !editarPost &&
+          usuarioAdministrador &&
+          usuarioLogado &&
+          usuarioLogado.id &&
+          postExibindo &&
+          postExibindo.user &&
+          postExibindo.user[0] &&
+          postExibindo.user[0].id === usuarioLogado.id
+        " class="mx-2" fab dark color="primary" small @click="editarPost = true">
           <v-icon>mdi-pencil-outline</v-icon>
         </v-btn>
         <v-tooltip bottom color="orange">
           <template v-slot:activator="{ on, attrs }">
             <!--tava nesse v-if abaixo, removido dia 10/10/24 !editarPost && -->
-            <v-btn
-              v-if="
-                usuarioAdministrador &&
-                usuarioLogado &&
-                usuarioLogado.id &&
-                postExibindo &&
-                postExibindo.user &&
-                postExibindo.user[0] &&
-                postExibindo.user[0].id !== usuarioLogado.id
-              "
-              class="mx-2"
-              fab
-              dark
-              color="orange"
-              small
-              v-bind="attrs"
-              v-on="on"
-              @click="editarPost = true"
-            >
+            <v-btn v-if="
+              usuarioAdministrador &&
+              usuarioLogado &&
+              usuarioLogado.id &&
+              postExibindo &&
+              postExibindo.user &&
+              postExibindo.user[0] &&
+              postExibindo.user[0].id !== usuarioLogado.id
+            " class="mx-2" fab dark color="orange" small v-bind="attrs" v-on="on" @click="editarPost = true">
               <v-icon>mdi-pencil</v-icon>
             </v-btn>
           </template>
-          <span class="text-body-1"
-            >TENHA CUIDADO AO EDITAR POSTS DE OUTROS USUÁRIOS! <br />
+          <span class="text-body-1">TENHA CUIDADO AO EDITAR POSTS DE OUTROS USUÁRIOS! <br />
             POR SEGURANÇA
             <strong>VOCÊ SERÁ MARCADO COMO AUTOR DESSA POSTAGEM</strong> APÓS
-            SALVAR AS MODIFICAÇÕES</span
-          >
+            SALVAR AS MODIFICAÇÕES</span>
         </v-tooltip>
       </div>
     </div>
 
-    <v-row
-      v-if="!postExibindo && posts && posts.rows && posts.rows.length"
-      :style="`height: ${
-        $vuetify.breakpoint.mdAndDown
-          ? $vuetify.breakpoint.height - 100
-          : $vuetify.breakpoint.height - 50
-      }px; overflow: auto`"
-      class="d-flex flex-row align-content-space-between"
-    >
-      <v-col
-        cols="12"
-        lg="4"
-        xl="4"
-        xs="12"
-        md="6"
-        class=""
-        v-for="post in posts['rows']"
-        :key="post.id"
-      >
-        <card-post
-          :autor="post.user[0].name"
-          :id="post.id"
-          :titulo="post.name"
-          :textoCurto="post.description"
-          :departamentos="post.sections"
-          :categorias="post.categories"
-          @exibir="exibicaoPost($event)"
-        />
+    <v-row v-if="!postExibindo && posts && posts.rows && posts.rows.length" :style="`height: ${$vuetify.breakpoint.mdAndDown
+      ? $vuetify.breakpoint.height - 100
+      : $vuetify.breakpoint.height - 50
+      }px; overflow: auto`" class="d-flex flex-row align-content-space-between">
+      <v-col cols="12" lg="4" xl="4" xs="12" md="6" class="" v-for="post in posts['rows']" :key="post.id">
+        <card-post :autor="post.user[0].name" :id="post.id" :titulo="post.name" :textoCurto="post.description"
+          :departamentos="post.sections" :categorias="post.categories" @exibir="exibicaoPost($event)" />
       </v-col>
       <v-col cols="12" v-if="posts && posts.rows && posts.rows.length">
-        <v-pagination
-          v-model="pagina"
-          :length="posts ? Math.ceil(posts['count'] / 10) : 0"
-          :total-visible="5"
-          class="flex-grow-1"
-          circle
-          color="primary"
-          @input="listagemDePosts()"
-        ></v-pagination>
+        <v-pagination v-model="pagina" :length="posts ? Math.ceil(posts['count'] / 10) : 0" :total-visible="5"
+          class="flex-grow-1" circle color="primary" @input="listagemDePosts()"></v-pagination>
       </v-col>
     </v-row>
-    <v-row
-      v-if="!postExibindo && posts && posts.rows && !posts.rows.length"
-      :style="`height: ${$vuetify.breakpoint.height - 130}px`"
-    >
+    <v-row v-if="!postExibindo && posts && posts.rows && !posts.rows.length"
+      :style="`height: ${$vuetify.breakpoint.height - 130}px`">
       <v-col cols="12" class="d-flex flex-column justify-center align-center">
         <v-icon :size="100" color="primary">
           mdi-magnify-remove-outline
@@ -203,41 +104,18 @@
     </v-row>
 
     <v-overlay z-index="10" :value="editarPost">
-      <v-card
-        :light="!$vuetify.theme.dark"
-        max-width="100%"
-        max-height="auto"
-        class="ma-4"
-        style="overflow: auto"
-      >
-        <v-card-title
-          :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''"
-        >
-          <span
-            :class="
-              $vuetify.breakpoint.width <= 700
-                ? 'font-weight-black'
-                : 'text-h4 font-weight-black'
-            "
-            >Editar postagem</span
-          >
+      <v-card :light="!$vuetify.theme.dark" max-width="100%" max-height="auto" class="ma-4" style="overflow: auto">
+        <v-card-title :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''">
+          <span :class="$vuetify.breakpoint.width <= 700
+            ? 'font-weight-black'
+            : 'text-h4 font-weight-black'
+            ">Editar postagem</span>
           <v-spacer></v-spacer>
-          <botao-aviso
-            v-if="editarPost"
-            corIcone="error"
-            large
-            titulo="Excluir post"
-            texto="Deseja realmente excluir este post?"
-            icone="mdi-delete"
-            @confirmar="exclusaoPost()"
-          />
+          <botao-aviso v-if="editarPost" corIcone="error" large titulo="Excluir post"
+            texto="Deseja realmente excluir este post?" icone="mdi-delete" @confirmar="exclusaoPost()" />
         </v-card-title>
-        <v-card-subtitle
-          :class="
-            $vuetify.breakpoint.width <= 700 ? 'text-caption pa-1 ma-1' : 'pt-1'
-          "
-          >Campos obrigatórios estão em negrito</v-card-subtitle
-        >
+        <v-card-subtitle :class="$vuetify.breakpoint.width <= 700 ? 'text-caption pa-1 ma-1' : 'pt-1'
+          ">Campos obrigatórios estão em negrito</v-card-subtitle>
         <v-divider></v-divider>
 
         <v-card-text class="mt-3" style="height: 500px; overflow: auto">
@@ -245,153 +123,61 @@
             <v-form>
               <v-row>
                 <v-col cols="12" class="my-1">
-                  <validation-provider
-                    name="Título"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <v-text-field
-                      v-model="titulo"
-                      :hide-details="!(errors && errors.length)"
-                      :error-messages="errors"
-                      outlined
-                      multiple
-                      dense
-                      class="elevation-1 negrito"
-                      label="Título"
-                    />
+                  <validation-provider name="Título" rules="required" v-slot="{ errors }">
+                    <v-text-field v-model="titulo" :hide-details="!(errors && errors.length)" :error-messages="errors"
+                      outlined multiple dense class="elevation-1 negrito" label="Título" />
                   </validation-provider>
                 </v-col>
                 <v-col cols="12" class="my-1">
-                  <validation-provider
-                    name="Descição"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <v-text-field
-                      v-model="postDescricao"
-                      :hide-details="!(errors && errors.length)"
-                      :error-messages="errors"
-                      outlined
-                      multiple
-                      dense
-                      class="elevation-1 negrito"
-                      label="Descrição"
-                    />
+                  <validation-provider name="Descição" rules="required" v-slot="{ errors }">
+                    <v-text-field v-model="postDescricao" :hide-details="!(errors && errors.length)"
+                      :error-messages="errors" outlined multiple dense class="elevation-1 negrito" label="Descrição" />
                   </validation-provider>
                 </v-col>
                 <v-col cols="12" class="my-1">
-                  <validation-provider
-                    name="Categoria"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <v-select
-                      v-model="categoriaSelecionadaPost"
-                      :items="categoriasListadasFiltro"
-                      :hide-details="!(errors && errors.length)"
-                      :error-messages="errors"
-                      outlined
-                      clearable
-                      chips
-                      small-chips
-                      multiple
-                      dense
-                      class="elevation-1 negrito"
-                      label="Categoria"
-                      item-text="name"
-                      item-value="id"
-                    >
+                  <validation-provider name="Categoria" rules="required" v-slot="{ errors }">
+                    <v-select v-model="categoriaSelecionadaPost" :items="categoriasListadasFiltro"
+                      :hide-details="!(errors && errors.length)" :error-messages="errors" outlined clearable chips
+                      small-chips multiple dense class="elevation-1 negrito" label="Categoria" item-text="name"
+                      item-value="id">
                       <template v-slot:append-item>
                         <v-divider class="mb-2"></v-divider>
-                        <v-pagination
-                          v-model="pagina"
-                          :length="
-                            categoriasListadas
-                              ? Math.ceil(categoriasListadas['count'] / 10)
-                              : 0
-                          "
-                          :total-visible="5"
-                          class="flex-grow-1"
-                          circle
-                          color="primary"
-                          @input="categoriasRequisicao(pagina)"
-                        ></v-pagination>
+                        <v-pagination v-model="pagina" :length="categoriasListadas
+                          ? Math.ceil(categoriasListadas['count'] / 10)
+                          : 0
+                          " :total-visible="5" class="flex-grow-1" circle color="primary"
+                          @input="categoriasRequisicao(pagina)"></v-pagination>
                       </template>
                     </v-select>
                   </validation-provider>
                 </v-col>
                 <v-col cols="12" class="my-1">
-                  <validation-provider
-                    name="Departamento"
-                    rules="required"
-                    v-slot="{ errors }"
-                  >
-                    <v-select
-                      v-model="departamentoSelecionadoPost"
-                      :items="departamentosListadosFiltro"
-                      :hide-details="!(errors && errors.length)"
-                      :error-messages="errors"
-                      outlined
-                      multiple
-                      clearable
-                      chips
-                      small-chips
-                      dense
-                      class="elevation-1 negrito"
-                      label="Departamento"
-                      item-text="name"
-                      item-value="id"
-                    >
+                  <validation-provider name="Departamento" rules="required" v-slot="{ errors }">
+                    <v-select v-model="departamentoSelecionadoPost" :items="departamentosListadosFiltro"
+                      :hide-details="!(errors && errors.length)" :error-messages="errors" outlined multiple clearable
+                      chips small-chips dense class="elevation-1 negrito" label="Departamento" item-text="name"
+                      item-value="id">
                       <template v-slot:prepend-item> </template>
                       <template v-slot:append-item>
                         <v-divider class="mb-2"></v-divider>
-                        <v-pagination
-                          v-model="paginaDepartamentos"
-                          :length="
-                            departamentosListados
-                              ? Math.ceil(departamentosListados['count'] / 10)
-                              : 0
-                          "
-                          :total-visible="5"
-                          class="flex-grow-1"
-                          circle
-                          color="primary"
-                          @input="departamentosRequisicao(paginaDepartamentos)"
-                        ></v-pagination>
+                        <v-pagination v-model="paginaDepartamentos" :length="departamentosListados
+                          ? Math.ceil(departamentosListados['count'] / 10)
+                          : 0
+                          " :total-visible="5" class="flex-grow-1" circle color="primary"
+                          @input="departamentosRequisicao(paginaDepartamentos)"></v-pagination>
                       </template>
                     </v-select>
                   </validation-provider>
                 </v-col>
                 <v-col cols="12">
-                  <v-menu
-                    ref="menu"
-                    v-model="menu"
-                    :close-on-content-click="false"
-                    :return-value.sync="date"
-                    transition="scale-transition"
-                    offset-y
-                    min-width="auto"
-                  >
+                  <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :return-value.sync="date"
+                    transition="scale-transition" offset-y min-width="auto">
                     <template v-slot:activator="{ on, attrs }">
-                      <validation-provider
-                        name="Data de expiração"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="dateFormatada"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          label="Data de expiração deste post"
-                          prepend-inner-icon="mdi-calendar"
-                          class="elevation-1 negrito"
-                          dense
-                          outlined
-                          readonly
-                          v-bind="attrs"
-                          v-on="on"
-                        ></v-text-field>
+                      <validation-provider name="Data de expiração" rules="required" v-slot="{ errors }">
+                        <v-text-field v-model="dateFormatada" :hide-details="!(errors && errors.length)"
+                          :error-messages="errors" label="Data de expiração deste post"
+                          prepend-inner-icon="mdi-calendar" class="elevation-1 negrito" dense outlined readonly
+                          v-bind="attrs" v-on="on"></v-text-field>
                       </validation-provider>
                     </template>
                     <v-date-picker v-model="date" no-title scrollable>
@@ -399,11 +185,7 @@
                       <v-btn text color="error" @click="sairDaEdicao()">
                         Cancelar Edição
                       </v-btn>
-                      <v-btn
-                        text
-                        color="primary"
-                        @click="$refs.menu.save(date)"
-                      >
+                      <v-btn text color="primary" @click="$refs.menu.save(date)">
                         OK
                       </v-btn>
                     </v-date-picker>
@@ -415,10 +197,7 @@
                 </v-col>
                 <v-col cols="12">
                   <p>Informações extras</p>
-                  <editor
-                    v-model="informacoesExtras"
-                    :editor-toolbar="customToolbar"
-                  />
+                  <editor v-model="informacoesExtras" :editor-toolbar="customToolbar" />
                 </v-col>
               </v-row>
             </v-form>
@@ -427,12 +206,8 @@
 
         <v-divider></v-divider>
         <v-card-actions>
-          <v-btn color="primary" outlined @click="salvarOuEditar()"
-            >Salvar</v-btn
-          >
-          <v-btn color="error" outlined class="ml-3" @click="sairDaEdicao()"
-            >Cancelar Edição</v-btn
-          >
+          <v-btn color="primary" outlined @click="salvarOuEditar()">Salvar</v-btn>
+          <v-btn color="error" outlined class="ml-3" @click="sairDaEdicao()">Cancelar Edição</v-btn>
         </v-card-actions>
       </v-card>
     </v-overlay>
@@ -454,84 +229,42 @@
                 : ""
             }}
             <br />
-            <span v-if="postExibindo && postExibindo.createdAt"
-              >Data da postagem: {{ format(postExibindo.createdAt) }}</span
-            >
+            <span v-if="postExibindo && postExibindo.createdAt">Data da postagem: {{ format(postExibindo.createdAt)
+              }}</span>
           </h5>
         </v-col>
-        <v-col
-          cols="12"
-          md="12"
-          sm="12"
-          lg="12"
-          xl="12"
-          class="d-flex flex-column"
-        >
-          <span class="subheading font-weight-bold">Categoria(s)</span>
+        <v-col cols="12" md="12" sm="12" lg="12" xl="12" class="d-flex flex-column">
+          <span class="subheading font-weight-bold">Departamento(s)</span>
           <v-chip-group>
-            <v-chip
-              v-for="(tag, index) in postExibindo.sections"
-              :key="index"
-              :link="false"
-              color="primary"
-            >
+            <v-chip v-for="(tag, index) in postExibindo.sections" :key="index" :link="false" color="primary">
               {{ tag.name }}
             </v-chip>
           </v-chip-group>
           <span class="subheading font-weight-bold">Categoria(s)</span>
           <v-chip-group>
-            <v-chip
-              v-for="(tag, index) in postExibindo.categories"
-              :key="index"
-              :link="false"
-              color="secondary"
-            >
+            <v-chip v-for="(tag, index) in postExibindo.categories" :key="index" :link="false" color="secondary">
               {{ tag.name }}
             </v-chip>
           </v-chip-group>
         </v-col>
-        <v-col
-          v-if="informacoesExtras"
-          cols="12"
-          md="12"
-          sm="12"
-          lg="12"
-          xl="12"
-          class="px-0 py-1"
-        >
+        <v-col v-if="informacoesExtras" cols="12" md="12" sm="12" lg="12" xl="12" class="px-0 py-1">
           <v-expansion-panels flat v-if="informacoesExtras">
             <v-expansion-panel class="px-0">
               <v-expansion-panel-header class="px-0">
-                <v-chip
-                  large
-                  class="ma-2"
-                  color="transparent"
-                  label
-                  text-color="white"
-                >
+                <v-chip large class="ma-2" color="transparent" label text-color="white">
                   <v-icon left color="primary"> mdi-label </v-icon>
                   <span class="primary--text">Outras informações</span>
                 </v-chip>
               </v-expansion-panel-header>
               <v-expansion-panel-content>
-                <p
-                  v-html="informacoesExtras"
-                  :style="`font-size: ${tamanhoFonte}px`"
-                ></p>
+                <p v-html="informacoesExtras" :style="`font-size: ${tamanhoFonte}px`"></p>
               </v-expansion-panel-content>
             </v-expansion-panel>
           </v-expansion-panels>
         </v-col>
 
-        <v-col
-          v-if="conteudo"
-          cols="12"
-          md="12"
-          sm="12"
-          lg="12"
-          xl="12"
-          style="border-bottom: 1px solid silver; border-top: 1px solid silver"
-        >
+        <v-col v-if="conteudo" cols="12" md="12" sm="12" lg="12" xl="12"
+          style="border-bottom: 1px solid silver; border-top: 1px solid silver">
           <p v-html="conteudo" :style="`font-size: ${tamanhoFonte}px`"></p>
         </v-col>
       </v-row>
@@ -775,12 +508,12 @@ export default {
         offset: this.pagina * 10 - 10,
         category:
           this.filtrosBusca.categoriaSelecionada &&
-          this.filtrosBusca.categoriaSelecionada.length > 0
+            this.filtrosBusca.categoriaSelecionada.length > 0
             ? this.filtrosBusca.categoriaSelecionada
             : null,
         section:
           this.filtrosBusca.departamentoSelecionado &&
-          this.filtrosBusca.departamentoSelecionado.length > 0
+            this.filtrosBusca.departamentoSelecionado.length > 0
             ? this.filtrosBusca.departamentoSelecionado
             : null,
         name: this.filtrosBusca.tituloPesquisa || null

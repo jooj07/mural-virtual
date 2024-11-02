@@ -1,203 +1,92 @@
 <template>
   <v-app id="inspire">
-    <v-overlay
-      :value="overlay"
-      :color="$vuetify.theme.dark ? 'black' : '#fff'"
-      opacity="1"
-    ></v-overlay>
+    <v-overlay :value="overlay" :color="$vuetify.theme.dark ? 'black' : '#fff'" opacity="1"></v-overlay>
     <v-main>
       <v-dialog v-model="overlayEditor" persistent max-width="800">
         <v-overlay :value="overlayEditor">
-          <v-card
-           :light="!$vuetify.theme.dark"
-            max-width="100%"
-            :max-height="$vuetify.breakpoint.width <= 700 ? '667' : $vuetify.breakpoint.height - 50"
-            class="ma-4"
-            style="overflow: auto"
-          >
-            <v-card-title
-              :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''"
-            >
-              <span
-                :class="
-                  $vuetify.breakpoint.width <= 700
-                    ? 'font-weight-black'
-                    : 'text-h4 font-weight-black'
-                "
-                >Nova postagem</span
-              >
+          <v-card :light="!$vuetify.theme.dark" max-width="100%"
+            :max-height="$vuetify.breakpoint.width <= 700 ? '667' : $vuetify.breakpoint.height - 50" class="ma-4"
+            style="overflow: auto">
+            <v-card-title :class="$vuetify.breakpoint.width <= 700 ? 'pa-1 ma-1' : ''">
+              <span :class="$vuetify.breakpoint.width <= 700
+                ? 'font-weight-black'
+                : 'text-h4 font-weight-black'
+                ">Nova postagem</span>
               <v-spacer></v-spacer>
               <v-btn color="error" icon small dense @click="cancelarPostagem()">
                 <v-icon>mdi-close</v-icon>
               </v-btn>
             </v-card-title>
-            <v-card-subtitle
-              :class="
-                $vuetify.breakpoint.width <= 700
-                  ? 'text-caption pa-1 ma-1'
-                  : 'pt-1'
-              "
-              >Campos obrigatórios estão em negrito</v-card-subtitle
-            >
+            <v-card-subtitle :class="$vuetify.breakpoint.width <= 700
+              ? 'text-caption pa-1 ma-1'
+              : 'pt-1'
+              ">Campos obrigatórios estão em negrito</v-card-subtitle>
             <v-divider></v-divider>
             <v-card-text class="mt-3"
-            :style="`height: ${$vuetify.breakpoint.width <= 700 ? '500px' : $vuetify.breakpoint.height - 400}; overflow: auto`">
+              :style="`height: ${$vuetify.breakpoint.width <= 700 ? '500px' : $vuetify.breakpoint.height - 400}; overflow: auto`">
               <validation-observer ref="formularioPost">
                 <v-form>
                   <v-row>
                     <v-col cols="12" class="my-1">
-                      <validation-provider
-                        name="Título"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="titulo"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          outlined
-                          multiple
-                          dense
-                          class="elevation-1 negrito"
-                          label="Título"
-                        />
+                      <validation-provider name="Título" rules="required" v-slot="{ errors }">
+                        <v-text-field v-model="titulo" :hide-details="!(errors && errors.length)"
+                          :error-messages="errors" outlined multiple dense class="elevation-1 negrito" label="Título" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <validation-provider
-                        name="Descição"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-text-field
-                          v-model="postDescricao"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          outlined
-                          multiple
-                          dense
-                          class="elevation-1 negrito"
-                          label="Descrição"
-                        />
+                      <validation-provider name="Descição" rules="required" v-slot="{ errors }">
+                        <v-text-field v-model="postDescricao" :hide-details="!(errors && errors.length)"
+                          :error-messages="errors" outlined multiple dense class="elevation-1 negrito"
+                          label="Descrição" />
                       </validation-provider>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <validation-provider
-                        name="Categoria"
-                        rules="required"
-                        vid="categoria"
-                        v-slot="{ errors }"
-                      >
-                        <v-select
-                          v-model="categoriaSelecionadaPost"
-                          :items="categoriasListadasFiltro"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          clearable
-                          outlined
-                          chips
-                          small-chips
-                          multiple
-                          dense
-                          class="elevation-1 negrito"
-                          label="Categoria"
-                          item-text="name"
-                          item-value="id"
-                        >
+                      <validation-provider name="Categoria" rules="required" vid="categoria" v-slot="{ errors }">
+                        <v-select v-model="categoriaSelecionadaPost" :items="categoriasListadasFiltro"
+                          :hide-details="!(errors && errors.length)" :error-messages="errors" clearable outlined chips
+                          small-chips multiple dense class="elevation-1 negrito" label="Categoria" item-text="name"
+                          item-value="id">
                           <template v-slot:append-item>
                             <v-divider class="mb-2"></v-divider>
-                            <v-pagination
-                              v-model="pagina"
-                              :length="
-                                categoriasListadas
-                                  ? Math.ceil(categoriasListadas['count'] / 10)
-                                  : 0
-                              "
-                              :total-visible="5"
-                              class="flex-grow-1"
-                              circle
-                              color="primary"
-                              @input="categoriasRequisicao(pagina)"
-                            ></v-pagination>
+                            <v-pagination v-model="pagina" :length="categoriasListadas
+                              ? Math.ceil(categoriasListadas['count'] / 10)
+                              : 0
+                              " :total-visible="5" class="flex-grow-1" circle color="primary"
+                              @input="categoriasRequisicao(pagina)"></v-pagination>
                           </template>
                         </v-select>
                       </validation-provider>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <validation-provider
-                        name="Departamento"
-                        rules="required"
-                        v-slot="{ errors }"
-                      >
-                        <v-select
-                          v-model="departamentoSelecionadoPost"
-                          :items="departamentosListadosFiltro"
-                          :hide-details="!(errors && errors.length)"
-                          :error-messages="errors"
-                          outlined
-                          multiple
-                          clearable
-                          chips
-                          small-chips
-                          dense
-                          class="elevation-1 negrito"
-                          label="Departamento"
-                          item-text="name"
-                          item-value="id"
-                        >
+                      <validation-provider name="Departamento" rules="required" v-slot="{ errors }">
+                        <v-select v-model="departamentoSelecionadoPost" :items="departamentosListadosFiltro"
+                          :hide-details="!(errors && errors.length)" :error-messages="errors" outlined multiple
+                          clearable chips small-chips dense class="elevation-1 negrito" label="Departamento"
+                          item-text="name" item-value="id">
                           <template v-slot:prepend-item> </template>
                           <template v-slot:append-item>
                             <v-divider class="mb-2"></v-divider>
-                            <v-pagination
-                              v-model="paginaDepartamentos"
-                              :length="
-                                departamentosListados
-                                  ? Math.ceil(
-                                      departamentosListados['count'] / 10
-                                    )
-                                  : 0
-                              "
-                              :total-visible="5"
-                              class="flex-grow-1"
-                              circle
-                              color="primary"
-                              @input="
+                            <v-pagination v-model="paginaDepartamentos" :length="departamentosListados
+                              ? Math.ceil(
+                                departamentosListados['count'] / 10
+                              )
+                              : 0
+                              " :total-visible="5" class="flex-grow-1" circle color="primary" @input="
                                 departamentosRequisicao(paginaDepartamentos)
-                              "
-                            ></v-pagination>
+                                "></v-pagination>
                           </template>
                         </v-select>
                       </validation-provider>
                     </v-col>
                     <v-col cols="12">
-                      <v-menu
-                        ref="menu"
-                        v-model="menu"
-                        :close-on-content-click="false"
-                        :return-value.sync="date"
-                        transition="scale-transition"
-                        offset-y
-                        min-width="auto"
-                      >
+                      <v-menu ref="menu" v-model="menu" :close-on-content-click="false" :return-value.sync="date"
+                        transition="scale-transition" offset-y min-width="auto">
                         <template v-slot:activator="{ on, attrs }">
-                          <validation-provider
-                            name="Data de expiração"
-                            rules="required"
-                            v-slot="{ errors }"
-                          >
-                            <v-text-field
-                              v-model="dateFormatada"
-                              :hide-details="!(errors && errors.length)"
-                              :error-messages="errors"
-                              label="Data de expiração deste post"
-                              prepend-inner-icon="mdi-calendar"
-                              class="elevation-1 negrito"
-                              dense
-                              outlined
-                              readonly
-                              v-bind="attrs"
-                              v-on="on"
-                            ></v-text-field>
+                          <validation-provider name="Data de expiração" rules="required" v-slot="{ errors }">
+                            <v-text-field v-model="dateFormatada" :hide-details="!(errors && errors.length)"
+                              :error-messages="errors" label="Data de expiração deste post"
+                              prepend-inner-icon="mdi-calendar" class="elevation-1 negrito" dense outlined readonly
+                              v-bind="attrs" v-on="on"></v-text-field>
                           </validation-provider>
                         </template>
                         <v-date-picker v-model="date" no-title scrollable>
@@ -205,11 +94,7 @@
                           <v-btn text color="primary" @click="menu = false">
                             Cancel
                           </v-btn>
-                          <v-btn
-                            text
-                            color="primary"
-                            @click="$refs.menu.save(date)"
-                          >
+                          <v-btn text color="primary" @click="$refs.menu.save(date)">
                             OK
                           </v-btn>
                         </v-date-picker>
@@ -217,17 +102,11 @@
                     </v-col>
                     <v-col cols="12">
                       <p class="font-weight-black">Conteúdo da postagem</p>
-                      <editor
-                        v-model="conteudo"
-                        :editor-toolbar="customToolbar"
-                      />
+                      <editor v-model="conteudo" :editor-toolbar="customToolbar" />
                     </v-col>
                     <v-col cols="12">
                       <p>Informações extras</p>
-                      <editor
-                        v-model="informacoesExtras"
-                        :editor-toolbar="customToolbar"
-                      />
+                      <editor v-model="informacoesExtras" :editor-toolbar="customToolbar" />
                     </v-col>
                   </v-row>
                 </v-form>
@@ -235,44 +114,21 @@
             </v-card-text>
             <v-divider></v-divider>
             <v-card-actions>
-              <v-btn
-                color="primary"
-                outlined
-                small
-                dense
-                @click="realizarPostagem()"
-              >
+              <v-btn color="primary" outlined small dense @click="realizarPostagem()">
                 Salvar
               </v-btn>
-              <v-btn
-                color="error"
-                outlined
-                small
-                dense
-                @click="cancelarPostagem()"
-              >
+              <v-btn color="error" outlined small dense @click="cancelarPostagem()">
                 Fechar
               </v-btn>
             </v-card-actions>
           </v-card>
         </v-overlay>
       </v-dialog>
-      <v-navigation-drawer
-        v-if="$vuetify.breakpoint.width >= 700"
-        v-model="drawer"
-        :mini-variant="!fix"
-        app
-        :disable-resize-watcher="true"
-        :disable-route-watcher="true"
-        touchless
-        permanent
-      >
+      <v-navigation-drawer v-if="$vuetify.breakpoint.width >= 700" v-model="drawer" :mini-variant="!fix" app
+        :disable-resize-watcher="true" :disable-route-watcher="true" touchless permanent>
         <v-list>
           <v-list-item v-show="fix">
-            <p
-              class="text-h4 mx-auto font-weight-black mt-2"
-              style="word-wrap: break-word; width: 90%"
-            >
+            <p class="text-h4 mx-auto font-weight-black mt-2" style="word-wrap: break-word; width: 90%">
               {{ $route.name }}
             </p>
           </v-list-item>
@@ -287,10 +143,7 @@
 
         <v-divider v-show="fix"></v-divider>
 
-        <div
-          class="d-flex flex-column justify-space-between"
-          :style="fix ? 'height: 79%' : 'height: 97%'"
-        >
+        <div class="d-flex flex-column justify-space-between" :style="fix ? 'height: 79%' : 'height: 97%'">
           <v-list nav dense>
             <v-list-item v-show="!fix" link @click="fix = !fix">
               <v-list-item-icon>
@@ -298,21 +151,13 @@
               </v-list-item-icon>
               <v-list-item-title>Exibir barra lateral</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              v-show="fix"
-              link
-              @click="(fix = !fix), (abaFiltros = false)"
-            >
+            <v-list-item v-show="fix" link @click="(fix = !fix), (abaFiltros = false)">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-menu-open</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Esconder barra lateral</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              v-show="$route.path.includes('/dashboard')"
-              link
-              :to="'/'"
-            >
+            <v-list-item v-show="$route.path.includes('/dashboard')" link :to="'/'">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-home</v-icon>
               </v-list-item-icon>
@@ -324,11 +169,7 @@
               </v-list-item-icon>
               <v-list-item-title>Atualizar</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              v-if="$route.path == '/'"
-              link
-              @click="!fix ? (fix = !fix) : '', (abaFiltros = !abaFiltros)"
-            >
+            <v-list-item v-if="$route.path == '/'" link @click="!fix ? (fix = !fix) : '', (abaFiltros = !abaFiltros)">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-filter-cog</v-icon>
               </v-list-item-icon>
@@ -342,98 +183,43 @@
                 <v-card-text>
                   <v-row no-gutters>
                     <v-col cols="12" class="my-1">
-                      <v-select
-                        v-model="categoriaSelecionada"
-                        :items="categoriasListadasFiltro"
-                        outlined
-                        multiple
-                        clearable
-                        chips
-                        small-chips
-                        dense
-                        hide-details
-                        class="elevation-1"
-                        label="Categoria"
-                        item-text="name"
-                        item-value="id"
-                      >
+                      <v-select v-model="categoriaSelecionada" :items="categoriasListadasFiltro" outlined multiple
+                        clearable chips small-chips dense hide-details class="elevation-1" label="Categoria"
+                        item-text="name" item-value="id">
                         <template v-slot:append-item>
                           <v-divider class="mb-2"></v-divider>
-                          <v-pagination
-                            v-model="pagina"
-                            :length="
-                              categoriasListadas
-                                ? Math.ceil(categoriasListadas['count'] / 10)
-                                : 0
-                            "
-                            :total-visible="5"
-                            class="flex-grow-1"
-                            circle
-                            color="primary"
-                            @input="categoriasRequisicao(pagina)"
-                          ></v-pagination>
+                          <v-pagination v-model="pagina" :length="categoriasListadas
+                            ? Math.ceil(categoriasListadas['count'] / 10)
+                            : 0
+                            " :total-visible="5" class="flex-grow-1" circle color="primary"
+                            @input="categoriasRequisicao(pagina)"></v-pagination>
                         </template>
                       </v-select>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <v-select
-                        v-model="departamentoSelecionado"
-                        :items="departamentosListadosFiltro"
-                        outlined
-                        multiple
-                        clearable
-                        chips
-                        small-chips
-                        dense
-                        hide-details
-                        class="elevation-1"
-                        label="Departamento"
-                        item-text="name"
-                        item-value="id"
-                      >
+                      <v-select v-model="departamentoSelecionado" :items="departamentosListadosFiltro" outlined multiple
+                        clearable chips small-chips dense hide-details class="elevation-1" label="Departamento"
+                        item-text="name" item-value="id">
                         <template v-slot:prepend-item> </template>
                         <template v-slot:append-item>
                           <v-divider class="mb-2"></v-divider>
-                          <v-pagination
-                            v-model="paginaDepartamentos"
-                            :length="
-                              departamentosListados
-                                ? Math.ceil(departamentosListados['count'] / 10)
-                                : 0
-                            "
-                            :total-visible="5"
-                            class="flex-grow-1"
-                            circle
-                            color="primary"
-                            @input="
+                          <v-pagination v-model="paginaDepartamentos" :length="departamentosListados
+                            ? Math.ceil(departamentosListados['count'] / 10)
+                            : 0
+                            " :total-visible="5" class="flex-grow-1" circle color="primary" @input="
                               departamentosRequisicao(paginaDepartamentos)
-                            "
-                          ></v-pagination>
+                              "></v-pagination>
                         </template>
                       </v-select>
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <v-text-field
-                        v-model="tituloPesquisa"
-                        clearable
-                        outlined
-                        dense
-                        hide-details
-                        class="elevation-1"
-                        label="Título"
-                        @click:clear="
+                      <v-text-field v-model="tituloPesquisa" clearable outlined dense hide-details class="elevation-1"
+                        label="Título" @click:clear="
                           (tituloPesquisa = null), listagemDePosts()
-                        "
-                        @keydown.enter="listagemDePosts()"
-                      />
+                          " @keydown.enter="listagemDePosts()" />
                     </v-col>
                     <v-col cols="12" class="my-1">
-                      <v-btn
-                        color="primary"
-                        text
-                        @click="listagemDePosts()"
-                        block
-                      >
+                      <v-btn color="primary" text @click="listagemDePosts()" block>
                         Pesquisar
                       </v-btn>
                       <v-btn color="error" text @click="limparFiltros()" block>
@@ -444,10 +230,7 @@
                 </v-card-text>
               </v-card>
             </v-expand-transition>
-            <v-list-item
-              link
-              @click="$vuetify.theme.dark = !$vuetify.theme.dark"
-            >
+            <v-list-item link @click="$vuetify.theme.dark = !$vuetify.theme.dark">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-theme-light-dark</v-icon>
               </v-list-item-icon>
@@ -459,12 +242,7 @@
               </v-list-item-icon>
               <v-list-item-title>Dashboard</v-list-item-title>
             </v-list-item>
-            <v-list-item
-              v-if="!usuarioLogado"
-              link
-              :to="'/autenticacao'"
-              title="Área do Servidor"
-            >
+            <v-list-item v-if="!usuarioLogado" link :to="'/autenticacao'" title="Área do Servidor">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-account-key</v-icon>
               </v-list-item-icon>
@@ -479,29 +257,17 @@
           </v-list>
           <v-spacer />
           <v-list v-if="$route.name === 'Categorias' && usuarioAdmin" nav dense>
-            <v-list-item
-              link
-              @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')"
-              title="Nova Categoria"
-              class="pl-0"
-            >
+            <v-list-item link @click="$store.commit('SET_CONTROLADOR', 'novaCategoria')" title="Nova Categoria"
+              class="pl-0">
               <v-list-item-icon>
                 <v-icon color="secondary" x-large>mdi-plus</v-icon>
               </v-list-item-icon>
               <v-list-item-title>Nova Categoria</v-list-item-title>
             </v-list-item>
           </v-list>
-          <v-list
-            v-if="$route.name === 'Departamentos' && usuarioAdmin"
-            nav
-            dense
-          >
-            <v-list-item
-              link
-              @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')"
-              title="Novo Departamento"
-              class="pl-0"
-            >
+          <v-list v-if="$route.name === 'Departamentos' && usuarioAdmin" nav dense>
+            <v-list-item link @click="$store.commit('SET_CONTROLADOR', 'novoDepartamento')" title="Novo Departamento"
+              class="pl-0">
               <v-list-item-icon>
                 <v-icon color="secondary" x-large>mdi-plus</v-icon>
               </v-list-item-icon>
@@ -509,11 +275,7 @@
             </v-list-item>
           </v-list>
 
-          <v-list
-            v-if="usuarioEstaLogado && (usuarioAdmin || usuarioServidor)"
-            nav
-            dense
-          >
+          <v-list v-if="usuarioEstaLogado && (usuarioAdmin || usuarioServidor)" nav dense>
             <v-list-item link @click="overlayEditor = true">
               <v-list-item-icon>
                 <v-icon color="secondary">mdi-pencil-plus</v-icon>
@@ -531,144 +293,64 @@
         </v-row>
       </v-container>
 
-      <v-speed-dial
-        v-if="$vuetify.breakpoint.width <= 700"
-        v-model="fab"
-        bottom
-        right
-        direction="top"
-        transition="slide-y-reverse-transition"
-        style="
+      <v-speed-dial v-if="$vuetify.breakpoint.width <= 700" v-model="fab" bottom right direction="top"
+        transition="slide-y-reverse-transition" style="
           position: absolute;
           bottom: 20px;
           right: 20px;
           z-index: 700000000;
-        "
-      >
+        ">
         <template v-slot:activator>
-          <v-btn
-            v-if="!overlayEditor"
-            v-model="fab"
-            :color="!fab ? 'primary' : 'error'"
-            dark
-            fab
-            @click="(overlay = !overlay), (snackbar = false)"
-          >
+          <v-btn v-if="!overlayEditor" v-model="fab" :color="!fab ? 'primary' : 'error'" dark fab
+            @click="(overlay = !overlay), (snackbar = false)">
             <v-icon v-if="fab"> mdi-close </v-icon>
             <v-icon v-else> mdi-transition </v-icon>
           </v-btn>
         </template>
-        <div
-          class="d-flex flex-column justify-start align-end"
-          style="width: 100% !important"
-        >
-          <v-btn
-            v-if="$route.name === 'Categorias' && usuarioAdmin"
-            block
-            x-large
-            color="tertiary"
-            class="rounded-pill"
+        <div class="d-flex flex-column justify-start align-end" style="width: 100% !important">
+          <v-btn v-if="$route.name === 'Categorias' && usuarioAdmin" block x-large color="tertiary" class="rounded-pill"
             @click="
               $store.commit('SET_CONTROLADOR', 'novaCategoria'),
-                (overlay = false)
-            "
-          >
+              (overlay = false)
+              ">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
-          <v-btn
-            v-if="$route.name === 'Departamentos' && usuarioAdmin"
-            block
-            large
-            color="tertiary"
-            class="rounded-pill"
-            @click="
+          <v-btn v-if="$route.name === 'Departamentos' && usuarioAdmin" block large color="tertiary"
+            class="rounded-pill" @click="
               $store.commit('SET_CONTROLADOR', 'novoDepartamento'),
-                (overlay = false)
-            "
-          >
+              (overlay = false)
+              ">
             <v-icon>mdi-plus</v-icon>
           </v-btn>
-          <v-btn
-            v-if="$route.name === 'Feed' && usuarioEstaLogado"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click.prevent="(overlayEditor = true), (overlay = false)"
-          >
+          <v-btn v-if="$route.name === 'Feed' && usuarioEstaLogado" block large color="tertiary"
+            :class="classeBotoesSpdD" @click.prevent="(overlayEditor = true), (overlay = false)">
             Nova postagem <v-icon>mdi-pencil-plus</v-icon>
           </v-btn>
-          <v-btn
-            :to="'/'"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click="overlay = false"
-          >
+          <v-btn :to="'/'" block large color="tertiary" :class="classeBotoesSpdD" @click="overlay = false">
             Início <v-icon>mdi-home</v-icon>
           </v-btn>
-          <v-btn
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click="atualizarTudo(), (overlay = false)"
-          >
+          <v-btn block large color="tertiary" :class="classeBotoesSpdD" @click="atualizarTudo(), (overlay = false)">
             Atualizar<v-icon>mdi-refresh</v-icon>
           </v-btn>
-          <v-btn
-            v-if="$route.path == '/'"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click="(snackbar = !snackbar), (overlay = false)"
-          >
+          <v-btn v-if="$route.path == '/'" block large color="tertiary" :class="classeBotoesSpdD"
+            @click="(snackbar = !snackbar), (overlay = false)">
             Filtros <v-icon>mdi-filter-cog</v-icon>
           </v-btn>
-          <v-btn
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click="
-              ($vuetify.theme.dark = !$vuetify.theme.dark), (overlay = false)
-            "
-          >
+          <v-btn block large color="tertiary" :class="classeBotoesSpdD" @click="
+            ($vuetify.theme.dark = !$vuetify.theme.dark), (overlay = false)
+            ">
             Alterar tema <v-icon>mdi-theme-light-dark</v-icon>
           </v-btn>
-          <v-btn
-            v-if="usuarioAdmin"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            :to="'/dashboard'"
-            @click="overlay = false"
-          >
+          <v-btn v-if="usuarioAdmin" block large color="tertiary" :class="classeBotoesSpdD" :to="'/dashboard'"
+            @click="overlay = false">
             Dashboard <v-icon>mdi-cog</v-icon>
           </v-btn>
-          <v-btn
-            v-if="!usuarioLogado"
-            :to="'/autenticacao'"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            title="Área do Servidor"
-            @click="overlay = false"
-          >
+          <v-btn v-if="!usuarioLogado" :to="'/autenticacao'" block large color="tertiary" :class="classeBotoesSpdD"
+            title="Área do Servidor" @click="overlay = false">
             Fazer login/Cadastre-se <v-icon>mdi-account-key</v-icon>
           </v-btn>
-          <v-btn
-            v-if="usuarioLogado"
-            block
-            large
-            color="tertiary"
-            :class="classeBotoesSpdD"
-            @click="sair(), (overlay = false)"
-          >
+          <v-btn v-if="usuarioLogado" block large color="tertiary" :class="classeBotoesSpdD"
+            @click="sair(), (overlay = false)">
             Sair <v-icon>mdi-logout</v-icon>
           </v-btn>
         </div>
@@ -678,86 +360,38 @@
         <v-form>
           <v-row no-gutters style="z-index: 1000 !important">
             <v-col cols="12" class="my-1">
-              <v-select
-                v-model="categoriaSelecionada"
-                :items="categoriasListadasFiltro"
-                outlined
-                multiple
-                clearable
-                chips
-                small-chips
-                dense
-                hide-details
-                class="elevation-1"
-                label="Categoria"
-                item-text="name"
-                item-value="id"
-              >
+              <v-select v-model="categoriaSelecionada" :items="categoriasListadasFiltro" outlined multiple clearable
+                chips small-chips dense hide-details class="elevation-1" label="Categoria" item-text="name"
+                item-value="id">
                 <template v-slot:append-item>
                   <v-divider class="mb-2"></v-divider>
-                  <v-pagination
-                    v-model="pagina"
-                    :length="
-                      categoriasListadas
-                        ? Math.ceil(categoriasListadas['count'] / 10)
-                        : 0
-                    "
-                    :total-visible="5"
-                    class="flex-grow-1"
-                    circle
-                    color="primary"
-                    @input="categoriasRequisicao(pagina)"
-                  ></v-pagination>
+                  <v-pagination v-model="pagina" :length="categoriasListadas
+                    ? Math.ceil(categoriasListadas['count'] / 10)
+                    : 0
+                    " :total-visible="5" class="flex-grow-1" circle color="primary"
+                    @input="categoriasRequisicao(pagina)"></v-pagination>
                 </template>
               </v-select>
             </v-col>
             <v-col cols="12" class="my-1">
-              <v-select
-                v-model="departamentoSelecionado"
-                :items="departamentosListadosFiltro"
-                outlined
-                multiple
-                clearable
-                chips
-                small-chips
-                dense
-                hide-details
-                class="elevation-1"
-                label="Departamento"
-                item-text="name"
-                item-value="id"
-              >
+              <v-select v-model="departamentoSelecionado" :items="departamentosListadosFiltro" outlined multiple
+                clearable chips small-chips dense hide-details class="elevation-1" label="Departamento" item-text="name"
+                item-value="id">
                 <template v-slot:prepend-item> </template>
                 <template v-slot:append-item>
                   <v-divider class="mb-2"></v-divider>
-                  <v-pagination
-                    v-model="paginaDepartamentos"
-                    :length="
-                      departamentosListados
-                        ? Math.ceil(departamentosListados['count'] / 10)
-                        : 0
-                    "
-                    :total-visible="5"
-                    class="flex-grow-1"
-                    circle
-                    color="primary"
-                    @input="departamentosRequisicao(paginaDepartamentos)"
-                  ></v-pagination>
+                  <v-pagination v-model="paginaDepartamentos" :length="departamentosListados
+                    ? Math.ceil(departamentosListados['count'] / 10)
+                    : 0
+                    " :total-visible="5" class="flex-grow-1" circle color="primary"
+                    @input="departamentosRequisicao(paginaDepartamentos)"></v-pagination>
                 </template>
               </v-select>
             </v-col>
             <v-col cols="12" class="my-1">
-              <v-text-field
-                v-model="tituloPesquisa"
-                clearable
-                outlined
-                dense
-                hide-details
-                class="elevation-1"
-                label="Título"
-                @click:clear="(tituloPesquisa = null), listagemDePosts()"
-                @keydown.enter="listagemDePosts()"
-              />
+              <v-text-field v-model="tituloPesquisa" clearable outlined dense hide-details class="elevation-1"
+                label="Título" @click:clear="(tituloPesquisa = null), listagemDePosts()"
+                @keydown.enter="listagemDePosts()" />
             </v-col>
             <v-col cols="12" class="my-1">
               <v-btn color="primary" text @click="listagemDePosts()" block>
@@ -1064,10 +698,13 @@ export default {
       this.overlayEditor = false
       this.conteudo = null
       this.titulo = null
+      this.postDescricao = null
       this.informacoesExtras = null
-      this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10)
+      // this.date = new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      //   .toISOString()
+      //   .substr(0, 10)
+      this.dateFormatada = null
+      this.date = null
       this.menu = false
       this.overlayEditor = false
     },

@@ -331,6 +331,9 @@ const newPost = async (req, res) => {
         name,
         deletedAt: {
           [Op.is]: null
+        },
+        expiresAt: {
+          [Op.gte]: new Date()
         }
       }
     })
